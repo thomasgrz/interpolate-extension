@@ -1,4 +1,4 @@
-import Interpolation, {
+import {
   AnyInterpolation,
   HeaderInterpolation,
   InterpolationType,
@@ -496,17 +496,17 @@ export const InterpolateStorage = {
       const setOfPreviousInterpolateConfigs = new Set([
         ...interpolateConfigs.scriptInterpolateConfigs
           ?.entries()
-          ?.map(([key, value]) => {
+          ?.map(([, value]) => {
             return value;
           }),
         ...interpolateConfigs.redirectInterpolateConfigs
           ?.entries()
-          ?.map(([key, value]) => {
+          ?.map(([, value]) => {
             return value;
           }),
         ...interpolateConfigs.headerInterpolateConfigs
           ?.entries()
-          ?.map(([key, value]) => {
+          ?.map(([, value]) => {
             return value;
           }),
       ]);

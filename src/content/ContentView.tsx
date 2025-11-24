@@ -28,7 +28,11 @@ export const ContentView = () => {
 
   useEffect(() => {
     InterpolateStorage.subscribeToChanges(async (changes) =>
-      setDisplayedRules(changes),
+      setDisplayedRules([
+        ...changes.headers,
+        ...changes.redirects,
+        ...changes.scripts,
+      ]),
     );
   }, []);
 
