@@ -1,5 +1,3 @@
-import { dashboardFormOptions } from "@/contexts/dashboard-context";
-import { useAppForm } from "@/hooks/useForm/useForm";
 import {
   Box,
   Callout,
@@ -9,98 +7,29 @@ import {
 } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-
-import { SubmitAction } from "@/constants";
-import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation";
-import { createRedirectInterpolation } from "@/utils/factories/createRedirectInterpolation/createRedirectInterpolation";
-import { createScriptInterpolation } from "@/utils/factories/createScriptInterpolation/createScriptInterpolation";
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { logger } from "@/utils/logger";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import { INTERPOLATE_SELECTED_FORM_KEY } from "@/utils/storage/storage.constants";
 import { DashboardControls } from "../DashboardControls/DashboardControls";
 import { HeaderForm } from "../HeaderForm/HeaderForm";
 import { RedirectForm } from "../RedirecForm/RedirectForm";
 import { InterpolationCard } from "../RuleCard/InterpolationCard";
 import { ScriptForm } from "../ScriptForm/ScriptForm";
 import styles from "./Dashboard.module.scss";
+import { useInterpolateFormSelection } from "@/hooks/useInterpolateFormSelection/useInterpolateFormSelection";
+import { useInterpolationForm } from "@/hooks/useInterpolationForm/useInterpolationForm";
+import { FormType } from "@/constants";
 
 export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
   const [displayedRules, setDisplayedRules] = useState<AnyInterpolation[]>([]);
   const [allPaused, setAllPaused] = useState<boolean | null>(null);
-  const [defaultForm, setDefaultForm] = useState<string | null>(null);
-  const [selectedConfigForm, setSelectedConfigForm] = useState<string | null>(
-    null,
+  const form = useInterpolationForm();
+  const { selectedForm, setSelectedForm } = useInterpolateFormSelection(
+    FormType.REDIRECT,
   );
 
-  useEffect(() => {
-    logger("Dashboard mounted");
-    const handleDefaultSelection = async () => {
-      const initialSelectedForm = await chrome.storage.local.get(
-        INTERPOLATE_SELECTED_FORM_KEY,
-      );
-      if (initialSelectedForm[INTERPOLATE_SELECTED_FORM_KEY]) {
-        logger(
-          `Initial selected form: ${
-            initialSelectedForm[INTERPOLATE_SELECTED_FORM_KEY]
-          }`,
-        );
-        setDefaultForm(initialSelectedForm[INTERPOLATE_SELECTED_FORM_KEY]);
-      }
-    };
-    handleDefaultSelection();
-  }, []);
-
-  useEffect(() => {
-    chrome.storage.local.set({
-      [INTERPOLATE_SELECTED_FORM_KEY]: selectedConfigForm,
-    });
-  }, [selectedConfigForm]);
-
-  const form = useAppForm({
-    ...dashboardFormOptions,
-    validators: {},
-    onSubmitMeta: {
-      submitAction: null,
-    },
-    onSubmit: async ({ value, meta }) => {
-      logger(`Selected action - ${meta?.submitAction}`);
-      if (meta.submitAction === SubmitAction.AddRedirect) {
-        await InterpolateStorage.create([
-          createRedirectInterpolation({
-            source: value.redirectRuleForm.source,
-            destination: value.redirectRuleForm.destination,
-            name: value.redirectRuleForm.name || "Redirect Rule",
-          }),
-        ]);
-        return;
-      }
-      if (meta.submitAction === SubmitAction.AddHeader) {
-        await InterpolateStorage.create([
-          createHeaderInterpolation({
-            headerKey: value.headerRuleForm.key,
-            headerValue: value.headerRuleForm.value,
-            name: value.headerRuleForm.name,
-          }),
-        ]);
-        return;
-      }
-      if (meta.submitAction === SubmitAction.CreateScript) {
-        await InterpolateStorage.create([
-          createScriptInterpolation({
-            name: value.scriptForm.name,
-            id: value.scriptForm.id,
-            body: value.scriptForm.body,
-            include: value.scriptForm.include,
-          }),
-        ]);
-        return;
-      }
-    },
-  });
-
   const getIsEveryRulePaused = async () => {
-    const rulesInStorage = await InterpolateStorage.getAll();
+    const rulesInStorage = await InterpolateStorage.getAllInterpolations();
     const isEveryRulePaused = rulesInStorage?.every(
       (rule) => rule?.enabledByUser === false,
     );
@@ -119,7 +48,7 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
 
   useEffect(() => {
     const getInitialRulesFromStorage = async () => {
-      const allRules = (await InterpolateStorage.getAll()) ?? [];
+      const allRules = (await InterpolateStorage.getAllInterpolations()) ?? [];
       setDisplayedRules(allRules);
     };
 
@@ -127,11 +56,13 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
   }, []);
 
   useEffect(() => {
-    InterpolateStorage.subscribeToChanges(async (changes) => {
-      setDisplayedRules(changes);
-      const isEveryRulePaused = await getIsEveryRulePaused();
-      setAllPaused(isEveryRulePaused);
-    });
+    InterpolateStorage.subscribeToChanges(
+      async ({ headers, redirects, scripts }) => {
+        setDisplayedRules([...headers, ...redirects, ...scripts]);
+        const isEveryRulePaused = await getIsEveryRulePaused();
+        setAllPaused(isEveryRulePaused);
+      },
+    );
   }, []);
 
   const handleAllPaused = async () => {
@@ -159,16 +90,14 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
       return item2.createdAt - item1.createdAt;
     });
 
-  const handleFormSelection = (selectedForm: string) => {
-    setSelectedConfigForm(selectedForm);
+  const handleFormSelection = (selectedForm: FormType) => {
+    setSelectedForm(selectedForm);
     form.reset();
   };
 
   const handleDeleteAll = async () => {
     await InterpolateStorage.deleteAll();
   };
-
-  const displayedForm = selectedConfigForm ?? defaultForm ?? "redirect-rules";
 
   return (
     <ErrorBoundary
@@ -183,20 +112,24 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
         <SegmentedControl.Root
           onValueChange={handleFormSelection}
           size="1"
-          value={selectedConfigForm ?? defaultForm ?? "redirect-rules"}
+          value={selectedForm}
         >
-          <SegmentedControl.Item value="redirect-rules">
-            Redirects
+          <SegmentedControl.Item value={FormType.REDIRECT}>
+            Redirect
           </SegmentedControl.Item>
-          <SegmentedControl.Item value="headers">Headers</SegmentedControl.Item>
-          <SegmentedControl.Item value="scripts">Scripts</SegmentedControl.Item>
+          <SegmentedControl.Item value={FormType.HEADER}>
+            Header
+          </SegmentedControl.Item>
+          <SegmentedControl.Item value={FormType.SCRIPT}>
+            Script
+          </SegmentedControl.Item>
         </SegmentedControl.Root>
       </Box>
       <Flex height={"100%"} direction="column" flexGrow={"1"}>
         <form>
-          {displayedForm === "redirect-rules" && <RedirectForm form={form} />}
-          {displayedForm === "headers" && <HeaderForm form={form} />}
-          {displayedForm === "scripts" && <ScriptForm form={form} />}
+          {selectedForm === FormType.REDIRECT && <RedirectForm form={form} />}
+          {selectedForm === FormType.HEADER && <HeaderForm form={form} />}
+          {selectedForm === FormType.SCRIPT && <ScriptForm form={form} />}
         </form>
       </Flex>
       <Separator size={"4"} my="1" />

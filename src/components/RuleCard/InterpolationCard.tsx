@@ -57,9 +57,11 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
 
   useEffect(() => {
     InterpolateStorage.subscribeToChanges(async (values) => {
-      const parentConfig = values.find(
-        (value) => value.details.id === info.details.id,
-      );
+      const parentConfig = [
+        ...values.headers,
+        ...values.redirects,
+        ...values.scripts,
+      ].find((value) => value.details.id === info.details.id);
       const isParentConfigPaused = parentConfig?.enabledByUser === false;
 
       setIsPaused(isParentConfigPaused);
