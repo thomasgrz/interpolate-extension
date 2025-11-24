@@ -1,2 +1,2 @@
-export const logger = (msg: string) =>
-  console.info("[Interpolate Chrome Extension]: ", msg);
+export const logger = (msg: string, data?: unknown) =>
+  console.info("[Interpolate Chrome Extension] ", msg, { data });

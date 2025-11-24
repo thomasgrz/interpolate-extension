@@ -3,3 +3,9 @@ export enum SubmitAction {
   AddHeader = "add-header",
   AddRedirect = "add-redirect",
 }
+
+export enum FormType {
+  SCRIPT = "script",
+  HEADER = "header",
+  REDIRECT = "redirect",
+}
