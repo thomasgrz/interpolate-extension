@@ -90,8 +90,8 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
       return item2.createdAt - item1.createdAt;
     });
 
-  const handleFormSelection = (selectedForm: string) => {
-    setSelectedConfigForm(selectedForm);
+  const handleFormSelection = (selectedForm: FormType) => {
+    setSelectedForm(selectedForm);
     form.reset();
   };
 

@@ -1,4 +1,5 @@
 import { expect, test } from "../fixtures/expect";
+import { FormType } from "../src/constants";
 
 const createHeaderRule = async (arg: {
   page: any;
@@ -11,7 +12,7 @@ const createHeaderRule = async (arg: {
     `chrome-extension://${arg.extensionId}/src/options/index.html`,
   );
 
-  await page.getByRole("radio", { name: "Headers" }).click();
+  await page.getByRole("radio", { name: FormType.HEADER }).click();
   await page.getByPlaceholder(/Forwarded/).fill(headerName);
   await page.getByPlaceholder(/http/).fill(headerValue);
   await page.getByText("Add config").click();
