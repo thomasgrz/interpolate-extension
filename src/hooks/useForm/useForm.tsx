@@ -17,12 +17,11 @@ function SubscribeButton({ label }: { label: string }) {
 
 export const { useAppForm, withForm, withFieldGroup } = createFormHook({
   fieldComponents: {
-    TextField: lazy(() => import("../../components/TextField/TextField.js")),
-    TextArea: lazy(() =>
-      import("../../components/TextArea/TextArea.js").then((mod) => ({
-        default: mod.default,
-      })),
+    SelectField: lazy(
+      () => import("../../components/SelectField/SelectField.js"),
     ),
+    TextField: lazy(() => import("../../components/TextField/TextField.js")),
+    TextArea: lazy(() => import("../../components/TextArea/TextArea.js")),
   },
   formComponents: {
     SubscribeButton,

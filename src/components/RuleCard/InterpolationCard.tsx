@@ -127,37 +127,8 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
               onPauseClick={handlePauseClick}
               isPaused={isPaused || !!info.error}
             />
-            <Tooltip content={collapseTriggerContent}>
-              <Collapsible.Trigger asChild>
-                <Button color="jade" size={"1"} radius="full">
-                  {isOpen ? <DoubleArrowUpIcon /> : <DoubleArrowDownIcon />}
-                </Button>
-              </Collapsible.Trigger>
-            </Tooltip>
           </Flex>
         </Flex>
-        <Collapsible.Content asChild>
-          <DataList.Root trim="end" size="1" m="1">
-            <DataList.Item align={"end"}>
-              <DataList.Label color="jade">Id:</DataList.Label>
-              <DataList.Value>{info.details.id}</DataList.Value>
-            </DataList.Item>
-            <DataList.Item>
-              <DataList.Label>Type:</DataList.Label>
-              <DataList.Value>{info.type}</DataList.Value>
-            </DataList.Item>
-            <DataList.Item>
-              <DataList.Label>Enabled:</DataList.Label>
-              <DataList.Value>{info.enabledByUser?.toString()}</DataList.Value>
-            </DataList.Item>
-            <DataList.Item>
-              <DataList.Label>Config:</DataList.Label>
-              <DataList.Value>
-                <Code>{JSON.stringify(info)}</Code>
-              </DataList.Value>
-            </DataList.Item>
-          </DataList.Root>
-        </Collapsible.Content>
       </Collapsible.Root>
     </Card>
   );

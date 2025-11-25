@@ -11,7 +11,7 @@ const node = document.getElementById("root");
 if (node instanceof HTMLElement) {
   createRoot(node).render(
     <StrictMode>
-      <Theme style={{ backgroundColor: "#FFDE21" }} radius="full">
+      <Theme style={{ backgroundColor: "#FFDE21" }} radius="large">
         <Dashboard />
       </Theme>
     </StrictMode>,

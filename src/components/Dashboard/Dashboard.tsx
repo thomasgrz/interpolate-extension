@@ -4,6 +4,7 @@ import {
   Flex,
   SegmentedControl,
   Separator,
+  Text,
 } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -110,12 +111,14 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
     >
       <Box p="2">
         <SegmentedControl.Root
+          variant="classic"
+          radius="full"
           onValueChange={handleFormSelection}
-          size="1"
+          size="2"
           value={selectedForm}
         >
           <SegmentedControl.Item value={FormType.REDIRECT}>
-            Redirect
+            <Text size="2">Redirect</Text>
           </SegmentedControl.Item>
           <SegmentedControl.Item value={FormType.HEADER}>
             Header
@@ -132,7 +135,6 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
           {selectedForm === FormType.SCRIPT && <ScriptForm form={form} />}
         </form>
       </Flex>
-      <Separator size={"4"} my="1" />
       <DashboardControls
         ruleCount={displayedRules?.length}
         allPaused={!!allPaused}

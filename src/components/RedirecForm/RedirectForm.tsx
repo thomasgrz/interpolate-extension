@@ -3,6 +3,7 @@ import { Box, Button, Flex } from "@radix-ui/themes";
 import CardAddIcon from "../../assets/card-add.svg";
 import { withForm } from "../../hooks/useForm/useForm";
 import styles from "./RedirectRuleForm.module.scss";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 export const RedirectForm = withForm({
   ...dashboardFormOptions,
@@ -23,7 +24,7 @@ export const RedirectForm = withForm({
                   <field.TextField
                     placeholder="Example: https://example.com/(.*)"
                     htmlFor="source"
-                    label="Source"
+                    label="Source:"
                   />
                 )}
               />
@@ -35,23 +36,19 @@ export const RedirectForm = withForm({
                 <field.TextField
                   placeholder="Example: https://google.com/$1"
                   htmlFor="source"
-                  label="Destination"
+                  label="Destination:"
                 />
               )}
             />
           </Flex>
-          <Flex flexGrow={"1"} justify={"end"}>
-            <Button
-              onClick={() =>
-                form.handleSubmit({ submitAction: "add-redirect" })
-              }
-              type="button"
-              size="1"
-            >
-              <CardAddIcon />
-              Add config
-            </Button>
-          </Flex>
+          <Button
+            onClick={() => form.handleSubmit({ submitAction: "add-redirect" })}
+            type="button"
+            size="2"
+          >
+            <PlusCircledIcon />
+            Create redirect
+          </Button>
         </Flex>
       </Box>
     );

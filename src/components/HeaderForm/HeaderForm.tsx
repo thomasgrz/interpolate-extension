@@ -3,6 +3,7 @@ import { withForm } from "@/hooks/useForm/useForm";
 import { Box, Button, Flex } from "@radix-ui/themes";
 import CardAddIcon from "../../assets/card-add.svg";
 import styles from "./HeaderForm.module.scss";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 export const HeaderForm = withForm({
   ...dashboardFormOptions,
@@ -23,7 +24,7 @@ export const HeaderForm = withForm({
                 <field.TextField
                   placeholder="x-Forwarded-For"
                   htmlFor="headerKey"
-                  label="Key"
+                  label="Header key:"
                 />
               </div>
             )}
@@ -35,20 +36,18 @@ export const HeaderForm = withForm({
               <field.TextField
                 placeholder="http://test.domain.com"
                 htmlFor="headerValue"
-                label="Value"
+                label="Header value:"
               />
             )}
           />
-          <Flex flexGrow={"1"} justify={"end"}>
-            <Button
-              onClick={() => form.handleSubmit({ submitAction: "add-header" })}
-              type="button"
-              size="1"
-            >
-              <CardAddIcon />
-              Add config
-            </Button>
-          </Flex>
+          <Button
+            onClick={() => form.handleSubmit({ submitAction: "add-header" })}
+            type="button"
+            size="2"
+          >
+            <PlusCircledIcon />
+            Create header
+          </Button>
         </Flex>
       </Box>
     );

@@ -1,8 +1,9 @@
-import { Box, Flex, TextField } from "@radix-ui/themes";
+import { Box, Flex, TextField, Text } from "@radix-ui/themes";
 import { useStore } from "@tanstack/react-form";
 import { Label } from "radix-ui";
 import { useFieldContext } from "../../contexts/form-context";
 import styles from "./TextField.module.scss";
+import InputLabel from "../InputLabel/InputLabel";
 
 export default function TextInput({
   label,
@@ -18,24 +19,24 @@ export default function TextInput({
   const errors = useStore(field.store, (state) => state.meta.errors);
   return (
     <Box flexGrow={"1"}>
-      <Flex gap={"1"} align={"center"}>
-        <Label.Root className={styles.LabelRoot} htmlFor={htmlFor}>
-          {label}:{" "}
-        </Label.Root>
-        <Box flexGrow={"1"}>
-          <TextField.Root
-            placeholder={placeholder}
-            value={field.state.value}
-            onChange={(e) => field.handleChange(e.target.value)}
-            onBlur={field.handleBlur}
-          />
-        </Box>
+      <Flex align="start">
+        <InputLabel>{label}</InputLabel>
       </Flex>
-      {errors.map((error: string) => (
-        <em key={error} style={{ color: "red" }}>
-          {error}
-        </em>
-      ))}
+      <Box flexGrow={"1"}>
+        <TextField.Root
+          placeholder={placeholder}
+          value={field.state.value}
+          onChange={(e) => field.handleChange(e.target.value)}
+          onBlur={field.handleBlur}
+        />
+        {errors.map((error: string) => (
+          <Flex>
+            <Text align={"left"} key={error} size={"1"} color="red">
+              {error}
+            </Text>
+          </Flex>
+        ))}
+      </Box>
     </Box>
   );
 }
