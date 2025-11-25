@@ -15,7 +15,7 @@ const createHeaderRule = async (arg: {
   await page.getByRole("radio", { name: FormType.HEADER }).click();
   await page.getByPlaceholder(/Forwarded/).fill(headerName);
   await page.getByPlaceholder(/http/).fill(headerValue);
-  await page.getByText("Add config").click();
+  await page.getByText("Create header").click();
 };
 
 test("should apply header rule", async ({ page, extensionId, network }) => {

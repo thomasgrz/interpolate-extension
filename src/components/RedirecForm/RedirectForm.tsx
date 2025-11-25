@@ -1,6 +1,5 @@
 import { dashboardFormOptions } from "@/contexts/dashboard-context.ts";
 import { Box, Button, Flex } from "@radix-ui/themes";
-import CardAddIcon from "../../assets/card-add.svg";
 import { withForm } from "../../hooks/useForm/useForm";
 import styles from "./RedirectRuleForm.module.scss";
 import { PlusCircledIcon } from "@radix-ui/react-icons";

@@ -13,7 +13,7 @@ const createRedirectRule = async (arg: {
 
   await page.getByPlaceholder(/example/).fill(source);
   await page.getByPlaceholder(/google/).fill(destination);
-  await page.getByText("Add config").click();
+  await page.getByText("Create redirect").click();
 };
 
 test("should apply redirect rule", async ({ page, network, extensionId }) => {

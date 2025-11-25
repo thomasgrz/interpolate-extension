@@ -24,7 +24,7 @@ try {
     InterpolateStorage.subscribeToChanges(async (values) => {
       try {
         try {
-          const userScriptChanges = values.scripts;
+          const userScriptChanges = values.updates.scripts;
           BrowserRules.updateUserScripts(userScriptChanges);
         } catch (e) {
           logger(`updateUserScripts error: ${e}`);
@@ -32,8 +32,8 @@ try {
 
         try {
           BrowserRules.updateDynamicRules([
-            ...values.redirects,
-            ...values.headers,
+            ...values.updates.redirects,
+            ...values.updates.headers,
           ]);
         } catch (e) {
           logger(`updateDynamicRules error: ${e}`);

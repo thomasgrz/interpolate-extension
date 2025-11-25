@@ -215,10 +215,11 @@ export const InterpolateStorage = {
     const caller = "getAllInterpolationIds";
     this.logInvocation(caller);
     try {
-      const result = await chrome.storage.sync.get(
-        INTERPOLATION_RECORD_IDS_STORAGE_KEY,
-      );
-      const ids = result[INTERPOLATION_RECORD_IDS_STORAGE_KEY] ?? [];
+      const result = await chrome.storage.sync.getKeys();
+      const ids =
+        result
+          .filter((key) => key.startsWith("interpolation-config"))
+          .map((key) => key.match(/interpolation-config-(.*)/)?.[1]) ?? [];
       return ids as string[];
     } catch (e) {
       logger(caller, e);
@@ -305,16 +306,24 @@ export const InterpolateStorage = {
   },
   async subscribeToChanges(
     cb: (arg: {
-      ids: string[];
-      headers: HeaderInterpolation[];
-      scripts: ScriptInterpolation[];
-      redirects: RedirectInterpolation[];
+      updates: {
+        ids: string[];
+        headers: HeaderInterpolation[];
+        scripts: ScriptInterpolation[];
+        redirects: RedirectInterpolation[];
+      };
+      interpolations: {
+        ids: string[];
+        headers: HeaderInterpolation[];
+        scripts: ScriptInterpolation[];
+        redirects: RedirectInterpolation[];
+      };
     }) => Promise<void>,
   ) {
     const caller = "subscribeToChanges";
     this.logInvocation(caller);
     try {
-      chrome.storage.sync.onChanged.addListener((_values) => {
+      chrome.storage.sync.onChanged.addListener(async (_values) => {
         this.logInvocation("chrome.storage.sync.onChanged");
         logger("[sync storage] onChanged: updatedValues", _values);
         const { scripts, headers, redirects, ids } = Object.entries(
@@ -358,11 +367,60 @@ export const InterpolateStorage = {
             redirects: [],
           },
         );
+
+        const interpolations = await this.getAllInterpolations();
+        const interpolationIds = await this.getAllInterpolationIds();
+
+        const {
+          headers: currentHeaders,
+          scripts: currentScripts,
+          redirects: currentRedirects,
+        } = interpolations?.reduce<{
+          headers: HeaderInterpolation[];
+          redirects: RedirectInterpolation[];
+          scripts: ScriptInterpolation[];
+        }>(
+          (acc, curr) => {
+            const { type } = curr;
+            switch (type) {
+              case "headers":
+                acc.headers.push(curr);
+                break;
+              case "redirect":
+                acc.redirects.push(curr);
+                break;
+              case "script":
+                acc.scripts.push(curr);
+                break;
+              default:
+                break;
+            }
+            return acc;
+          },
+          {
+            headers: [],
+            scripts: [],
+            redirects: [],
+          },
+        ) ?? {
+          headers: [],
+          scripts: [],
+          redirects: [],
+        };
+
         cb({
-          ids,
-          scripts,
-          headers,
-          redirects,
+          updates: {
+            ids,
+            scripts: currentScripts,
+            headers: currentHeaders,
+            redirects: currentRedirects,
+          },
+          interpolations: {
+            ids: interpolationIds ?? [],
+            scripts: currentScripts,
+            headers: currentHeaders,
+            redirects: currentRedirects,
+          },
         });
       });
     } catch (e) {

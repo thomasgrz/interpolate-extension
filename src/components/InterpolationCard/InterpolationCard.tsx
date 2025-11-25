@@ -58,9 +58,9 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   useEffect(() => {
     InterpolateStorage.subscribeToChanges(async (values) => {
       const parentConfig = [
-        ...values.headers,
-        ...values.redirects,
-        ...values.scripts,
+        ...values.interpolations.headers,
+        ...values.interpolations.redirects,
+        ...values.interpolations.scripts,
       ].find((value) => value.details.id === info.details.id);
       const isParentConfigPaused = parentConfig?.enabledByUser === false;
 
@@ -80,13 +80,11 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
     await InterpolateStorage.setIsEnabled(info, false);
   };
 
-  const collapseTriggerContent = isOpen ? "collapse" : "expand";
-
   const getPreview = () => {
     switch (info.type) {
       case "headers":
         // @ts-expect-error testing
-        return <HeaderRulePreview details={info} name={info.name} />;
+        return <HeaderRulePreview details={info.details} name={info.name} />;
       case "redirect":
         return <RedirectRulePreview rule={info} />;
       case "script":
@@ -119,14 +117,19 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
               )}
             </Flex>
           </Box>
-          <Flex direction={"column"} gap="3" className={styles.DeleteAction}>
-            <RuleDeleteAction onDelete={onDelete} />
+          <Flex
+            direction={"column"}
+            justify="between"
+            align={"center"}
+            className={styles.DeleteAction}
+          >
             <RuleToggle
               disabled={!!info.error}
               onResumeClick={handleResumeClick}
               onPauseClick={handlePauseClick}
               isPaused={isPaused || !!info.error}
             />
+            <RuleDeleteAction onDelete={onDelete} />
           </Flex>
         </Flex>
       </Collapsible.Root>

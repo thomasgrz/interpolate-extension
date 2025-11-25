@@ -14,7 +14,7 @@ import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/Interpola
 import { DashboardControls } from "../DashboardControls/DashboardControls";
 import { HeaderForm } from "../HeaderForm/HeaderForm";
 import { RedirectForm } from "../RedirecForm/RedirectForm";
-import { InterpolationCard } from "../RuleCard/InterpolationCard";
+import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
 import { ScriptForm } from "../ScriptForm/ScriptForm";
 import styles from "./Dashboard.module.scss";
 import { useInterpolateFormSelection } from "@/hooks/useInterpolateFormSelection/useInterpolateFormSelection";
@@ -57,13 +57,15 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
   }, []);
 
   useEffect(() => {
-    InterpolateStorage.subscribeToChanges(
-      async ({ headers, redirects, scripts }) => {
-        setDisplayedRules([...headers, ...redirects, ...scripts]);
-        const isEveryRulePaused = await getIsEveryRulePaused();
-        setAllPaused(isEveryRulePaused);
-      },
-    );
+    InterpolateStorage.subscribeToChanges(async ({ interpolations }) => {
+      setDisplayedRules([
+        ...interpolations.headers,
+        ...interpolations.redirects,
+        ...interpolations.scripts,
+      ]);
+      const isEveryRulePaused = await getIsEveryRulePaused();
+      setAllPaused(isEveryRulePaused);
+    });
   }, []);
 
   const handleAllPaused = async () => {

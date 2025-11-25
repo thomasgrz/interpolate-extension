@@ -2,6 +2,7 @@ import { HeaderInterpolation } from "@/utils/factories/Interpolation";
 import { Badge, DataList } from "@radix-ui/themes";
 
 export const HeaderRulePreview = ({ details }: HeaderInterpolation) => {
+  console.log(details);
   return (
     <DataList.Root trim="end" size="1" m="1">
       <DataList.Item>
@@ -20,12 +21,6 @@ export const HeaderRulePreview = ({ details }: HeaderInterpolation) => {
         <DataList.Label>Value:</DataList.Label>
         <DataList.Value>
           {details?.action?.requestHeaders?.[0]?.value}
-        </DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label>RegEx:</DataList.Label>
-        <DataList.Value>
-          <strong>{details?.condition?.regexFilter}</strong>
         </DataList.Value>
       </DataList.Item>
     </DataList.Root>

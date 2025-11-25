@@ -1,4 +1,4 @@
-import { InterpolationCard } from "@/components/RuleCard/InterpolationCard";
+import { InterpolationCard } from "@/components/InterpolationCard/InterpolationCard";
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import { Box, Button, Flex, IconButton, Theme } from "@radix-ui/themes";
@@ -29,9 +29,9 @@ export const ContentView = () => {
   useEffect(() => {
     InterpolateStorage.subscribeToChanges(async (changes) =>
       setDisplayedRules([
-        ...changes.headers,
-        ...changes.redirects,
-        ...changes.scripts,
+        ...changes.updates.headers,
+        ...changes.updates.redirects,
+        ...changes.updates.scripts,
       ]),
     );
   }, []);
