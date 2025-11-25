@@ -1,9 +1,9 @@
 import { dashboardFormOptions } from "@/contexts/dashboard-context";
 import { withForm } from "@/hooks/useForm/useForm";
 import { Box, Button, Flex } from "@radix-ui/themes";
-import CardAddIcon from "../../assets/card-add.svg";
 import styles from "./HeaderForm.module.scss";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 export const HeaderForm = withForm({
   ...dashboardFormOptions,
@@ -23,7 +23,6 @@ export const HeaderForm = withForm({
               <div className={styles.Input}>
                 <field.TextField
                   placeholder="x-Forwarded-For"
-                  htmlFor="headerKey"
                   label="Header key:"
                 />
               </div>
@@ -35,19 +34,15 @@ export const HeaderForm = withForm({
             children={(field) => (
               <field.TextField
                 placeholder="http://test.domain.com"
-                htmlFor="headerValue"
                 label="Header value:"
               />
             )}
           />
-          <Button
+          <SubmitButton
             onClick={() => form.handleSubmit({ submitAction: "add-header" })}
-            type="button"
-            size="2"
           >
-            <PlusCircledIcon />
             Create header
-          </Button>
+          </SubmitButton>
         </Flex>
       </Box>
     );

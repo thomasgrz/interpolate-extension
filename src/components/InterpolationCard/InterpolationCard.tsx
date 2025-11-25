@@ -6,21 +6,8 @@ import {
   ScriptInterpolation,
 } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import {
-  DoubleArrowDownIcon,
-  DoubleArrowUpIcon,
-  QuestionMarkCircledIcon,
-} from "@radix-ui/react-icons";
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Code,
-  DataList,
-  Flex,
-  Tooltip,
-} from "@radix-ui/themes";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import { Badge, Box, Card, Flex, Tooltip } from "@radix-ui/themes";
 import { Collapsible } from "radix-ui";
 import { HeaderRulePreview } from "../HeaderPreview/HeaderPreview";
 import { RedirectRulePreview } from "../RedirectPreview/RedirectPreview";

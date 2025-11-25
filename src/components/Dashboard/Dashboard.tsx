@@ -2,6 +2,7 @@ import {
   Box,
   Callout,
   Flex,
+  IconButton,
   SegmentedControl,
   Separator,
   Text,
@@ -13,13 +14,14 @@ import { logger } from "@/utils/logger";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import { DashboardControls } from "../DashboardControls/DashboardControls";
 import { HeaderForm } from "../HeaderForm/HeaderForm";
-import { RedirectForm } from "../RedirecForm/RedirectForm";
+import { RedirectForm } from "../RedirectForm/RedirectForm";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
 import { ScriptForm } from "../ScriptForm/ScriptForm";
 import styles from "./Dashboard.module.scss";
 import { useInterpolateFormSelection } from "@/hooks/useInterpolateFormSelection/useInterpolateFormSelection";
 import { useInterpolationForm } from "@/hooks/useInterpolationForm/useInterpolationForm";
 import { FormType } from "@/constants";
+import { ButtonIcon, IconJarLogoIcon, RocketIcon } from "@radix-ui/react-icons";
 
 export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
   const [displayedRules, setDisplayedRules] = useState<AnyInterpolation[]>([]);
@@ -112,6 +114,11 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
       }
     >
       <Box p="2">
+        <Flex p="1" justify={"center"}>
+          <Box height={"1rem"}>
+            <RocketIcon />
+          </Box>
+        </Flex>
         <SegmentedControl.Root
           variant="classic"
           radius="full"

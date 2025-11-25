@@ -1,17 +1,13 @@
 import { Box, Flex, TextField, Text } from "@radix-ui/themes";
 import { useStore } from "@tanstack/react-form";
-import { Label } from "radix-ui";
 import { useFieldContext } from "../../contexts/form-context";
-import styles from "./TextField.module.scss";
 import InputLabel from "../InputLabel/InputLabel";
 
 export default function TextInput({
   label,
-  htmlFor,
   placeholder,
 }: {
   label: string;
-  htmlFor: string;
   placeholder?: string;
 }) {
   const field = useFieldContext<string>();

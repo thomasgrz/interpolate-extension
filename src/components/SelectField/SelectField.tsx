@@ -1,7 +1,6 @@
 import { useFieldContext } from "@/contexts/form-context";
 import { Box, Flex, Select } from "@radix-ui/themes";
 import { useStore } from "@tanstack/react-form";
-import { Label } from "radix-ui";
 import styles from "./SelectField.module.scss";
 import InputLabel from "../InputLabel/InputLabel";
 

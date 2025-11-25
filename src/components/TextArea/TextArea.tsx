@@ -1,7 +1,6 @@
 import { Box, Flex, Text, TextArea as _TextArea } from "@radix-ui/themes";
 import { useStore } from "@tanstack/react-form";
 import { useFieldContext } from "../../contexts/form-context";
-import { Label } from "radix-ui";
 import InputLabel from "../InputLabel/InputLabel";
 
 export default function TextArea({

@@ -307,7 +307,7 @@ export const InterpolateStorage = {
   async subscribeToChanges(
     cb: (arg: {
       updates: {
-        ids: string[];
+        ids: (string | number)[];
         headers: HeaderInterpolation[];
         scripts: ScriptInterpolation[];
         redirects: RedirectInterpolation[];
@@ -326,10 +326,8 @@ export const InterpolateStorage = {
       chrome.storage.sync.onChanged.addListener(async (_values) => {
         this.logInvocation("chrome.storage.sync.onChanged");
         logger("[sync storage] onChanged: updatedValues", _values);
-        const { scripts, headers, redirects, ids } = Object.entries(
-          _values,
-        ).reduce<{
-          ids: string[];
+        const updates = Object.entries(_values).reduce<{
+          ids: (string | number)[];
           headers: HeaderInterpolation[];
           scripts: ScriptInterpolation[];
           redirects: RedirectInterpolation[];
@@ -337,8 +335,9 @@ export const InterpolateStorage = {
           (acc, curr) => {
             const key = curr[0];
             const value = curr[1].newValue;
+            const interpolation = value as AnyInterpolation;
+
             if (key.startsWith(INTERPOLATE_RECORD_PREFIX)) {
-              const interpolation = value as AnyInterpolation;
               const { type } = interpolation;
               switch (type) {
                 case "headers":
@@ -355,9 +354,7 @@ export const InterpolateStorage = {
               }
             }
 
-            if (key === INTERPOLATION_RECORD_IDS_STORAGE_KEY) {
-              acc.ids.push(value);
-            }
+            acc.ids.push(interpolation.details.id);
             return acc;
           },
           {
@@ -409,12 +406,7 @@ export const InterpolateStorage = {
         };
 
         cb({
-          updates: {
-            ids,
-            scripts: currentScripts,
-            headers: currentHeaders,
-            redirects: currentRedirects,
-          },
+          updates,
           interpolations: {
             ids: interpolationIds ?? [],
             scripts: currentScripts,
@@ -522,7 +514,6 @@ export const InterpolateStorage = {
                     (curr as chrome.userScripts.RegisteredUserScript)?.js?.[0]
                       ?.code ?? "",
                   name: "unknown-from-browser",
-                  id: currentId as string,
                 }),
               );
             }

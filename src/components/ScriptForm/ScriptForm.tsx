@@ -3,6 +3,7 @@ import { dashboardFormOptions } from "@/contexts/dashboard-context";
 import { withForm } from "@/hooks/useForm/useForm";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { Box, Button, Flex } from "@radix-ui/themes";
+import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 export const ScriptForm = withForm({
   ...dashboardFormOptions,
@@ -24,11 +25,7 @@ export const ScriptForm = withForm({
         <Flex gap="1" direction={"column"}>
           <form.AppField validators={validators} name="scriptForm.name">
             {(field) => (
-              <field.TextField
-                htmlFor="Name"
-                label="Name:"
-                placeholder="My Cool Script"
-              />
+              <field.TextField label="Name:" placeholder="My Cool Script" />
             )}
           </form.AppField>
           <form.AppField validators={validators} name="scriptForm.body">
@@ -42,26 +39,19 @@ export const ScriptForm = withForm({
           </form.AppField>
           <form.AppField name="scriptForm.matches">
             {(field) => (
-              <field.TextField
-                htmlFor="Matches"
-                label="RegEx matcher:"
-                placeholder="*://*/*"
-              />
+              <field.TextField label="RegEx matcher:" placeholder="*://*/*" />
             )}
           </form.AppField>
           <form.AppField name="scriptForm.runAt">
             {(field) => <field.SelectField options={options} label={"When:"} />}
           </form.AppField>
-          <Button
+          <SubmitButton
             onClick={() =>
               form.handleSubmit({ submitAction: SubmitAction.CreateScript })
             }
-            type="button"
-            size="2"
           >
-            <PlusCircledIcon />
             Create script
-          </Button>
+          </SubmitButton>
         </Flex>
       </Box>
     );

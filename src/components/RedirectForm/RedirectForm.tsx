@@ -1,8 +1,8 @@
 import { dashboardFormOptions } from "@/contexts/dashboard-context.ts";
-import { Box, Button, Flex } from "@radix-ui/themes";
+import { Box, Flex } from "@radix-ui/themes";
 import { withForm } from "../../hooks/useForm/useForm";
 import styles from "./RedirectRuleForm.module.scss";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 export const RedirectForm = withForm({
   ...dashboardFormOptions,
@@ -22,7 +22,6 @@ export const RedirectForm = withForm({
                 children={(field) => (
                   <field.TextField
                     placeholder="Example: https://example.com/(.*)"
-                    htmlFor="source"
                     label="Source:"
                   />
                 )}
@@ -34,20 +33,16 @@ export const RedirectForm = withForm({
               children={(field) => (
                 <field.TextField
                   placeholder="Example: https://google.com/$1"
-                  htmlFor="source"
                   label="Destination:"
                 />
               )}
             />
           </Flex>
-          <Button
+          <SubmitButton
             onClick={() => form.handleSubmit({ submitAction: "add-redirect" })}
-            type="button"
-            size="2"
           >
-            <PlusCircledIcon />
             Create redirect
-          </Button>
+          </SubmitButton>
         </Flex>
       </Box>
     );
