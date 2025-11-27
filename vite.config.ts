@@ -26,7 +26,7 @@ export default defineConfig({
       },
       include: "**/*.svg",
     }),
-    crx({ manifest }),
+    // crx({ manifest }),
     zip({ outDir: "release", outFileName: `crx-${name}-${version}.zip` }),
   ],
   server: {

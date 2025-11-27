@@ -1,10 +1,12 @@
 import { createFormHook } from "@tanstack/react-form";
-import { lazy } from "react";
 import {
   fieldContext,
   formContext,
   useFormContext,
 } from "../../contexts/form-context.ts";
+import SelectField from "@/components/SelectField/SelectField.tsx";
+import TextArea from "@/components/TextArea/TextArea.tsx";
+import TextField from "@/components/TextField/TextField.tsx";
 
 function SubscribeButton({ label }: { label: string }) {
   const form = useFormContext();
@@ -17,11 +19,9 @@ function SubscribeButton({ label }: { label: string }) {
 
 export const { useAppForm, withForm, withFieldGroup } = createFormHook({
   fieldComponents: {
-    SelectField: lazy(
-      () => import("../../components/SelectField/SelectField.js"),
-    ),
-    TextField: lazy(() => import("../../components/TextField/TextField.js")),
-    TextArea: lazy(() => import("../../components/TextArea/TextArea.js")),
+    SelectField,
+    TextField,
+    TextArea,
   },
   formComponents: {
     SubscribeButton,

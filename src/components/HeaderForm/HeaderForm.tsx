@@ -1,8 +1,7 @@
 import { dashboardFormOptions } from "@/contexts/dashboard-context";
 import { withForm } from "@/hooks/useForm/useForm";
-import { Box, Button, Flex } from "@radix-ui/themes";
+import { Box, Flex } from "@radix-ui/themes";
 import styles from "./HeaderForm.module.scss";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 export const HeaderForm = withForm({

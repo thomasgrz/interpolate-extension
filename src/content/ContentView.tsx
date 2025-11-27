@@ -1,60 +1,64 @@
 import { InterpolationCard } from "@/components/InterpolationCard/InterpolationCard";
-import { AnyInterpolation } from "@/utils/factories/Interpolation";
-import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import { Box, Button, Flex, IconButton, Theme } from "@radix-ui/themes";
+import { Box, Flex, IconButton, Theme } from "@radix-ui/themes";
 import { Separator } from "radix-ui";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Hide from "../assets/hide.svg";
 import Show from "../assets/show.svg";
 import styles from "./ContentView.module.scss";
+import { useInterpolations } from "@/hooks/useInterpolations/userInterpolations";
+import { AnimatePresence, motion } from "motion/react";
+
+const box: React.CSSProperties = {
+  width: "100%",
+  // height: 100,
+  borderRadius: "10px",
+};
 
 export const ContentView = () => {
-  const [show, setShow] = useState(true);
-  const [displayedRules, setDisplayedRules] = useState<AnyInterpolation[]>([]);
-
-  const fetchRules = async () => {
-    const _rules = await chrome.storage.local.get("rules");
-    setDisplayedRules(_rules.rules);
-  };
+  const [isVisible, setIsVisible] = useState(false);
+  const { interpolations } = useInterpolations();
 
   const toggle = () => {
-    setShow(!show);
-    fetchRules();
+    setIsVisible((prev) => !prev);
   };
-
-  useEffect(() => {
-    fetchRules();
-  }, []);
-
-  useEffect(() => {
-    InterpolateStorage.subscribeToChanges(async (changes) =>
-      setDisplayedRules([
-        ...changes.updates.headers,
-        ...changes.updates.redirects,
-        ...changes.updates.scripts,
-      ]),
-    );
-  }, []);
-
   return (
     <Theme>
-      <Box className={styles.ContentView}>
-        <Flex align="end" direction={"row"}>
-          <div
-            data-ui-shown={show}
-            className={show ? styles.DisplayedRules : styles.HiddenRules}
-          >
-            {displayedRules?.map?.((rule) => (
-              <InterpolationCard key={rule.details.id} info={rule} />
-            ))}
-          </div>
+      <Box width="500px" className={styles.ContentView}>
+        <Flex direction="column" gap="1" width="100%" align="end">
+          <AnimatePresence>
+            {!isVisible ? null : (
+              <>
+                {interpolations()?.map((rule) => (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{
+                      duration: 0.4,
+                      scale: {
+                        type: "spring",
+                        visualDuration: 0.4,
+                        bounce: 0.5,
+                      },
+                    }}
+                    style={box}
+                    key="box"
+                  >
+                    <Box
+                      width={"100%"}
+                      p="1"
+                      className={styles.RuleCardContainer}
+                    >
+                      <InterpolationCard info={rule} />
+                    </Box>
+                  </motion.div>
+                ))}
+              </>
+            )}
+          </AnimatePresence>
           <Separator.Root />
-          <Flex gap="1">
-            <Button onClick={() => fetchRules()}> Refresh</Button>
-            <IconButton color="green" onClick={toggle}>
-              {show ? <Hide /> : <Show />}
-            </IconButton>
-          </Flex>
+          <IconButton size="4" color="green" onClick={toggle}>
+            {isVisible ? <Hide /> : <Show />}
+          </IconButton>
         </Flex>
       </Box>
     </Theme>

@@ -2,6 +2,7 @@ import { BrowserRules } from "./utils/browser/BrowserRules";
 import {
   HeaderInterpolation,
   RedirectInterpolation,
+  ScriptInterpolation,
 } from "./utils/factories/Interpolation";
 import { logger } from "./utils/logger";
 import { InterpolateStorage } from "./utils/storage/InterpolateStorage/InterpolateStorage";
@@ -21,20 +22,40 @@ try {
       contexts: ["all"],
     });
 
-    InterpolateStorage.subscribeToChanges(async (values) => {
+    InterpolateStorage.subscribeToInterpolationChanges(async (values) => {
+      const { userScriptChanges, dynamicRuleChanges } = values.updated?.reduce<{
+        userScriptChanges: ScriptInterpolation[];
+        dynamicRuleChanges: (HeaderInterpolation | RedirectInterpolation)[];
+      }>(
+        (acc, curr) => {
+          const { type } = curr;
+          switch (type) {
+            case "script":
+              acc.userScriptChanges.push(curr);
+              break;
+            case "headers":
+            case "redirect":
+              acc.dynamicRuleChanges.push(curr);
+              break;
+            default:
+              break;
+          }
+          return acc;
+        },
+        {
+          userScriptChanges: [],
+          dynamicRuleChanges: [],
+        },
+      );
       try {
         try {
-          const userScriptChanges = values.updates.scripts;
           BrowserRules.updateUserScripts(userScriptChanges);
         } catch (e) {
           logger(`updateUserScripts error: ${e}`);
         }
 
         try {
-          BrowserRules.updateDynamicRules([
-            ...values.updates.redirects,
-            ...values.updates.headers,
-          ]);
+          BrowserRules.updateDynamicRules(dynamicRuleChanges);
         } catch (e) {
           logger(`updateDynamicRules error: ${e}`);
         }

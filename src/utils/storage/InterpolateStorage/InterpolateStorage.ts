@@ -36,6 +36,12 @@ export const InterpolateStorage = {
   getRollbackRecordKey(id: number | string) {
     return `rollback-record-${this.getInterpolationRecordKey(id)}`;
   },
+  async getInterpolationById(id: number | string) {
+    const key = this.getInterpolationRecordKey(id);
+    const interp = await chrome.storage.sync.get(key);
+    const value = interp[key];
+    return value;
+  },
   async setInterpolationIds(ids: string[]) {
     const caller = "setInterpolationIds";
     try {
@@ -55,8 +61,12 @@ export const InterpolateStorage = {
     const caller = "set";
     this.logInvocation(caller);
     if (!interpolations) return;
-    const interpolationIds = interpolations.map((interp) => interp.details.id);
+    logger(interpolations);
+
     const interpolationRecords = interpolations.reduce((acc, curr) => {
+      const isObject = curr && !Array.isArray(curr) && typeof curr === "object";
+      const invalid = !isObject;
+      if (invalid) return acc;
       return {
         ...acc,
         [this.getInterpolationRecordKey(curr.details.id)]: curr,
@@ -64,7 +74,6 @@ export const InterpolateStorage = {
     }, {});
     try {
       chrome.storage.sync.set({
-        [INTERPOLATION_RECORD_IDS_STORAGE_KEY]: interpolationIds,
         ...interpolationRecords,
       });
     } catch (e) {
@@ -145,12 +154,10 @@ export const InterpolateStorage = {
       this.logError(caller, e as string);
     }
   },
-  async setIsEnabled(
-    interpolationToUpdate: AnyInterpolation,
-    enabledByUser: boolean,
-  ) {
+  async setIsEnabled(id: string | number, enabledByUser: boolean) {
     const caller = "update";
     this.logInvocation(caller);
+    const interpolationToUpdate = await this.getInterpolationById(id);
     try {
       await this.createRollbackRecords([
         {
@@ -250,170 +257,90 @@ export const InterpolateStorage = {
     const caller = "deleteAll";
     this.logInvocation(caller);
     try {
-      const allCurrent = await this.getAllInterpolations();
-      const rollbackRecords = allCurrent?.reduce<
-        Array<{
-          before: AnyInterpolation;
-          after: null;
-          action: RollbackAction;
-          id: number | string;
-        }>
-      >((acc, curr) => {
-        return [
-          ...(acc ? acc : []),
-          {
-            action: RollbackAction.DELETE,
-            before: curr,
-            after: null,
-            id: curr.details?.id,
-          },
-        ];
-      }, []);
-      if (rollbackRecords) {
-        await this.createRollbackRecords(rollbackRecords);
-      }
-      await chrome.storage.sync.set({
-        [INTERPOLATION_RECORD_IDS_STORAGE_KEY]: [],
-        ...rollbackRecords,
-      });
+      return chrome.storage.sync.clear();
     } catch (e) {
       this.logError(caller, e as string);
     }
   },
-  async delete(interpolationToDelete: AnyInterpolation) {
+  async delete(ids: string[] | string) {
     const caller = "delete";
     this.logInvocation(caller);
     try {
-      const allCurrent = await this.getAllInterpolationIds();
-      const updated =
-        allCurrent?.filter(
-          (id) => String(id) !== String(interpolationToDelete?.details?.id),
-        ) ?? [];
-
-      await this.createRollbackRecords([
-        {
-          action: RollbackAction.DELETE,
-          after: null,
-          before: interpolationToDelete,
-          id: interpolationToDelete.details.id,
-        },
-      ]);
-
-      await this.setInterpolationIds(updated);
+      await chrome.storage.sync.remove(ids);
     } catch (e) {
       this.logError(caller, e as string);
     }
   },
-  async subscribeToChanges(
+  async subscribeToInterpolationChanges(
     cb: (arg: {
-      updates: {
-        ids: (string | number)[];
-        headers: HeaderInterpolation[];
-        scripts: ScriptInterpolation[];
-        redirects: RedirectInterpolation[];
-      };
-      interpolations: {
-        ids: string[];
-        headers: HeaderInterpolation[];
-        scripts: ScriptInterpolation[];
-        redirects: RedirectInterpolation[];
-      };
+      created: {
+        newValue?: AnyInterpolation;
+      }[];
+      updated: {
+        newValue?: AnyInterpolation;
+        oldValue?: AnyInterpolation;
+      }[];
+      removed: {
+        newValue?: null;
+        oldValue?: AnyInterpolation;
+      }[];
     }) => Promise<void>,
   ) {
     const caller = "subscribeToChanges";
     this.logInvocation(caller);
     try {
-      chrome.storage.sync.onChanged.addListener(async (_values) => {
+      chrome.storage.sync.onChanged.addListener(async (changes) => {
         this.logInvocation("chrome.storage.sync.onChanged");
-        logger("[sync storage] onChanged: updatedValues", _values);
-        const updates = Object.entries(_values).reduce<{
-          ids: (string | number)[];
-          headers: HeaderInterpolation[];
-          scripts: ScriptInterpolation[];
-          redirects: RedirectInterpolation[];
+        logger("[sync storage] onChanged: updatedValues", changes);
+        const interpolationConfigs = Object.entries(changes)?.reduce<{
+          created: {
+            newValue?: AnyInterpolation;
+          }[];
+          updated: {
+            oldValue?: AnyInterpolation;
+            newValue?: AnyInterpolation;
+          }[];
+          removed: {
+            oldValue: AnyInterpolation;
+            newValue?: null;
+          }[];
         }>(
           (acc, curr) => {
-            const key = curr[0];
-            const value = curr[1].newValue;
-            const interpolation = value as AnyInterpolation;
+            const [key, value] = curr;
+            const isInterpolation = key.startsWith(INTERPOLATE_RECORD_PREFIX);
 
-            if (key.startsWith(INTERPOLATE_RECORD_PREFIX)) {
-              const { type } = interpolation;
-              switch (type) {
-                case "headers":
-                  acc.headers.push(interpolation);
-                  break;
-                case "redirect":
-                  acc.redirects.push(interpolation);
-                  break;
-                case "script":
-                  acc.scripts.push(interpolation);
-                  break;
-                default:
-                  break;
+            if (isInterpolation) {
+              const isCreated = !Object.hasOwn(value, "oldValue");
+              if (isCreated) {
+                acc.created.push(value.newValue);
+                return acc;
+              }
+
+              const isUpdated =
+                Object.hasOwn(value, "oldValue") &&
+                Object.hasOwn(value, "newValue");
+
+              if (isUpdated) {
+                acc.updated.push(value.newValue);
+                return acc;
+              }
+
+              const isRemoved =
+                Object.hasOwn(value, "oldValue") && !value.newValue;
+
+              if (isRemoved) {
+                acc.removed.push(value.newValue);
               }
             }
-
-            acc.ids.push(interpolation.details.id);
             return acc;
           },
           {
-            ids: [],
-            scripts: [],
-            headers: [],
-            redirects: [],
+            created: [],
+            updated: [],
+            removed: [],
           },
         );
-
-        const interpolations = await this.getAllInterpolations();
-        const interpolationIds = await this.getAllInterpolationIds();
-
-        const {
-          headers: currentHeaders,
-          scripts: currentScripts,
-          redirects: currentRedirects,
-        } = interpolations?.reduce<{
-          headers: HeaderInterpolation[];
-          redirects: RedirectInterpolation[];
-          scripts: ScriptInterpolation[];
-        }>(
-          (acc, curr) => {
-            const { type } = curr;
-            switch (type) {
-              case "headers":
-                acc.headers.push(curr);
-                break;
-              case "redirect":
-                acc.redirects.push(curr);
-                break;
-              case "script":
-                acc.scripts.push(curr);
-                break;
-              default:
-                break;
-            }
-            return acc;
-          },
-          {
-            headers: [],
-            scripts: [],
-            redirects: [],
-          },
-        ) ?? {
-          headers: [],
-          scripts: [],
-          redirects: [],
-        };
-
-        cb({
-          updates,
-          interpolations: {
-            ids: interpolationIds ?? [],
-            scripts: currentScripts,
-            headers: currentHeaders,
-            redirects: currentRedirects,
-          },
-        });
+        cb(interpolationConfigs);
       });
     } catch (e) {
       this.logError(caller, e as string);

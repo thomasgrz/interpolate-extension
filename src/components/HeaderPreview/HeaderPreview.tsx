@@ -2,7 +2,6 @@ import { HeaderInterpolation } from "@/utils/factories/Interpolation";
 import { Badge, DataList } from "@radix-ui/themes";
 
 export const HeaderRulePreview = ({ details }: HeaderInterpolation) => {
-  console.log(details);
   return (
     <DataList.Root trim="end" size="1" m="1">
       <DataList.Item>

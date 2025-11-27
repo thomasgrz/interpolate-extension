@@ -43,13 +43,12 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   }, [isPaused]);
 
   useEffect(() => {
-    InterpolateStorage.subscribeToChanges(async (values) => {
-      const parentConfig = [
-        ...values.interpolations.headers,
-        ...values.interpolations.redirects,
-        ...values.interpolations.scripts,
-      ].find((value) => value.details.id === info.details.id);
-      const isParentConfigPaused = parentConfig?.enabledByUser === false;
+    InterpolateStorage.subscribeToInterpolationChanges(async (values) => {
+      const isParentConfigPaused = values?.updated?.some((interp) => {
+        const isMatch = interp.details.id;
+        const isMatchPaused = isMatch && !interp.enabledByUser;
+        return isMatchPaused;
+      });
 
       setIsPaused(isParentConfigPaused);
     });
@@ -60,11 +59,11 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   };
 
   const handleResumeClick = async () => {
-    await InterpolateStorage.setIsEnabled(info, true);
+    await InterpolateStorage.setIsEnabled(info.details?.id, true);
   };
 
   const handlePauseClick = async () => {
-    await InterpolateStorage.setIsEnabled(info, false);
+    await InterpolateStorage.setIsEnabled(info.details?.id, false);
   };
 
   const getPreview = () => {
