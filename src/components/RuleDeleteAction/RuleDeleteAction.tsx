@@ -5,7 +5,7 @@ export const RuleDeleteAction = ({ onDelete }: { onDelete: () => void }) => {
   return (
     <AlertDialog.Root>
       <AlertDialog.Trigger>
-        <IconButton variant="soft" color="red">
+        <IconButton variant="ghost" color="red">
           <TrashIcon />
         </IconButton>
       </AlertDialog.Trigger>

@@ -2,14 +2,10 @@
   position: fixed;
   right: 0;
   bottom: 0;
-  margin: 1.25rem;
-  z-index: 1000;
+  z-index: 10000;
   display: flex;
-  align-items: flex-end;
-  font-family: ui-sans-serif, system-ui, sans-serif;
-  user-select: none;
-  line-height: 1em;
-  // max-height: 100dvh;
+  padding: 1rem;
+  // border: 2px solid red;
 }
 
 .DisplayRules {

@@ -22,9 +22,10 @@ export const DashboardControls = ({
       <Flex justify={"between"} flexGrow={"1"} width="100%">
         {allPaused ? (
           <Button
+            radius="full"
             type="button"
             disabled={!ruleCount}
-            size={"3"}
+            size={"2"}
             className={styles.ResumeAllRules}
             color="green"
             onClick={onResumeAllRules}
@@ -34,9 +35,10 @@ export const DashboardControls = ({
           </Button>
         ) : (
           <Button
+            radius="full"
             type="button"
             disabled={!ruleCount}
-            size={"3"}
+            size={"2"}
             className={styles.PauseAllRules}
             color="blue"
             onClick={onPauseAllRules}
@@ -57,7 +59,7 @@ export const DashboardControls = ({
           <AlertDialog.Trigger>
             <Button
               disabled={!ruleCount}
-              size={"3"}
+              size={"2"}
               className={styles.DeleteAllRules}
               color="red"
             >

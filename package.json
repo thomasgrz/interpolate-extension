@@ -5,11 +5,14 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "test:unit": "vitest",
+    "test:unit:ui": "vitest --ui",
     "test": "playwright test",
-    "test:ui": "playwright test --ui",
+    "test:component:ui": "playwright test --ui",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:browser": "vitest --config=vitest.browser.config.ts"
   },
   "dependencies": {
     "@msw/playwright": "^0.4.2",
@@ -21,6 +24,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.525.0",
+    "motion": "^12.23.24",
     "msw": "^2.12.0",
     "radix-ui": "^1.4.2",
     "react": "^19.1.0",
@@ -42,10 +46,13 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/browser-playwright": "^4.0.14",
+    "@vitest/ui": "^4.0.14",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
+    "happy-dom": "^20.0.10",
     "husky": "^9.1.7",
     "jiti": "^2.5.1",
     "prettier": "3.6.2",
@@ -57,6 +64,7 @@
     "vite": "^7.0.5",
     "vite-plugin-svgr": "^4.3.0",
     "vite-plugin-zip-pack": "^1.2.4",
-    "vitest": "^4.0.9"
+    "vitest": "^4.0.9",
+    "vitest-browser-react": "^2.0.2"
   }
 }

@@ -28,12 +28,12 @@ export default defineManifest({
     "webNavigation",
     "userScripts",
   ],
-  // content_scripts: [
-  //   {
-  //     js: ["src/content/main.tsx"],
-  //     matches: ["https://*/*"],
-  //   },
-  // ],
+  content_scripts: [
+    {
+      js: ["src/content/main.tsx"],
+      matches: ["https://*/*"],
+    },
+  ],
   options_page: "src/options/index.html",
   host_permissions: ["<all_urls>"],
   side_panel: {

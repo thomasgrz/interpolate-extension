@@ -22,12 +22,6 @@ export const HeaderRulePreview = ({ details }: HeaderInterpolation) => {
           {details?.action?.requestHeaders?.[0]?.value}
         </DataList.Value>
       </DataList.Item>
-      <DataList.Item>
-        <DataList.Label>RegEx:</DataList.Label>
-        <DataList.Value>
-          <strong>{details?.condition?.regexFilter}</strong>
-        </DataList.Value>
-      </DataList.Item>
     </DataList.Root>
   );
 };
