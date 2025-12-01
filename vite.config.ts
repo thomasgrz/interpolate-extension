@@ -8,7 +8,7 @@ import zip from "vite-plugin-zip-pack";
 import manifest from "./manifest.config.js";
 import { name, version } from "./package.json";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": `${path.resolve(__dirname, "src")}`,
@@ -26,7 +26,7 @@ export default defineConfig({
       },
       include: "**/*.svg",
     }),
-    crx({ manifest }),
+    mode === "unit-test" ? null : crx({ manifest }),
     zip({ outDir: "release", outFileName: `crx-${name}-${version}.zip` }),
   ],
   server: {
@@ -34,4 +34,4 @@ export default defineConfig({
       origin: [/chrome-extension:\/\//],
     },
   },
-});
+}));

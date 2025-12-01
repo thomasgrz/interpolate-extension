@@ -15,12 +15,9 @@ export const dashboardFormOptions = formOptions({
     scriptForm: {
       name: "",
       body: "",
-      id: "",
       runAt: "document_idle",
       allFrames: true,
       matches: "",
-      exclude: "",
-      include: "",
     },
   },
 });

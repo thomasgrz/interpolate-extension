@@ -4,100 +4,50 @@ import {
   Flex,
   SegmentedControl,
   Separator,
+  Text,
 } from "@radix-ui/themes";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { AnyInterpolation } from "@/utils/factories/Interpolation";
-import { logger } from "@/utils/logger";
-import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import { DashboardControls } from "../DashboardControls/DashboardControls";
 import { HeaderForm } from "../HeaderForm/HeaderForm";
-import { RedirectForm } from "../RedirecForm/RedirectForm";
-import { InterpolationCard } from "../RuleCard/InterpolationCard";
+import { RedirectForm } from "../RedirectForm/RedirectForm";
+import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
 import { ScriptForm } from "../ScriptForm/ScriptForm";
 import styles from "./Dashboard.module.scss";
 import { useInterpolateFormSelection } from "@/hooks/useInterpolateFormSelection/useInterpolateFormSelection";
 import { useInterpolationForm } from "@/hooks/useInterpolationForm/useInterpolationForm";
 import { FormType } from "@/constants";
+import { InterpolateContext } from "@/contexts/interpolate-context";
+import { RocketIcon } from "@radix-ui/react-icons";
 
 export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
-  const [displayedRules, setDisplayedRules] = useState<AnyInterpolation[]>([]);
-  const [allPaused, setAllPaused] = useState<boolean | null>(null);
   const form = useInterpolationForm();
+
   const { selectedForm, setSelectedForm } = useInterpolateFormSelection(
     FormType.REDIRECT,
   );
 
-  const getIsEveryRulePaused = async () => {
-    const rulesInStorage = await InterpolateStorage.getAllInterpolations();
-    const isEveryRulePaused = rulesInStorage?.every(
-      (rule) => rule?.enabledByUser === false,
-    );
-
-    return !!isEveryRulePaused;
-  };
-
-  useEffect(() => {
-    const getInitAllPaused = async () => {
-      const isEveryRulePaused = await getIsEveryRulePaused();
-      setAllPaused(isEveryRulePaused);
-    };
-
-    getInitAllPaused();
-  }, []);
-
-  useEffect(() => {
-    const getInitialRulesFromStorage = async () => {
-      const allRules = (await InterpolateStorage.getAllInterpolations()) ?? [];
-      setDisplayedRules(allRules);
-    };
-
-    getInitialRulesFromStorage();
-  }, []);
-
-  useEffect(() => {
-    InterpolateStorage.subscribeToChanges(
-      async ({ headers, redirects, scripts }) => {
-        setDisplayedRules([...headers, ...redirects, ...scripts]);
-        const isEveryRulePaused = await getIsEveryRulePaused();
-        setAllPaused(isEveryRulePaused);
-      },
-    );
-  }, []);
+  const { interpolations, pauseAll, resumeAll, removeAll, allPaused } =
+    useContext(InterpolateContext);
 
   const handleAllPaused = async () => {
-    try {
-      setAllPaused(true);
-      await InterpolateStorage.disableAll();
-      logger("handleAllPaused: all rules paused successfully.");
-    } catch (e) {
-      logger(`handleAllPaused: failed with error: ${e}`);
-    }
+    pauseAll();
   };
 
   const handleAllResumed = async () => {
-    try {
-      setAllPaused(false);
-      await InterpolateStorage.enableAll();
-      logger("handleAllResumed: all rules resumed successfully");
-    } catch (e) {
-      logger(`handleAllResumed: failed with error: ${e}`);
-    }
+    resumeAll();
   };
 
-  const rulesSortedByCreationTime = () =>
-    displayedRules?.sort((item1, item2) => {
-      return item2.createdAt - item1.createdAt;
-    });
+  const handleDeleteAll = () => {
+    removeAll();
+  };
 
   const handleFormSelection = (selectedForm: FormType) => {
     setSelectedForm(selectedForm);
     form.reset();
   };
 
-  const handleDeleteAll = async () => {
-    await InterpolateStorage.deleteAll();
-  };
+  const shouldShowRules = showRules && !!interpolations?.length;
 
   return (
     <ErrorBoundary
@@ -109,13 +59,20 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
       }
     >
       <Box p="2">
+        <Flex p="1" justify={"center"}>
+          <Box height={"1rem"}>
+            <RocketIcon />
+          </Box>
+        </Flex>
         <SegmentedControl.Root
+          variant="classic"
+          radius="full"
           onValueChange={handleFormSelection}
-          size="1"
+          size="2"
           value={selectedForm}
         >
           <SegmentedControl.Item value={FormType.REDIRECT}>
-            Redirect
+            <Text size="2">Redirect</Text>
           </SegmentedControl.Item>
           <SegmentedControl.Item value={FormType.HEADER}>
             Header
@@ -132,9 +89,8 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
           {selectedForm === FormType.SCRIPT && <ScriptForm form={form} />}
         </form>
       </Flex>
-      <Separator size={"4"} my="1" />
       <DashboardControls
-        ruleCount={displayedRules?.length}
+        ruleCount={interpolations?.length}
         allPaused={!!allPaused}
         onResumeAllRules={handleAllResumed}
         onPauseAllRules={handleAllPaused}
@@ -149,11 +105,16 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
         wrap="wrap"
         justify={"between"}
       >
-        {showRules &&
-          rulesSortedByCreationTime()?.map((rule) => {
+        {shouldShowRules &&
+          interpolations?.map((rule) => {
             return (
-              <Box width={"100%"} p="1" className={styles.RuleCardContainer}>
-                <InterpolationCard info={rule} />{" "}
+              <Box
+                key={rule.details?.id}
+                width={"100%"}
+                p="1"
+                className={styles.RuleCardContainer}
+              >
+                <InterpolationCard info={rule} />
               </Box>
             );
           })}

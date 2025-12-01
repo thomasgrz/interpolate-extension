@@ -40,9 +40,8 @@ export const useInterpolationForm = () => {
         await InterpolateStorage.create([
           createScriptInterpolation({
             name: value.scriptForm.name,
-            id: value.scriptForm.id,
             body: value.scriptForm.body,
-            include: value.scriptForm.include,
+            matches: value.scriptForm.matches,
           }),
         ]);
         return;

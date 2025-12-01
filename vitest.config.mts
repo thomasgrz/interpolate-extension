@@ -1,24 +1,44 @@
-import { configDefaults, defineConfig, mergeConfig } from "vitest/config";
+import { defineConfig, configDefaults, mergeConfig } from "vitest/config";
 import viteConfig from "./vite.config";
+import { playwright } from "@vitest/browser-playwright";
 
 export default defineConfig((configEnv) => {
   return mergeConfig(
-    // @ts-expect-error testing
-    viteConfig({ ...configEnv, excludeCrx: true }),
+    viteConfig({ ...configEnv, mode: "unit-test" }),
     defineConfig({
       test: {
-        alias: {
-          "@/": new URL("./src/", import.meta.url).pathname,
-        },
+        exclude: [...configDefaults.exclude, "browser-tests"],
         projects: [
           {
+            // Unit tests that can be run in Node environment
+            extends: true,
             test: {
+              setupFiles: ["./vitest.node.setup.mts"],
+              environment: "happy-dom",
+              name: "unit",
+              include: ["**/*.node.test.ts", "**/*.node.test.tsx"],
+              exclude: ["**/*.browser.test.tsx", "**/*.browser.test.ts"],
+            },
+          },
+          {
+            // Browser tests using Playwright in browser mode
+            extends: true,
+            test: {
+              setupFiles: ["./vitest.browser.setup.mts"],
+              name: "browser",
+              include: ["**/*.browser.test.tsx", "**/*.browser.test.ts"],
               browser: {
+                headless: true,
                 enabled: true,
+                provider: playwright({
+                  actionTimeout: 2000,
+                  launchOptions: {
+                    // channel: "chrome",
+                    timeout: 2000,
+                  },
+                }),
                 instances: [{ browser: "chromium" }],
-                provider: "playwright",
               },
-              exclude: [...configDefaults.exclude],
             },
           },
         ],

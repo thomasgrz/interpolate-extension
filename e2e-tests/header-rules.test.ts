@@ -1,4 +1,4 @@
-import { expect, test } from "../fixtures/expect";
+import { expect, test } from "./fixtures/expect";
 import { FormType } from "../src/constants";
 
 const createHeaderRule = async (arg: {
@@ -15,7 +15,7 @@ const createHeaderRule = async (arg: {
   await page.getByRole("radio", { name: FormType.HEADER }).click();
   await page.getByPlaceholder(/Forwarded/).fill(headerName);
   await page.getByPlaceholder(/http/).fill(headerValue);
-  await page.getByText("Add config").click();
+  await page.getByText("Create header").click();
 };
 
 test("should apply header rule", async ({ page, extensionId, network }) => {
@@ -27,12 +27,14 @@ test("should apply header rule", async ({ page, extensionId, network }) => {
     extensionId,
   });
 
+  await page.getByTestId("header-preview-X-Test-Header").waitFor();
   // Navigate to a test page
   await page.goto("https://httpbin.org/headers");
 
   // Verify that the header has been added
-  const headerContent = await page.locator("pre").innerText();
-  expect(headerContent).toContain('"X-Test-Header": "ModRequest"');
+  expect(await page.locator("pre").innerText()).toContain(
+    '"X-Test-Header": "ModRequest"',
+  );
 });
 
 test("should not apply header rule when paused", async ({

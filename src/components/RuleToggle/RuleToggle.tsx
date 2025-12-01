@@ -18,7 +18,12 @@ export const RuleToggle = ({
         <Tooltip
           content={disabled ? "rule cannot be enabled due to error" : "resume"}
         >
-          <IconButton disabled={disabled} onClick={onResumeClick} color="green">
+          <IconButton
+            radius="full"
+            disabled={disabled}
+            onClick={onResumeClick}
+            color="green"
+          >
             <PlayIcon />
           </IconButton>
         </Tooltip>

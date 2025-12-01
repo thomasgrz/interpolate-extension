@@ -1,0 +1,142 @@
+import { AnyInterpolation } from "@/utils/factories/Interpolation";
+import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
+import { useEffect, useRef, useState } from "react";
+
+const getIsEveryRulePaused = async () => {
+  const rulesInStorage = await InterpolateStorage.getAllInterpolations();
+  const isEveryRulePaused = rulesInStorage?.every(
+    (rule) => rule?.enabledByUser === false,
+  );
+
+  return !!isEveryRulePaused;
+};
+
+export const useInterpolations = () => {
+  const [interpolations, setInterpolations] = useState<AnyInterpolation[] | []>(
+    [],
+  );
+  const [allPaused, setAllPaused] = useState<boolean>();
+  const isSubscribedRef = useRef(false);
+
+  const add = (interp: AnyInterpolation[] | AnyInterpolation) => {
+    const result = InterpolateStorage.create(
+      Array.isArray(interp) ? interp : [interp],
+    );
+    return result;
+  };
+  const resume = async (id: string | number) => {
+    const result = await InterpolateStorage.setIsEnabled(id, true);
+    return result;
+  };
+
+  const pause = async (id: string | number) => {
+    const result = await InterpolateStorage.setIsEnabled(id, false);
+    return result;
+  };
+
+  const remove = async (id: (string | number) | (string | number)[]) => {
+    const result = InterpolateStorage.delete(Array.isArray(id) ? id : [id]);
+    return result;
+  };
+
+  const pauseAll = async () => {
+    setAllPaused(true);
+    try {
+      await InterpolateStorage.disableAll();
+    } catch (e) {
+      // reset "resume" status if theres a failures
+      setAllPaused(false);
+    }
+  };
+
+  const resumeAll = async () => {
+    setAllPaused(false);
+    try {
+      await InterpolateStorage.enableAll();
+    } catch (e) {
+      // reset "pause" status if theres a failure
+      setAllPaused(true);
+    }
+  };
+
+  useEffect(() => {
+    if (isSubscribedRef.current) {
+      return;
+    }
+    isSubscribedRef.current = true;
+    InterpolateStorage.subscribeToInterpolationChanges(async (changes) => {
+      setInterpolations((prevInterpolations) => {
+        let interpolationsAfterChanges = prevInterpolations as
+          | AnyInterpolation[]
+          | [];
+
+        if (changes.created?.length) {
+          const newInterpolations = changes.created;
+
+          if (newInterpolations.length) {
+            interpolationsAfterChanges = [
+              ...interpolationsAfterChanges,
+              ...newInterpolations,
+            ];
+          }
+        }
+
+        if (changes.removed?.length) {
+          const removalMap = new Map(
+            changes.removed.map((interp) => [interp.details.id, interp]),
+          );
+
+          interpolationsAfterChanges = interpolationsAfterChanges.filter(
+            (interp) => !removalMap.get(interp.details.id),
+          );
+        }
+
+        if (changes.updated?.length) {
+          const updateMap = new Map(
+            changes.updated.map((interp) => [interp.details.id, interp]),
+          );
+
+          interpolationsAfterChanges = interpolationsAfterChanges.map(
+            (interp) => {
+              const updated = updateMap.get(interp.details.id);
+              if (updated) {
+                return updated;
+              }
+              return interp;
+            },
+          );
+        }
+        return interpolationsAfterChanges;
+      });
+
+      const isEveryRulePaused = await getIsEveryRulePaused();
+      setAllPaused(isEveryRulePaused);
+    });
+  }, []);
+
+  useEffect(() => {
+    const getInitAllPaused = async () => {
+      const isEveryRulePaused = await getIsEveryRulePaused();
+      setAllPaused(isEveryRulePaused);
+    };
+
+    getInitAllPaused();
+  }, []);
+
+  const removeAll = async () => {
+    const result = await InterpolateStorage.deleteAll();
+    return result;
+  };
+
+  return {
+    add,
+    allPaused,
+    remove,
+    removeAll,
+    interpolations,
+    pause,
+    pauseAll,
+    resume,
+    resumeAll,
+  };
+};

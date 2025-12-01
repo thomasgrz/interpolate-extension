@@ -12,7 +12,7 @@ export const test = base.extend<{
     initialHandlers: [],
   }),
   context: async ({}, use) => {
-    const pathToExtension = path.join(import.meta.dirname, "../dist");
+    const pathToExtension = path.join(import.meta.dirname, "../../dist");
     const context = await chromium.launchPersistentContext("", {
       channel: "chromium",
       args: [

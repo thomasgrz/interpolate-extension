@@ -11,6 +11,7 @@ document.body.appendChild(container);
 createRoot(container).render(
   <StrictMode>
     <Theme>
+      <h1>hello</h1>
       <ContentView />
     </Theme>
   </StrictMode>,

@@ -1,20 +1,9 @@
 import {
   AnyInterpolation,
-  HeaderInterpolation,
   InterpolationType,
-  RedirectInterpolation,
-  ScriptInterpolation,
 } from "@/utils/factories/Interpolation";
 import { logger } from "@/utils/logger";
-import {
-  INTERPOLATE_RECORD_PREFIX,
-  INTERPOLATION_RECORD_IDS_STORAGE_KEY,
-} from "../storage.constants";
-import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation";
-import { createScriptInterpolation } from "@/utils/factories/createScriptInterpolation/createScriptInterpolation";
-import { createRedirectInterpolation } from "@/utils/factories/createRedirectInterpolation/createRedirectInterpolation";
-import { BrowserRules } from "@/utils/browser/BrowserRules";
-import { getInterpolationType } from "@/utils/browser/getInterpolationType";
+import { INTERPOLATE_RECORD_PREFIX } from "../storage.constants";
 
 enum RollbackAction {
   RESUMED = "resume",
@@ -23,12 +12,11 @@ enum RollbackAction {
 }
 
 export const InterpolateStorage = {
-  name: "InterpolateStorage",
   logInvocation(caller: string) {
-    logger(`${this.name} (invocation): ${caller}`);
+    logger(`(invocation): ${caller}`);
   },
   logError(caller: string, error: unknown) {
-    logger(`${this.name}: ${caller} threw (error): `, error);
+    logger(`${caller} threw (error): `, error);
   },
   getInterpolationRecordKey(id: number | string) {
     return `${INTERPOLATE_RECORD_PREFIX}${id}`;
@@ -36,49 +24,44 @@ export const InterpolateStorage = {
   getRollbackRecordKey(id: number | string) {
     return `rollback-record-${this.getInterpolationRecordKey(id)}`;
   },
-  async setInterpolationIds(ids: string[]) {
-    const caller = "setInterpolationIds";
-    try {
-      await chrome.storage.sync.set({
-        [INTERPOLATION_RECORD_IDS_STORAGE_KEY]: ids,
-      });
-
-      const result = await chrome.storage.sync.get<{
-        [INTERPOLATION_RECORD_IDS_STORAGE_KEY]: string[];
-      }>(INTERPOLATION_RECORD_IDS_STORAGE_KEY);
-      return result[INTERPOLATION_RECORD_IDS_STORAGE_KEY];
-    } catch (e) {
-      this.logError(caller, e);
-    }
+  async getInterpolationById(id: number | string) {
+    const key = this.getInterpolationRecordKey(id);
+    const interp = await chrome.storage.sync.get(key);
+    const value = interp[key];
+    return value;
   },
   async setInterpolations(interpolations?: AnyInterpolation[]) {
     const caller = "set";
     this.logInvocation(caller);
     if (!interpolations) return;
-    const interpolationIds = interpolations.map((interp) => interp.details.id);
+    logger(interpolations);
+
     const interpolationRecords = interpolations.reduce((acc, curr) => {
+      const isObject = curr && !Array.isArray(curr) && typeof curr === "object";
+      const invalid = !isObject;
+      if (invalid) return acc;
       return {
         ...acc,
         [this.getInterpolationRecordKey(curr.details.id)]: curr,
       };
     }, {});
     try {
-      chrome.storage.sync.set({
-        [INTERPOLATION_RECORD_IDS_STORAGE_KEY]: interpolationIds,
+      await chrome.storage.sync.set({
         ...interpolationRecords,
       });
     } catch (e) {
       this.logError(caller, e);
     }
   },
-  async create(interpolationsToCreate: AnyInterpolation[]) {
+  async create(interpolationsToCreate: AnyInterpolation | AnyInterpolation[]) {
     const caller = "create";
     this.logInvocation(caller);
     try {
-      const allCurrent = await this.getAllInterpolations();
-      const currentWithNewlyCreated =
-        allCurrent?.concat(interpolationsToCreate) ?? [];
-      await this.setInterpolations(currentWithNewlyCreated);
+      await this.setInterpolations(
+        Array.isArray(interpolationsToCreate)
+          ? interpolationsToCreate
+          : [interpolationsToCreate],
+      );
     } catch (e) {
       this.logError(caller, e);
     }
@@ -145,12 +128,10 @@ export const InterpolateStorage = {
       this.logError(caller, e as string);
     }
   },
-  async setIsEnabled(
-    interpolationToUpdate: AnyInterpolation,
-    enabledByUser: boolean,
-  ) {
-    const caller = "update";
+  async setIsEnabled(id: string | number, enabledByUser: boolean) {
+    const caller = "setIsEnabled";
     this.logInvocation(caller);
+    const interpolationToUpdate = await this.getInterpolationById(id);
     try {
       await this.createRollbackRecords([
         {
@@ -211,35 +192,31 @@ export const InterpolateStorage = {
       this.logError(caller, e as string);
     }
   },
-  async getAllInterpolationIds() {
-    const caller = "getAllInterpolationIds";
-    this.logInvocation(caller);
-    try {
-      const result = await chrome.storage.sync.get(
-        INTERPOLATION_RECORD_IDS_STORAGE_KEY,
-      );
-      const ids = result[INTERPOLATION_RECORD_IDS_STORAGE_KEY] ?? [];
-      return ids as string[];
-    } catch (e) {
-      logger(caller, e);
-    }
-  },
   async getAllInterpolations() {
     const caller = "getAllInterpolations";
     this.logInvocation(caller);
     try {
-      const interpolationIds = await this.getAllInterpolationIds();
+      const result = await chrome.storage.sync.getKeys();
+      const interpolations = result.filter((key) =>
+        key.startsWith(INTERPOLATE_RECORD_PREFIX),
+      );
+      const storageRecords = await chrome.storage.sync.get(interpolations);
+      logger(storageRecords);
+      const interpolationConfigs = Object.values(storageRecords).reduce<
+        AnyInterpolation[]
+      >((acc, curr) => {
+        const isInterpolation =
+          curr &&
+          !Array.isArray(curr) &&
+          typeof curr === "object" &&
+          Object.hasOwn(curr, "type") &&
+          Object.hasOwn(curr, "details");
+        if (isInterpolation) {
+          acc.push(curr as AnyInterpolation);
+        }
+        return acc;
+      }, []);
 
-      const ruleKeys =
-        interpolationIds?.map((id) => this.getInterpolationRecordKey(id)) ?? [];
-
-      const interpolations = ruleKeys.length
-        ? ((await chrome.storage.sync.get(ruleKeys)) as Record<
-            string,
-            AnyInterpolation
-          >)
-        : [];
-      const interpolationConfigs = Object.values(interpolations);
       return interpolationConfigs.length ? interpolationConfigs : [];
     } catch (e) {
       this.logError(caller, e as string);
@@ -249,289 +226,72 @@ export const InterpolateStorage = {
     const caller = "deleteAll";
     this.logInvocation(caller);
     try {
-      const allCurrent = await this.getAllInterpolations();
-      const rollbackRecords = allCurrent?.reduce<
-        Array<{
-          before: AnyInterpolation;
-          after: null;
-          action: RollbackAction;
-          id: number | string;
-        }>
-      >((acc, curr) => {
-        return [
-          ...(acc ? acc : []),
-          {
-            action: RollbackAction.DELETE,
-            before: curr,
-            after: null,
-            id: curr.details?.id,
-          },
-        ];
-      }, []);
-      if (rollbackRecords) {
-        await this.createRollbackRecords(rollbackRecords);
-      }
-      await chrome.storage.sync.set({
-        [INTERPOLATION_RECORD_IDS_STORAGE_KEY]: [],
-        ...rollbackRecords,
-      });
+      return chrome.storage.sync.clear();
     } catch (e) {
       this.logError(caller, e as string);
     }
   },
-  async delete(interpolationToDelete: AnyInterpolation) {
+  async delete(ids: (number | string)[] | (string | number)) {
     const caller = "delete";
     this.logInvocation(caller);
     try {
-      const allCurrent = await this.getAllInterpolationIds();
-      const updated =
-        allCurrent?.filter(
-          (id) => String(id) !== String(interpolationToDelete?.details?.id),
-        ) ?? [];
-
-      await this.createRollbackRecords([
-        {
-          action: RollbackAction.DELETE,
-          after: null,
-          before: interpolationToDelete,
-          id: interpolationToDelete.details.id,
-        },
-      ]);
-
-      await this.setInterpolationIds(updated);
+      await chrome.storage.sync.remove(ids);
     } catch (e) {
       this.logError(caller, e as string);
     }
   },
-  async subscribeToChanges(
+
+  async subscribeToInterpolationChanges(
     cb: (arg: {
-      ids: string[];
-      headers: HeaderInterpolation[];
-      scripts: ScriptInterpolation[];
-      redirects: RedirectInterpolation[];
+      created: AnyInterpolation[];
+      updated: AnyInterpolation[];
+      removed: AnyInterpolation[];
     }) => Promise<void>,
   ) {
     const caller = "subscribeToChanges";
     this.logInvocation(caller);
     try {
-      chrome.storage.sync.onChanged.addListener((_values) => {
+      chrome.storage.sync.onChanged.addListener(async (changes) => {
         this.logInvocation("chrome.storage.sync.onChanged");
-        logger("[sync storage] onChanged: updatedValues", _values);
-        const { scripts, headers, redirects, ids } = Object.entries(
-          _values,
-        ).reduce<{
-          ids: string[];
-          headers: HeaderInterpolation[];
-          scripts: ScriptInterpolation[];
-          redirects: RedirectInterpolation[];
+        const interpolationConfigs = Object.entries(changes)?.reduce<{
+          created: AnyInterpolation[];
+          updated: AnyInterpolation[];
+          removed: AnyInterpolation[];
         }>(
           (acc, curr) => {
-            const key = curr[0];
-            const value = curr[1].newValue;
-            if (key.startsWith(INTERPOLATE_RECORD_PREFIX)) {
-              const interpolation = value as AnyInterpolation;
-              const { type } = interpolation;
-              switch (type) {
-                case "headers":
-                  acc.headers.push(interpolation);
-                  break;
-                case "redirect":
-                  acc.redirects.push(interpolation);
-                  break;
-                case "script":
-                  acc.scripts.push(interpolation);
-                  break;
-                default:
-                  break;
+            const [key, value] = curr;
+            const isInterpolation = key.startsWith(INTERPOLATE_RECORD_PREFIX);
+            if (isInterpolation) {
+              const isCreated = !Object.hasOwn(value, "oldValue");
+              if (isCreated) {
+                acc.created.push(value.newValue);
+                return acc;
               }
-            }
-
-            if (key === INTERPOLATION_RECORD_IDS_STORAGE_KEY) {
-              acc.ids.push(value);
+              const isUpdated =
+                Object.hasOwn(value, "oldValue") &&
+                Object.hasOwn(value, "newValue");
+              if (isUpdated) {
+                acc.updated.push(value.newValue);
+                return acc;
+              }
+              const isRemoved =
+                Object.hasOwn(value, "oldValue") && !value.newValue;
+              if (isRemoved) {
+                acc.removed.push(value.oldValue);
+              }
             }
             return acc;
           },
           {
-            ids: [],
-            scripts: [],
-            headers: [],
-            redirects: [],
+            created: [],
+            updated: [],
+            removed: [],
           },
         );
-        cb({
-          ids,
-          scripts,
-          headers,
-          redirects,
-        });
+        cb(interpolationConfigs);
       });
     } catch (e) {
       this.logError(caller, e as string);
-    }
-  },
-  async setPollingStatus(isPolling: boolean) {
-    const caller = "setPollingStatus";
-    this.logInvocation(caller);
-    chrome.storage.local.set({
-      polling: isPolling.toString(),
-    });
-  },
-  async synchronizeWithClient() {
-    const caller = "synchronizeWithClient";
-    this.logInvocation(caller);
-    this.setPollingStatus(true);
-    try {
-      // Turn into Interpolate configs into a O(1) accessible object
-      let allPreviousInterpolations = await this.getAllInterpolations();
-
-      const interpolateConfigs = allPreviousInterpolations?.reduce(
-        (acc, curr) => {
-          const type = curr.type;
-          const currentId = curr.details.id;
-
-          switch (type) {
-            case "headers":
-              acc.headerInterpolateConfigs.set(currentId as number, curr);
-              break;
-            case "redirect":
-              acc.redirectInterpolateConfigs.set(currentId as number, curr);
-              break;
-            case "script":
-              acc.scriptInterpolateConfigs.set(currentId as string, curr);
-              break;
-            default:
-              break;
-          }
-          return acc;
-        },
-        {
-          redirectInterpolateConfigs: new Map<number, RedirectInterpolation>(),
-          headerInterpolateConfigs: new Map<number, HeaderInterpolation>(),
-          scriptInterpolateConfigs: new Map<string, ScriptInterpolation>(),
-        },
-      ) ?? {
-        redirectInterpolateConfigs: new Map<number, RedirectInterpolation>(),
-        headerInterpolateConfigs: new Map<number, HeaderInterpolation>(),
-        scriptInterpolateConfigs: new Map<string, ScriptInterpolation>(),
-      };
-      // All user scripts from browser
-      const allUserScripts = await chrome.userScripts.getScripts();
-      // All dynamic rules from browser
-      const allDynamicRules =
-        await chrome.declarativeNetRequest.getDynamicRules();
-
-      // Create Interpolate configs or re-use existing Interpolate configs
-      // in the form of a Set for comparison later
-      const interpolationsInBrowser = [
-        ...(allUserScripts ?? []),
-        ...(allDynamicRules ?? []),
-      ].reduce((acc, curr) => {
-        const interpolationType = getInterpolationType(curr);
-        const currentId = curr.id;
-        let matchingInterpolation;
-        switch (interpolationType) {
-          case "headers":
-            matchingInterpolation =
-              interpolateConfigs.headerInterpolateConfigs.get(
-                currentId as number,
-              );
-            if (matchingInterpolation) {
-              return acc.add(matchingInterpolation);
-            } else {
-              return acc.add(
-                createHeaderInterpolation({
-                  headerKey:
-                    (curr as chrome.declarativeNetRequest.Rule)?.action
-                      ?.requestHeaders?.[0]?.header ?? "unknown",
-                  headerValue:
-                    (curr as chrome.declarativeNetRequest.Rule)?.action
-                      ?.requestHeaders?.[0]?.value ?? "unknown",
-                  name: "unknown-from-browser",
-                }),
-              );
-            }
-          case "script":
-            matchingInterpolation =
-              interpolateConfigs.scriptInterpolateConfigs.get(
-                currentId as string,
-              );
-            if (matchingInterpolation) {
-              return acc.add(matchingInterpolation);
-            } else {
-              return acc.add(
-                createScriptInterpolation({
-                  body:
-                    (curr as chrome.userScripts.RegisteredUserScript)?.js?.[0]
-                      ?.code ?? "",
-                  name: "unknown-from-browser",
-                  id: currentId as string,
-                }),
-              );
-            }
-          case "redirect":
-            matchingInterpolation =
-              interpolateConfigs.redirectInterpolateConfigs.get(
-                currentId as number,
-              );
-            if (matchingInterpolation) {
-              return acc.add(matchingInterpolation);
-            } else {
-              return acc.add(
-                createRedirectInterpolation({
-                  source:
-                    (curr as chrome.declarativeNetRequest.Rule)?.condition
-                      ?.regexFilter ?? "unknown",
-                  destination:
-                    (curr as chrome.declarativeNetRequest.Rule)?.action
-                      ?.redirect?.url ?? "unknown",
-                  name: "unknown-from-browser",
-                }),
-              );
-            }
-          default:
-            return acc;
-        }
-      }, new Set<AnyInterpolation>());
-      // Turn Interpolate configs into a Set for easier comparison
-      const setOfPreviousInterpolateConfigs = new Set([
-        ...interpolateConfigs.scriptInterpolateConfigs
-          ?.entries()
-          ?.map(([, value]) => {
-            return value;
-          }),
-        ...interpolateConfigs.redirectInterpolateConfigs
-          ?.entries()
-          ?.map(([, value]) => {
-            return value;
-          }),
-        ...interpolateConfigs.headerInterpolateConfigs
-          ?.entries()
-          ?.map(([, value]) => {
-            return value;
-          }),
-      ]);
-      // Orphaned Interpolate configs in browser (that Interpolate doesnt know about)
-      const orphanedInterpolateConfigsInBrowser =
-        interpolationsInBrowser.difference(setOfPreviousInterpolateConfigs);
-      // Add the orphaned configs to Interpolate storage
-      this.create(
-        orphanedInterpolateConfigsInBrowser?.entries()?.reduce((acc, curr) => {
-          acc.push(curr[0]);
-          return acc;
-        }, [] as AnyInterpolation[]),
-      );
-      // New Interpolate configs defined but not enabled in browser
-      const interpolationsToUpdateInBrowser =
-        setOfPreviousInterpolateConfigs.difference(interpolationsInBrowser);
-      // Update browser
-      await BrowserRules.updateInterpolationsInBrowser([
-        ...(interpolationsToUpdateInBrowser ?? []),
-      ]);
-      logger("synchronized with client successfully!");
-      this.setPollingStatus(false);
-    } catch (e) {
-      this.setPollingStatus(false);
-      this.logError(caller, (e as Error).message);
     }
   },
 };

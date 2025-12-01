@@ -1,2 +1,4 @@
-export const logger = (msg: string, data?: unknown) =>
-  console.info("[Interpolate Chrome Extension] ", msg, { data });
+export const logger = (...args: unknown[]) => {
+  if (import.meta.env.MODE === "test") return;
+  console.info("[Interpolate Chrome Extension] ", ...args);
+};
