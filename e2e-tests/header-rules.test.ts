@@ -3,11 +3,12 @@ import { FormType } from "../src/constants";
 
 const createHeaderRule = async (arg: {
   page: any;
+  ruleName: string;
   headerName: string;
   headerValue: string;
   extensionId: string;
 }) => {
-  const { headerName, headerValue, page } = arg;
+  const { ruleName, headerName, headerValue, page } = arg;
   await page.goto(
     `chrome-extension://${arg.extensionId}/src/options/index.html`,
   );
@@ -16,6 +17,7 @@ const createHeaderRule = async (arg: {
   await dashboard.waitFor({ state: "visible" });
   await page.getByRole("radio", { name: FormType.HEADER }).click();
   await page.getByPlaceholder(/Forwarded/).fill(headerName);
+  await page.getByPlaceholder(/Cool Header/).fill(ruleName);
   await page.getByPlaceholder(/http/).fill(headerValue);
   await page.getByText("Create header").click();
 };
@@ -27,6 +29,7 @@ test("should apply header rule", async ({ page, extensionId, network }) => {
     headerName: "X-Test-Header",
     headerValue: "ModRequest",
     extensionId,
+    ruleName: "rule #1",
   });
 
   await page.getByTestId("header-preview-X-Test-Header").waitFor();
@@ -49,6 +52,7 @@ test("should not apply header rule when paused", async ({
     headerName: "X-Test-Header",
     headerValue: "ModRequest",
     extensionId,
+    ruleName: "rule #2",
   });
 
   // Pause the header rule
@@ -72,6 +76,7 @@ test("should selectively apply header rule if enabled", async ({
     headerName: "X-Test-Header",
     headerValue: "ModRequest",
     extensionId,
+    ruleName: "rule #3",
   });
 
   await createHeaderRule({
@@ -79,6 +84,7 @@ test("should selectively apply header rule if enabled", async ({
     headerName: "X-Another-Header",
     headerValue: "ShouldNotApply",
     extensionId,
+    ruleName: "rule #4",
   });
 
   // Pause the second header rule
@@ -106,6 +112,7 @@ test("should disable all header rules when global pause is activated", async ({
     headerName: "X-Test-Header",
     headerValue: "ModRequest",
     extensionId,
+    ruleName: "rule #5",
   });
 
   await createHeaderRule({
@@ -113,6 +120,7 @@ test("should disable all header rules when global pause is activated", async ({
     headerName: "X-Another-Header",
     headerValue: "ShouldNotApply",
     extensionId,
+    ruleName: "rule #6",
   });
 
   // Activate global pause
@@ -136,6 +144,7 @@ test("should re-enable header rules when global pause is deactivated", async ({
     headerName: "X-Test-Header",
     headerValue: "ModRequest",
     extensionId,
+    ruleName: "rule #7",
   });
 
   await createHeaderRule({
@@ -143,6 +152,7 @@ test("should re-enable header rules when global pause is deactivated", async ({
     headerName: "X-Another-Header",
     headerValue: "ShouldNotApply",
     extensionId,
+    ruleName: "rule #8",
   });
 
   // Activate global pause

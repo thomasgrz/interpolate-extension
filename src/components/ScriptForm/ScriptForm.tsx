@@ -24,7 +24,10 @@ export const ScriptForm = withForm({
         <Flex gap="1" direction={"column"}>
           <form.AppField validators={validators} name="scriptForm.name">
             {(field) => (
-              <field.TextField label="Name:" placeholder="My Cool Script" />
+              <field.TextField
+                label="Rule name:"
+                placeholder="My Cool Script"
+              />
             )}
           </form.AppField>
           <form.AppField validators={validators} name="scriptForm.body">

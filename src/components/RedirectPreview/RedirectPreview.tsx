@@ -1,11 +1,18 @@
 import { RedirectInterpolation } from "@/utils/factories/Interpolation";
 import { Badge, DataList } from "@radix-ui/themes";
 
-export const RedirectRulePreview = (props: { rule: RedirectInterpolation }) => {
-  const { rule } = props;
+export const RedirectRulePreview = (props: {
+  rule: RedirectInterpolation;
+  name: string;
+}) => {
+  const { rule, name } = props;
 
   return (
     <DataList.Root trim="end" size="1" m="1">
+      <DataList.Item align="center">
+        <DataList.Label>Name:</DataList.Label>
+        <DataList.Value>{name}</DataList.Value>
+      </DataList.Item>
       <DataList.Item align="center">
         <DataList.Label>Type:</DataList.Label>
         <DataList.Value>

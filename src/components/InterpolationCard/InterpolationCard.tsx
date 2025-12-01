@@ -57,12 +57,11 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   const getPreview = () => {
     switch (info.type) {
       case "headers":
-        // @ts-expect-error testing
         return <HeaderRulePreview details={info.details} name={info.name} />;
       case "redirect":
-        return <RedirectRulePreview rule={info} />;
+        return <RedirectRulePreview name={info.name} rule={info} />;
       case "script":
-        return <ScriptPreview rule={info} />;
+        return <ScriptPreview name={info.name} rule={info} />;
     }
   };
   return (
@@ -70,6 +69,7 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
       data-ui-active={hit}
       data-ui-error={!!info.error}
       className={styles.InterpolationCard}
+      variant="surface"
     >
       <Collapsible.Root onOpenChange={setIsOpen} open={isOpen}>
         <Flex justify={"between"} flexGrow="2">
