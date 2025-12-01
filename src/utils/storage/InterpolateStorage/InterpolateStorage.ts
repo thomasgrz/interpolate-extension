@@ -1,17 +1,9 @@
 import {
   AnyInterpolation,
-  HeaderInterpolation,
   InterpolationType,
-  RedirectInterpolation,
-  ScriptInterpolation,
 } from "@/utils/factories/Interpolation";
 import { logger } from "@/utils/logger";
 import { INTERPOLATE_RECORD_PREFIX } from "../storage.constants";
-import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation";
-import { createScriptInterpolation } from "@/utils/factories/createScriptInterpolation/createScriptInterpolation";
-import { createRedirectInterpolation } from "@/utils/factories/createRedirectInterpolation/createRedirectInterpolation";
-import { BrowserRules } from "@/utils/browser/BrowserRules";
-import { getInterpolationType } from "@/utils/browser/getInterpolationType";
 
 enum RollbackAction {
   RESUMED = "resume",

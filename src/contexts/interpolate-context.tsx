@@ -5,11 +5,11 @@ import { createContext, ReactNode } from "react";
 export const InterpolateContext = createContext({
   interpolations: [] as AnyInterpolation[] | [] | undefined,
   allPaused: undefined as boolean | undefined,
-  pause: (id: string) => {},
+  pause: (_id: string) => {},
   pauseAll: () => {},
-  resume: (id: string) => {},
+  resume: (_id: string) => {},
   resumeAll: () => {},
-  remove: (id: string) => {},
+  remove: (_id: string) => {},
   removeAll: () => {},
 });
 

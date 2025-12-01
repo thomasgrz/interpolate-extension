@@ -20,12 +20,12 @@ type InterpolationCardProps = {
   info: RedirectInterpolation | HeaderInterpolation | ScriptInterpolation;
 };
 export const InterpolationCard = ({ info }: InterpolationCardProps) => {
-  const [isPaused, setIsPaused] = useState(!info.enabledByUser);
   const [isOpen, setIsOpen] = useState(false);
   const [hit, setHit] = useState(false);
   const [recentlyHitColor, setRecentlyHitColor] = useState<"green" | "gray">(
     "green",
   );
+  const { enabledByUser } = info;
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
@@ -40,7 +40,7 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
         }, 30000);
       }
     });
-  }, [isPaused]);
+  }, [enabledByUser]);
 
   const onDelete = async () => {
     await InterpolateStorage.delete(info.details.id);
@@ -101,7 +101,7 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
               disabled={!!info.error}
               onResumeClick={handleResumeClick}
               onPauseClick={handlePauseClick}
-              isPaused={isPaused || !!info.error}
+              isPaused={!enabledByUser || !!info.error}
             />
             <RuleDeleteAction onDelete={onDelete} />
           </Flex>
