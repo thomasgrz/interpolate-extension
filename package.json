@@ -8,7 +8,7 @@
     "test:component": "vitest run",
     "test:component:ui": "vitest --ui",
     "test:e2e": "playwright test -c playwright.config.ts -x",
-    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:ui": "playwright test --ui -c playwright.config.ts",
     "build": "tsc -b && vite build",
     "check": "tsc --noEmit",
     "preview": "vite preview",

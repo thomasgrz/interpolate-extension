@@ -8,7 +8,12 @@ export const RedirectRulePreview = (props: {
   const { rule, name } = props;
 
   return (
-    <DataList.Root trim="end" size="1" m="1">
+    <DataList.Root
+      data-test={`redirect-preview-${rule.details.id}`}
+      trim="end"
+      size="1"
+      m="1"
+    >
       <DataList.Item align="center">
         <DataList.Label>Name:</DataList.Label>
         <DataList.Value>{name}</DataList.Value>
