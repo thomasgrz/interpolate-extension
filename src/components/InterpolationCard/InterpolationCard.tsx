@@ -28,7 +28,7 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   const { enabledByUser } = info;
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener((msg) => {
+    chrome.runtime?.onMessage?.addListener?.((msg) => {
       if (msg === `redirect-${info.details.id}-hit`) {
         setRecentlyHitColor("green");
         setHit(true);

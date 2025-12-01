@@ -16,7 +16,7 @@ export const useInterpolations = () => {
     [],
   );
   const [allPaused, setAllPaused] = useState<boolean>();
-  const isSubscribedRef = useRef(false);
+  const isInitialized = useRef(false);
 
   const add = (interp: AnyInterpolation[] | AnyInterpolation) => {
     const result = InterpolateStorage.create(
@@ -59,59 +59,84 @@ export const useInterpolations = () => {
     }
   };
 
-  useEffect(() => {
-    if (isSubscribedRef.current) {
-      return;
-    }
-    isSubscribedRef.current = true;
-    InterpolateStorage.subscribeToInterpolationChanges(async (changes) => {
-      setInterpolations((prevInterpolations) => {
-        let interpolationsAfterChanges = prevInterpolations as
-          | AnyInterpolation[]
-          | [];
+  const handleStorageChanges = async (changes: {
+    updated: AnyInterpolation[];
+    removed: AnyInterpolation[];
+    created: AnyInterpolation[];
+  }) => {
+    setInterpolations((prevInterpolations) => {
+      let interpolationsAfterChanges = prevInterpolations as
+        | AnyInterpolation[]
+        | [];
 
-        if (changes.created?.length) {
-          const newInterpolations = changes.created;
+      if (changes.created?.length) {
+        const newInterpolations = changes.created;
 
-          if (newInterpolations.length) {
-            interpolationsAfterChanges = [
-              ...interpolationsAfterChanges,
-              ...newInterpolations,
-            ];
-          }
+        if (newInterpolations.length) {
+          interpolationsAfterChanges = [
+            ...interpolationsAfterChanges,
+            ...newInterpolations,
+          ];
         }
+      }
 
-        if (changes.removed?.length) {
-          const removalMap = new Map(
-            changes.removed.map((interp) => [interp.details.id, interp]),
-          );
+      if (changes.removed?.length) {
+        const removalMap = new Map(
+          changes.removed.map((interp) => [interp.details.id, interp]),
+        );
 
-          interpolationsAfterChanges = interpolationsAfterChanges.filter(
-            (interp) => !removalMap.get(interp.details.id),
-          );
-        }
+        interpolationsAfterChanges = interpolationsAfterChanges.filter(
+          (interp) => !removalMap.get(interp.details.id),
+        );
+      }
 
-        if (changes.updated?.length) {
-          const updateMap = new Map(
-            changes.updated.map((interp) => [interp.details.id, interp]),
-          );
+      if (changes.updated?.length) {
+        const updateMap = new Map(
+          changes.updated.map((interp) => [interp.details.id, interp]),
+        );
 
-          interpolationsAfterChanges = interpolationsAfterChanges.map(
-            (interp) => {
-              const updated = updateMap.get(interp.details.id);
-              if (updated) {
-                return updated;
-              }
-              return interp;
-            },
-          );
-        }
-        return interpolationsAfterChanges;
-      });
+        interpolationsAfterChanges = interpolationsAfterChanges.map(
+          (interp) => {
+            const updated = updateMap.get(interp.details.id);
+            if (updated) {
+              return updated;
+            }
+            return interp;
+          },
+        );
+      }
 
-      const isEveryRulePaused = await getIsEveryRulePaused();
-      setAllPaused(isEveryRulePaused);
+      return interpolationsAfterChanges;
     });
+
+    const isEveryRulePaused = await getIsEveryRulePaused();
+    setAllPaused(isEveryRulePaused);
+  };
+
+  const handleInitialization = async () => {
+    isInitialized.current = true;
+
+    InterpolateStorage.subscribeToInterpolationChanges(async (changes) => {
+      handleStorageChanges(changes);
+    });
+
+    const getInitialInterpolations = async () => {
+      const interps = await InterpolateStorage.getAllInterpolations();
+
+      return interps;
+    };
+
+    const initialInterps = await getInitialInterpolations();
+
+    if (!initialInterps) return;
+
+    setInterpolations(initialInterps);
+  };
+
+  useEffect(() => {
+    if (isInitialized.current) return;
+
+    handleInitialization();
   }, []);
 
   useEffect(() => {
