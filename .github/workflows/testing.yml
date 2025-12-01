@@ -17,10 +17,10 @@ jobs:
         run: npm ci
       - name: Build extension
         run: npm run build
-      - name: Run Vitest tests
-        run: npm run test:component
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Run Unit tests
+        run: npm run test:component
       - name: Start test server
         run: npm run dev & sleep 5
       - name: Run Playwright tests
