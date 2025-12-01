@@ -10,6 +10,7 @@
     "test:e2e": "playwright test -c playwright.config.ts -x",
     "test:e2e:ui": "playwright test --ui",
     "build": "tsc -b && vite build",
+    "check": "tsc --no-emit",
     "preview": "vite preview",
     "prepare": "husky"
   },
