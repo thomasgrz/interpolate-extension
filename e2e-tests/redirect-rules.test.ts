@@ -10,20 +10,15 @@ const createRedirectRule = async (arg: {
 }) => {
   const { source, destination, page, extensionId } = arg;
   await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
-
+  const dashboard = page.getByTestId("dashboard");
+  await dashboard.waitFor({ state: "attached" });
+  await dashboard.waitFor({ state: "visible" });
   await page.getByPlaceholder(/example/).fill(source);
   await page.getByPlaceholder(/google/).fill(destination);
   await page.getByText("Create redirect").click();
 };
 
 test("should apply redirect rule", async ({ page, network, extensionId }) => {
-  network.use(
-    http.get("https://example.com/*", (args) => {
-      return HttpResponse.text(
-        `<html><body><h1>Example Domain</h1></body></html>`,
-      );
-    }),
-  );
   await createRedirectRule({
     page,
     source: ".*something.*",
@@ -97,6 +92,9 @@ test("should disable all rules when global pause is activated", async ({
 
   // Activate global pause
   await page.getByRole("button", { name: /Pause/ }).click();
+  // validate that the rule has been paused (play icon is shown)
+  const resumeToggle = page.getByTestId("play-rule-toggle");
+  await resumeToggle.waitFor({ state: "visible" });
   await page.goto("https://something.com");
   await expect(page).toHaveURL("https://something.com/");
 

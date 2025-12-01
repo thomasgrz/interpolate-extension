@@ -58,7 +58,7 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
         </Callout.Root>
       }
     >
-      <Box p="2">
+      <Box data-testid={"dashboard"} p="2">
         <Flex p="1" justify={"center"}>
           <Box height={"1rem"}>
             <RocketIcon />

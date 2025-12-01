@@ -11,7 +11,9 @@ const createHeaderRule = async (arg: {
   await page.goto(
     `chrome-extension://${arg.extensionId}/src/options/index.html`,
   );
-
+  const dashboard = await page.getByTestId("dashboard");
+  await dashboard.waitFor({ state: "attached" });
+  await dashboard.waitFor({ state: "visible" });
   await page.getByRole("radio", { name: FormType.HEADER }).click();
   await page.getByPlaceholder(/Forwarded/).fill(headerName);
   await page.getByPlaceholder(/http/).fill(headerValue);
