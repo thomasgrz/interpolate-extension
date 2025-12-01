@@ -23,5 +23,5 @@
     "skipLibCheck": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src", "src/components/HeaderForm/HeaderForm.test.tsx"]
 }

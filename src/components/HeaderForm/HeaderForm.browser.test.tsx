@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
 import { HeaderForm } from "./HeaderForm";
 import { useInterpolationForm } from "@/hooks/useInterpolationForm/useInterpolationForm";
-import { renderWithProviders } from "../../../test-utils/renderWithProviders";
+import { renderInBrowser } from "../../../test-utils/renderInBrowser";
 
 const Container = () => {
   const form = useInterpolationForm();
@@ -11,15 +11,15 @@ const Container = () => {
 
 describe("HeaderForm", () => {
   it("should display all inputs", () => {
-    renderWithProviders(<Container />);
+    renderInBrowser(<Container />);
   });
   it("should allow input of header key", async () => {
-    renderWithProviders(<Container />);
+    renderInBrowser(<Container />);
     await page.getByPlaceholder(/x-Forwarded/).fill("Test Name");
     expect(page.getByText("Test Name")).toBeDefined();
   });
   it("should allow input of header value", async () => {
-    renderWithProviders(<Container />);
+    renderInBrowser(<Container />);
     await page.getByPlaceholder(/test.domain/).fill("Test Value");
     expect(page.getByText("Test Value")).toBeDefined();
   });

@@ -1,7 +1,6 @@
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
-import { logger } from "@/utils/logger";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const getIsEveryRulePaused = async () => {
   const rulesInStorage = await InterpolateStorage.getAllInterpolations();
@@ -13,24 +12,31 @@ const getIsEveryRulePaused = async () => {
 };
 
 export const useInterpolations = () => {
-  const [interpolations, setInterpolations] = useState<
-    AnyInterpolation[] | []
-  >();
+  const [interpolations, setInterpolations] = useState<AnyInterpolation[] | []>(
+    [],
+  );
   const [allPaused, setAllPaused] = useState<boolean>();
+  const isSubscribedRef = useRef(false);
 
   const add = (interp: AnyInterpolation[] | AnyInterpolation) => {
-    return InterpolateStorage.create(Array.isArray(interp) ? interp : [interp]);
+    const result = InterpolateStorage.create(
+      Array.isArray(interp) ? interp : [interp],
+    );
+    return result;
   };
   const resume = async (id: string | number) => {
-    return InterpolateStorage.setIsEnabled(id, true);
+    const result = await InterpolateStorage.setIsEnabled(id, true);
+    return result;
   };
 
   const pause = async (id: string | number) => {
-    return InterpolateStorage.setIsEnabled(id, false);
+    const result = await InterpolateStorage.setIsEnabled(id, false);
+    return result;
   };
 
-  const remove = async (id: string | string[]) => {
-    return InterpolateStorage.delete(Array.isArray(id) ? id : [id]);
+  const remove = async (id: (string | number) | (string | number)[]) => {
+    const result = InterpolateStorage.delete(Array.isArray(id) ? id : [id]);
+    return result;
   };
 
   const pauseAll = async () => {
@@ -54,15 +60,10 @@ export const useInterpolations = () => {
   };
 
   useEffect(() => {
-    const getInitialRulesFromStorage = async () => {
-      const allRules = (await InterpolateStorage.getAllInterpolations()) ?? [];
-      setInterpolations(allRules);
-    };
-
-    getInitialRulesFromStorage();
-  }, []);
-
-  useEffect(() => {
+    if (isSubscribedRef.current) {
+      return;
+    }
+    isSubscribedRef.current = true;
     InterpolateStorage.subscribeToInterpolationChanges(async (changes) => {
       setInterpolations((prevInterpolations) => {
         let interpolationsAfterChanges = prevInterpolations as
@@ -70,9 +71,7 @@ export const useInterpolations = () => {
           | [];
 
         if (changes.created?.length) {
-          const newInterpolations = changes.created
-            .map((interp) => interp.newValue)
-            .filter((interp) => interp !== undefined);
+          const newInterpolations = changes.created;
 
           if (newInterpolations.length) {
             interpolationsAfterChanges = [
@@ -84,10 +83,7 @@ export const useInterpolations = () => {
 
         if (changes.removed?.length) {
           const removalMap = new Map(
-            changes.removed.map((interp) => [
-              interp.oldValue?.details.id,
-              interp.oldValue,
-            ]),
+            changes.removed.map((interp) => [interp.details.id, interp]),
           );
 
           interpolationsAfterChanges = interpolationsAfterChanges.filter(
@@ -97,10 +93,7 @@ export const useInterpolations = () => {
 
         if (changes.updated?.length) {
           const updateMap = new Map(
-            changes.updated.map((interp) => [
-              interp.newValue?.details.id,
-              interp.newValue,
-            ]),
+            changes.updated.map((interp) => [interp.details.id, interp]),
           );
 
           interpolationsAfterChanges = interpolationsAfterChanges.map(
@@ -113,7 +106,6 @@ export const useInterpolations = () => {
             },
           );
         }
-
         return interpolationsAfterChanges;
       });
 
@@ -132,7 +124,8 @@ export const useInterpolations = () => {
   }, []);
 
   const removeAll = async () => {
-    await InterpolateStorage.deleteAll();
+    const result = await InterpolateStorage.deleteAll();
+    return result;
   };
 
   return {

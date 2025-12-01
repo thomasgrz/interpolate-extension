@@ -1,9 +1,9 @@
 import { Theme } from "@radix-ui/themes";
-import { render } from "vitest-browser-react";
 import "../src/sidepanel/Sidepanel.css";
-import { InterpolateProvider } from "@/contexts/interpolate-context";
+import { InterpolateProvider } from "../src/contexts/interpolate-context";
+import { render } from "@testing-library/react";
 
-const AllProviders = ({ children }: { children: React.ReactNode }) => {
+export const AllProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <Theme>
       <InterpolateProvider>{children}</InterpolateProvider>
@@ -15,5 +15,5 @@ export const renderWithProviders = (
   ui: React.ReactNode,
   options?: Record<string, unknown>,
 ) => {
-  render(ui, { wrapper: AllProviders, ...options });
+  return render(ui, { wrapper: AllProviders, ...options });
 };

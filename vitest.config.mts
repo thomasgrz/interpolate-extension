@@ -3,22 +3,46 @@ import viteConfig from "./vite.config";
 import { playwright } from "@vitest/browser-playwright";
 
 export default defineConfig((configEnv) => {
-  return mergeConfig(viteConfig, {
-    excludeCrx: true,
-    test: {
-      exclude: [...configDefaults.exclude, "browser-tests"],
-
-      browser: {
-        enabled: true,
-        provider: playwright({
-          actionTimeout: 2000,
-          launchOptions: {
-            channel: "chrome-beta",
-            timeout: 2000,
+  return mergeConfig(
+    viteConfig({ ...configEnv, mode: "unit-test" }),
+    defineConfig({
+      test: {
+        exclude: [...configDefaults.exclude, "browser-tests"],
+        projects: [
+          {
+            // Unit tests that can be run in Node environment
+            extends: true,
+            test: {
+              setupFiles: ["./vitest.node.setup.mts"],
+              environment: "happy-dom",
+              name: "unit",
+              include: ["**/*.node.test.ts", "**/*.node.test.tsx"],
+              exclude: ["**/*.browser.test.tsx", "**/*.browser.test.ts"],
+            },
           },
-        }),
-        instances: [{ browser: "chrome" }],
+          {
+            // Browser tests using Playwright in browser mode
+            extends: true,
+            test: {
+              setupFiles: ["./vitest.browser.setup.mts"],
+              name: "browser",
+              include: ["**/*.browser.test.tsx", "**/*.browser.test.ts"],
+              browser: {
+                headless: true,
+                enabled: true,
+                provider: playwright({
+                  actionTimeout: 2000,
+                  launchOptions: {
+                    // channel: "chrome",
+                    timeout: 2000,
+                  },
+                }),
+                instances: [{ browser: "chromium" }],
+              },
+            },
+          },
+        ],
       },
-    },
-  });
+    }),
+  );
 });

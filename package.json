@@ -5,14 +5,13 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "test:unit": "vitest",
-    "test:unit:ui": "vitest --ui",
-    "test": "playwright test",
-    "test:component:ui": "playwright test --ui",
+    "test:component": "vitest",
+    "test:component:ui": "vitest --ui",
+    "test:e2e": "playwright test -c playwright.config.ts -x",
+    "test:e2e:ui": "playwright test --ui",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "prepare": "husky",
-    "test:browser": "vitest --config=vitest.browser.config.ts"
+    "prepare": "husky"
   },
   "dependencies": {
     "@msw/playwright": "^0.4.2",
@@ -26,6 +25,7 @@
     "lucide-react": "^0.525.0",
     "motion": "^12.23.24",
     "msw": "^2.12.0",
+    "pino": "^10.1.0",
     "radix-ui": "^1.4.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

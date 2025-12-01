@@ -5,7 +5,7 @@ import { useState } from "react";
 import Hide from "../assets/hide.svg";
 import Show from "../assets/show.svg";
 import styles from "./ContentView.module.scss";
-import { useInterpolations } from "@/hooks/useInterpolations/userInterpolations";
+import { useInterpolations } from "@/hooks/useInterpolations/useInterpolations";
 import { AnimatePresence, motion } from "motion/react";
 
 const box: React.CSSProperties = {
@@ -28,7 +28,7 @@ export const ContentView = () => {
           <AnimatePresence>
             {!isVisible ? null : (
               <>
-                {interpolations()?.map((rule) => (
+                {interpolations?.map((rule) => (
                   <motion.div
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}

@@ -1,6 +1,6 @@
 import { Page } from "@playwright/test";
 import { http, HttpResponse } from "msw";
-import { expect, test } from "../fixtures/expect";
+import { expect, test } from "./fixtures/expect";
 
 const createRedirectRule = async (arg: {
   page: Page;

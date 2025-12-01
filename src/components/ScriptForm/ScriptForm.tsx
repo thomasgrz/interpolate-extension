@@ -1,8 +1,7 @@
 import { SubmitAction } from "@/constants";
 import { dashboardFormOptions } from "@/contexts/dashboard-context";
 import { withForm } from "@/hooks/useForm/useForm";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
-import { Box, Button, Flex } from "@radix-ui/themes";
+import { Box, Flex } from "@radix-ui/themes";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 export const ScriptForm = withForm({

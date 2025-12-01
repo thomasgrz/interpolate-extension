@@ -5,10 +5,15 @@ export const HeaderRulePreview = ({ details }: HeaderInterpolation) => {
   return (
     <DataList.Root trim="end" size="1" m="1">
       <DataList.Item>
-        <DataList.Label>Type:</DataList.Label>
-        <DataList.Value>
-          <Badge color="yellow">Header</Badge>
-        </DataList.Value>
+        <Badge
+          variant="surface"
+          highContrast
+          color="green"
+          size="1"
+          data-testid={`header-preview-${details?.action?.requestHeaders?.[0]?.header}`}
+        >
+          Header Interpolation
+        </Badge>
       </DataList.Item>
       <DataList.Item>
         <DataList.Label>Key:</DataList.Label>

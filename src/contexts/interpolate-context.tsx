@@ -1,15 +1,15 @@
-import { useInterpolations } from "@/hooks/useInterpolations/userInterpolations";
+import { useInterpolations } from "@/hooks/useInterpolations/useInterpolations";
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { createContext, ReactNode } from "react";
 
 export const InterpolateContext = createContext({
   interpolations: [] as AnyInterpolation[] | [] | undefined,
   allPaused: undefined as boolean | undefined,
-  pause: async (id: string) => {},
+  pause: (id: string) => {},
   pauseAll: () => {},
-  resume: async (id: string) => {},
+  resume: (id: string) => {},
   resumeAll: () => {},
-  remove: async (id: string) => {},
+  remove: (id: string) => {},
   removeAll: () => {},
 });
 

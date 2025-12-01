@@ -42,20 +42,8 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
     });
   }, [isPaused]);
 
-  useEffect(() => {
-    InterpolateStorage.subscribeToInterpolationChanges(async (values) => {
-      const isParentConfigPaused = values?.updated?.some((interp) => {
-        const isMatch = interp.details.id;
-        const isMatchPaused = isMatch && !interp.enabledByUser;
-        return isMatchPaused;
-      });
-
-      setIsPaused(isParentConfigPaused);
-    });
-  }, []);
-
   const onDelete = async () => {
-    await InterpolateStorage.delete(info);
+    await InterpolateStorage.delete(info.details.id);
   };
 
   const handleResumeClick = async () => {

@@ -1,9 +1,9 @@
-name: Playwright Tests
+name: Component & E2E Tests
 on:
   push:
-    branches: [main, master, testing/playwright, user-scripts]
+    branches: [main]
   pull_request:
-    branches: [main, master, testing/playwright, user-scripts]
+    branches: [main]
 jobs:
   test:
     timeout-minutes: 5
@@ -17,12 +17,14 @@ jobs:
         run: npm ci
       - name: Build extension
         run: npm run build
+      - name: Run Vitest tests
+        run: npm run test:components
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Start test server
         run: npm run dev & sleep 5
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
