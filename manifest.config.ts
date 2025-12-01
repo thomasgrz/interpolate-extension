@@ -40,7 +40,7 @@ export default defineManifest({
     default_path: "src/sidepanel/side-panel.html",
   },
   background: {
-    service_worker: "src/background.ts",
+    service_worker: "src/background/background.ts",
     type: "module",
   },
 });

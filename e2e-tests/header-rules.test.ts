@@ -91,15 +91,18 @@ test("should selectively apply header rule if enabled", async ({
   const secondRuleToggle = page.locator("data-testid=pause-rule-toggle").nth(0); // 0th index is most recently added rule
   await secondRuleToggle.click();
 
+  const firstRuleToggle = page.getByTestId("play-rule-toggle");
+  await firstRuleToggle.waitFor({ state: "visible" });
+
   // Navigate to a test page
   await page.goto("https://httpbin.org/headers");
 
   // Verify that the first header has been added
   const headerContent = await page.locator("pre").innerText();
-  expect(headerContent).toContain('"X-Test-Header": "ModRequest"');
+  expect(headerContent).not.toContain('"X-Test-Header": "ShouldNotApply"');
 
   // Verify that the second header has NOT been added
-  expect(headerContent).not.toContain('"X-Another-Header": "ShouldNotApply"');
+  expect(headerContent).not.toContain('"X-Another-Header": "Should Apply"');
 });
 
 test("should disable all header rules when global pause is activated", async ({

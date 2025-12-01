@@ -28,7 +28,7 @@ export default defineConfig((configEnv) => {
               name: "browser",
               include: ["**/*.browser.test.tsx", "**/*.browser.test.ts"],
               browser: {
-                headless: true,
+                headless: !!process.env.CI,
                 enabled: true,
                 provider: playwright({
                   actionTimeout: 2000,
