@@ -1,19 +1,20 @@
 import { Page } from "@playwright/test";
-import { http, HttpResponse } from "msw";
 import { expect, test } from "./fixtures/expect";
 
 const createRedirectRule = async (arg: {
   page: Page;
+  ruleName: string;
   source: string;
   destination: string;
   extensionId: string;
 }) => {
-  const { source, destination, page, extensionId } = arg;
+  const { source, destination, page, extensionId, ruleName } = arg;
   await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
   const dashboard = page.getByTestId("dashboard");
   await dashboard.waitFor({ state: "attached" });
   await dashboard.waitFor({ state: "visible" });
   await page.getByPlaceholder(/example/).fill(source);
+  await page.getByPlaceholder(/Cool Redirect/).fill(ruleName);
   await page.getByPlaceholder(/google/).fill(destination);
   await page.getByText("Create redirect").click();
 };
@@ -24,6 +25,7 @@ test("should apply redirect rule", async ({ page, network, extensionId }) => {
     source: ".*something.*",
     destination: "https://example.com/*",
     extensionId,
+    ruleName: "rule #1",
   });
 
   await page.goto("https://something.com");
@@ -36,6 +38,7 @@ test("should not apply paused redirect rule", async ({ page, extensionId }) => {
     source: ".*something.*",
     destination: "https://example.com/*",
     extensionId,
+    ruleName: "rule #2",
   });
 
   // Pause the extension
@@ -54,6 +57,7 @@ test("should selectively apply redirect rule if enabled", async ({
     source: ".*something.*",
     destination: "https://example.com/test",
     extensionId,
+    ruleName: "rule #3",
   });
 
   await createRedirectRule({
@@ -61,6 +65,7 @@ test("should selectively apply redirect rule if enabled", async ({
     source: ".*google.*",
     destination: "https://example.com/test2",
     extensionId,
+    ruleName: "rule #4",
   });
 
   // Pause the extension
@@ -81,6 +86,7 @@ test("should disable all rules when global pause is activated", async ({
     source: ".*something.*",
     destination: "https://example.com/test",
     extensionId,
+    ruleName: "rule #5",
   });
 
   await createRedirectRule({
@@ -88,6 +94,7 @@ test("should disable all rules when global pause is activated", async ({
     source: ".*google.*",
     destination: "https://example.com/test2",
     extensionId,
+    ruleName: "rule #6",
   });
 
   // Activate global pause
@@ -111,6 +118,7 @@ test("should re-enable rules when global pause is deactivated", async ({
     source: ".*something.*",
     destination: "https://example.com/test",
     extensionId,
+    ruleName: "rule #7",
   });
 
   await createRedirectRule({
@@ -118,6 +126,7 @@ test("should re-enable rules when global pause is deactivated", async ({
     source: ".*google.*",
     destination: "https://example.com/test2",
     extensionId,
+    ruleName: "rule #8",
   });
 
   // Activate global pause

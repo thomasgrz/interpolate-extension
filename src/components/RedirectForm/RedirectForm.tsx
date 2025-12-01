@@ -15,18 +15,28 @@ export const RedirectForm = withForm({
       <Box className={styles.Card} p="2">
         <Flex gap="1" direction={"column"}>
           <Flex gap="1" direction={"column"}>
-            <Flex direction={"row"}>
-              <form.AppField
-                validators={validators}
-                name="redirectRuleForm.source"
-                children={(field) => (
+            <form.AppField
+              validators={validators}
+              name="redirectRuleForm.name"
+              children={(field) => (
+                <div className={styles.Input}>
                   <field.TextField
-                    placeholder="Example: https://example.com/(.*)"
-                    label="Source:"
+                    placeholder="Cool Redirect"
+                    label="Rule name:"
                   />
-                )}
-              />
-            </Flex>
+                </div>
+              )}
+            />
+            <form.AppField
+              validators={validators}
+              name="redirectRuleForm.source"
+              children={(field) => (
+                <field.TextField
+                  placeholder="Example: https://example.com/(.*)"
+                  label="Source:"
+                />
+              )}
+            />
             <form.AppField
               validators={validators}
               name="redirectRuleForm.destination"

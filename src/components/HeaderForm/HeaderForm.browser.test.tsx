@@ -10,8 +10,10 @@ const Container = () => {
 };
 
 describe("HeaderForm", () => {
-  it("should display all inputs", () => {
+  it("should allow input of rule name", async () => {
     renderInBrowser(<Container />);
+    await page.getByPlaceholder(/Cool Header/).fill("Cool Header");
+    expect(page.getByText("Cool Header")).toBeDefined();
   });
   it("should allow input of header key", async () => {
     renderInBrowser(<Container />);

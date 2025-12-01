@@ -17,6 +17,15 @@ export const HeaderForm = withForm({
         <Flex gap="1" direction={"column"}>
           <form.AppField
             validators={validators}
+            name="headerRuleForm.name"
+            children={(field) => (
+              <div className={styles.Input}>
+                <field.TextField placeholder="Cool Header" label="Rule name:" />
+              </div>
+            )}
+          />
+          <form.AppField
+            validators={validators}
             name="headerRuleForm.key"
             children={(field) => (
               <div className={styles.Input}>
