@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "test:component": "vitest",
+    "test:component": "vitest run",
     "test:component:ui": "vitest --ui",
     "test:e2e": "playwright test -c playwright.config.ts -x",
     "test:e2e:ui": "playwright test --ui",
