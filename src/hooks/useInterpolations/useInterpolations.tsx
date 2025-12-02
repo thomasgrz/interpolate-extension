@@ -23,10 +23,8 @@ export const useInterpolations = () => {
     const updateRecentlyInvoked = async () => {
       debugger;
       const result = await chrome.storage.sync.get("recentlyUsed");
-      console.log({ result });
       if (!Object.hasOwn(result, "recentlyUsed")) return;
       const { recentlyUsed } = result;
-      console.log({ recentlyUsed });
       setRecentlyUsed(recentlyUsed);
     };
 
