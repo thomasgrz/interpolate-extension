@@ -18,7 +18,7 @@ describe("useInterpolations", () => {
     await InterpolateStorage.create([interpolation]);
     const { result } = renderHook(() => useInterpolations());
 
-    await waitFor(() => expect(chrome.storage.sync.get).toBeCalledTimes(2));
+    await waitFor(() => expect(chrome.storage.sync.get).toBeCalledTimes(3));
     await waitFor(() =>
       expect(result.current.interpolations[0]).toEqual(interpolation),
     );

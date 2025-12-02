@@ -15,8 +15,23 @@ export const useInterpolations = () => {
   const [interpolations, setInterpolations] = useState<AnyInterpolation[] | []>(
     [],
   );
+  const [recentlyUsed, setRecentlyUsed] = useState<AnyInterpolation[]>([]);
   const [allPaused, setAllPaused] = useState<boolean>();
   const isInitialized = useRef(false);
+
+  useEffect(() => {
+    const updateRecentlyInvoked = async () => {
+      debugger;
+      const result = await chrome.storage.sync.get("recentlyUsed");
+      console.log({ result });
+      if (!Object.hasOwn(result, "recentlyUsed")) return;
+      const { recentlyUsed } = result;
+      console.log({ recentlyUsed });
+      setRecentlyUsed(recentlyUsed);
+    };
+
+    updateRecentlyInvoked();
+  }, []);
 
   const add = (interp: AnyInterpolation[] | AnyInterpolation) => {
     const result = InterpolateStorage.create(
@@ -158,6 +173,7 @@ export const useInterpolations = () => {
     allPaused,
     remove,
     removeAll,
+    recentlyUsed,
     interpolations,
     pause,
     pauseAll,
