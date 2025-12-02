@@ -240,7 +240,21 @@ export const InterpolateStorage = {
       this.logError(caller, e as string);
     }
   },
-
+  async subscribeToRecentlyInvoked(
+    cb: (arg: { recentlyInvoked: AnyInterpolation[] }) => Promise<void>,
+  ) {
+    const caller = "subscribeToRecentlyInvoked";
+    this.logInvocation(caller);
+    try {
+      chrome.storage.sync.onChanged.addListener(async (changes) => {
+        this.logInvocation("chrome.storage.sync.onChanged");
+        if (!Object.hasOwn(changes, "recentlyInvoked")) return;
+        const recentlyInvoked = changes.recentlyInvoked;
+        const { newValue } = recentlyInvoked;
+        cb({ recentlyInvoked: newValue });
+      });
+    } catch (e) {}
+  },
   async subscribeToInterpolationChanges(
     cb: (arg: {
       created: AnyInterpolation[];

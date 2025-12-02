@@ -45,20 +45,18 @@ try {
           | HeaderInterpolation
         )[]) ?? [];
 
-      const redirectUrls = rulesFromStorage.map((rule) => ({
-        id: rule?.details?.id,
-        redirectUrl: rule?.details?.action?.redirect?.url,
-      }));
-
-      const invokedRule = redirectUrls.find((redirect) => {
+      const invokedRule = rulesFromStorage.find((rule) => {
+        const ruleRedirectUrl = rule?.details?.action?.redirect?.url;
         return (
-          redirect.redirectUrl &&
-          redirectUriIfExists.startsWith(redirect.redirectUrl)
+          ruleRedirectUrl && redirectUriIfExists.startsWith(ruleRedirectUrl)
         );
       });
 
       if (invokedRule) {
-        chrome.runtime.sendMessage(`redirect-${invokedRule.id}-hit`);
+        chrome.runtime.sendMessage(`redirect-${invokedRule.details.id}-hit`);
+        chrome.storage.sync.set({
+          recentlyUsed: [invokedRule],
+        });
       }
     },
     { urls: ["<all_urls>"] },

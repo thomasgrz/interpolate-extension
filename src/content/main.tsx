@@ -1,18 +1,15 @@
-import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { ContentView } from "./ContentView.tsx";
+import { Notifier } from "./Notifier.tsx";
+import styles from "./Notifier.module.scss";
 
 const container = document.createElement("div");
 container.id = "crxjs-app";
-container.style.position = "fixed";
-document.body.appendChild(container);
+container.className = styles.Root;
+document.body.prepend(container);
 createRoot(container).render(
   <StrictMode>
-    <Theme>
-      <h1>hello</h1>
-      <ContentView />
-    </Theme>
+    <Notifier />
   </StrictMode>,
 );
