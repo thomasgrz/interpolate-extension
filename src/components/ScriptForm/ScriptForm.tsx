@@ -1,7 +1,7 @@
 import { SubmitAction } from "@/constants";
 import { dashboardFormOptions } from "@/contexts/dashboard-context";
 import { withForm } from "@/hooks/useForm/useForm";
-import { Box, Callout, Flex } from "@radix-ui/themes";
+import { Box, Flex } from "@radix-ui/themes";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
 import { useEffect, useState } from "react";
 import { ScriptsPermissionWarning } from "../ScriptsPermissionWarning/ScriptsPermissionWarning";
