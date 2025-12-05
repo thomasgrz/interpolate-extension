@@ -1,5 +1,5 @@
 import { RedirectInterpolation } from "@/utils/factories/Interpolation";
-import { Badge, DataList } from "@radix-ui/themes";
+import { DataList, Text } from "@radix-ui/themes";
 
 export const RedirectRulePreview = (props: {
   rule: RedirectInterpolation;
@@ -21,7 +21,7 @@ export const RedirectRulePreview = (props: {
       <DataList.Item align="center">
         <DataList.Label>Type:</DataList.Label>
         <DataList.Value>
-          <Badge color="cyan">Redirect</Badge>
+          <Text>Redirect</Text>
         </DataList.Value>
       </DataList.Item>
       <DataList.Item>

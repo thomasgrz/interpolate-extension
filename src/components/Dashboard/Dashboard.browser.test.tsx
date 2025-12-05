@@ -11,12 +11,12 @@ describe("Dashboard", () => {
       headerValue: "test header value",
       name: "test rule",
     });
-    chrome.storage.sync.set({
+    chrome.storage?.sync?.set({
       [`interpolation-config-${interpolation.details.id}`]: interpolation,
     });
 
     renderInBrowser(<Dashboard />);
-    const preview = page.getByTestId(/header-preview-test header key/);
+    const preview = page.getByTestId(/headers-preview-.*/);
     await expect.element(preview).toBeVisible();
   });
 });

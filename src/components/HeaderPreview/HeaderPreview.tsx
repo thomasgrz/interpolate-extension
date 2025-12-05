@@ -1,27 +1,20 @@
 import { HeaderInterpolation } from "@/utils/factories/Interpolation";
-import { Badge, DataList } from "@radix-ui/themes";
+import { DataList } from "@radix-ui/themes";
 
 export const HeaderRulePreview = ({
   details,
   name,
+  dataOrientation,
 }: {
   details: HeaderInterpolation["details"];
   name: string;
+  dataOrientation: "horizontal" | "vertical";
 }) => {
   return (
-    <DataList.Root trim="end" size="1" m="1">
+    <DataList.Root orientation={dataOrientation} trim="end" size="1" m="1">
       <DataList.Item>
         <DataList.Label>Type:</DataList.Label>
-        <DataList.Value>
-          <Badge
-            variant="soft"
-            color="green"
-            size="1"
-            data-testid={`header-preview-${details?.action?.requestHeaders?.[0]?.header}`}
-          >
-            Header
-          </Badge>
-        </DataList.Value>
+        <DataList.Value>Header</DataList.Value>
       </DataList.Item>
       <DataList.Item>
         <DataList.Label>Name:</DataList.Label>

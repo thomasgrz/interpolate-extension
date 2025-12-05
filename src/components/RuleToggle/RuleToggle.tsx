@@ -1,5 +1,5 @@
 import { PauseIcon, PlayIcon } from "@radix-ui/react-icons";
-import { Box, IconButton, Tooltip } from "@radix-ui/themes";
+import { Flex, Button, IconButton, Tooltip } from "@radix-ui/themes";
 
 export const RuleToggle = ({
   isPaused,
@@ -13,7 +13,10 @@ export const RuleToggle = ({
   onResumeClick: () => void;
 }) => {
   return (
-    <Box data-testid={`${isPaused ? "play" : "pause"}-rule-toggle`}>
+    <Flex
+      align="center"
+      data-testid={`${isPaused ? "play" : "pause"}-rule-toggle`}
+    >
       {isPaused ? (
         <Tooltip
           content={disabled ? "rule cannot be enabled due to error" : "resume"}
@@ -29,11 +32,17 @@ export const RuleToggle = ({
         </Tooltip>
       ) : (
         <Tooltip content="pause">
-          <IconButton disabled={disabled} onClick={onPauseClick} color={"blue"}>
+          <Button
+            size="1"
+            variant="surface"
+            disabled={disabled}
+            onClick={onPauseClick}
+            color={"blue"}
+          >
             <PauseIcon />
-          </IconButton>
+          </Button>
         </Tooltip>
       )}
-    </Box>
+    </Flex>
   );
 };

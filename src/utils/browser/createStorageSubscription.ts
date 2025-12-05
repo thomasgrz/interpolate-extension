@@ -5,7 +5,7 @@ export const createSyncStorageSubscription = <T>(
     removed: T[];
   }) => Promise<void> | void,
 ) => {
-  return chrome.storage.sync.onChanged.addListener(
+  return chrome.storage?.sync?.onChanged.addListener(
     async (changes: { [key: string]: chrome.storage.StorageChange }) => {
       const created: T[] = [];
       const updated: T[] = [];

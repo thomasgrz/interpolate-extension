@@ -18,7 +18,7 @@ import { useInterpolateFormSelection } from "@/hooks/useInterpolateFormSelection
 import { useInterpolationForm } from "@/hooks/useInterpolationForm/useInterpolationForm";
 import { FormType } from "@/constants";
 import { InterpolateContext } from "@/contexts/interpolate-context";
-import { RocketIcon } from "@radix-ui/react-icons";
+import { CardStackPlusIcon } from "@radix-ui/react-icons";
 
 export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
   const form = useInterpolationForm();
@@ -61,7 +61,7 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
       <Box data-testid={"dashboard"} p="2">
         <Flex p="1" justify={"center"}>
           <Box height={"1rem"}>
-            <RocketIcon />
+            <CardStackPlusIcon />
           </Box>
         </Flex>
         <SegmentedControl.Root
@@ -97,20 +97,12 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
         onDeleteAllRules={handleDeleteAll}
       />
       <Separator size={"4"} my="1" />
-      <Flex
-        width="100%"
-        p="1"
-        flexGrow={"1"}
-        direction={"column"}
-        wrap="wrap"
-        justify={"between"}
-      >
+      <Flex width="100%" p="1" flexGrow={"1"} direction={"row"} wrap="wrap">
         {shouldShowRules &&
           interpolations?.map((rule) => {
             return (
               <Box
                 key={rule.details?.id}
-                width={"100%"}
                 p="1"
                 className={styles.RuleCardContainer}
               >

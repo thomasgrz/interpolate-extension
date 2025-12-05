@@ -21,8 +21,7 @@ export const useInterpolations = () => {
 
   useEffect(() => {
     const updateRecentlyInvoked = async () => {
-      debugger;
-      const result = await chrome.storage.sync.get("recentlyUsed");
+      const result = await chrome.storage?.sync?.get("recentlyUsed");
       if (!Object.hasOwn(result, "recentlyUsed")) return;
       const { recentlyUsed } = result;
       setRecentlyUsed(recentlyUsed);

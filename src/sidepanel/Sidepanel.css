@@ -4,6 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.radix-themes {
+  --default-font-family: "Space Mono", monospace;
+}
+
 :root {
   --background: #fefce9;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

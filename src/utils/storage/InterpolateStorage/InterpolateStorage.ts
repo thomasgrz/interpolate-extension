@@ -26,7 +26,7 @@ export const InterpolateStorage = {
   },
   async getInterpolationById(id: number | string) {
     const key = this.getInterpolationRecordKey(id);
-    const interp = await chrome.storage.sync.get(key);
+    const interp = await chrome.storage?.sync?.get(key);
     const value = interp[key];
     return value;
   },
@@ -46,7 +46,7 @@ export const InterpolateStorage = {
       };
     }, {});
     try {
-      await chrome.storage.sync.set({
+      await chrome.storage?.sync?.set({
         ...interpolationRecords,
       });
     } catch (e) {
@@ -173,7 +173,7 @@ export const InterpolateStorage = {
           },
         };
       }, {});
-      result = await chrome.storage.sync.set(rollbackRecords);
+      result = await chrome.storage?.sync?.set(rollbackRecords);
     } catch (e) {
       this.logError(caller, e as string);
     }
@@ -196,11 +196,11 @@ export const InterpolateStorage = {
     const caller = "getAllInterpolations";
     this.logInvocation(caller);
     try {
-      const result = await chrome.storage.sync.getKeys();
+      const result = await chrome.storage?.sync?.getKeys();
       const interpolations = result.filter((key) =>
         key.startsWith(INTERPOLATE_RECORD_PREFIX),
       );
-      const storageRecords = await chrome.storage.sync.get(interpolations);
+      const storageRecords = await chrome.storage?.sync?.get(interpolations);
       logger(storageRecords);
       const interpolationConfigs = Object.values(storageRecords).reduce<
         AnyInterpolation[]
@@ -226,7 +226,7 @@ export const InterpolateStorage = {
     const caller = "deleteAll";
     this.logInvocation(caller);
     try {
-      return chrome.storage.sync.clear();
+      return chrome.storage?.sync?.clear();
     } catch (e) {
       this.logError(caller, e as string);
     }
@@ -235,7 +235,7 @@ export const InterpolateStorage = {
     const caller = "delete";
     this.logInvocation(caller);
     try {
-      await chrome.storage.sync.remove(ids);
+      await chrome.storage?.sync?.remove(ids);
     } catch (e) {
       this.logError(caller, e as string);
     }
@@ -246,8 +246,8 @@ export const InterpolateStorage = {
     const caller = "subscribeToRecentlyInvoked";
     this.logInvocation(caller);
     try {
-      chrome.storage.sync.onChanged.addListener(async (changes) => {
-        this.logInvocation("chrome.storage.sync.onChanged");
+      chrome.storage?.sync?.onChanged.addListener(async (changes) => {
+        this.logInvocation("chrome.storage?.sync?.onChanged");
         if (!Object.hasOwn(changes, "recentlyInvoked")) return;
         const recentlyInvoked = changes.recentlyInvoked;
         const { newValue } = recentlyInvoked;
@@ -265,8 +265,8 @@ export const InterpolateStorage = {
     const caller = "subscribeToChanges";
     this.logInvocation(caller);
     try {
-      chrome.storage.sync.onChanged.addListener(async (changes) => {
-        this.logInvocation("chrome.storage.sync.onChanged");
+      chrome.storage?.sync?.onChanged.addListener(async (changes) => {
+        this.logInvocation("chrome.storage?.sync?.onChanged");
         const interpolationConfigs = Object.entries(changes)?.reduce<{
           created: AnyInterpolation[];
           updated: AnyInterpolation[];

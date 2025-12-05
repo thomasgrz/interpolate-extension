@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   HeaderInterpolation,
@@ -6,8 +6,16 @@ import {
   ScriptInterpolation,
 } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
-import { Badge, Box, Card, Flex, Tooltip } from "@radix-ui/themes";
+import { DoubleArrowDownIcon, DoubleArrowUpIcon } from "@radix-ui/react-icons";
+import {
+  Badge,
+  Box,
+  Card,
+  Flex,
+  IconButton,
+  Text,
+  Tooltip,
+} from "@radix-ui/themes";
 import { Collapsible } from "radix-ui";
 import { HeaderRulePreview } from "../HeaderPreview/HeaderPreview";
 import { RedirectRulePreview } from "../RedirectPreview/RedirectPreview";
@@ -19,12 +27,11 @@ import { ScriptPreview } from "../ScriptPreview/ScriptPreview";
 type InterpolationCardProps = {
   info: RedirectInterpolation | HeaderInterpolation | ScriptInterpolation;
 };
+
 export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hit, setHit] = useState(false);
-  const [recentlyHitColor, setRecentlyHitColor] = useState<"green" | "gray">(
-    "green",
-  );
+  const [_, setRecentlyHitColor] = useState<"green" | "gray">("green");
   const { enabledByUser } = info;
 
   useEffect(() => {
@@ -54,59 +61,110 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
     await InterpolateStorage.setIsEnabled(info.details?.id, false);
   };
 
+  const handleOpenChange = (value: boolean) => {
+    setIsOpen(value);
+  };
+
+  const badgeColor = () => {
+    switch (info.type) {
+      case "headers":
+        return "green";
+      case "script":
+        return "purple";
+      case "redirect":
+        return "blue";
+    }
+  };
+
+  const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
+    "horizontal",
+  );
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const observer = new ResizeObserver(() => {
+      const elementWidth = ref.current?.clientWidth;
+      if (!elementWidth) return;
+      if (elementWidth > 300) {
+        setOrientation("horizontal");
+      } else {
+        setOrientation("vertical");
+      }
+    });
+
+    observer.observe(ref.current);
+    return () => {
+      observer.disconnect();
+    };
+  }, [ref]);
+
   const getPreview = () => {
     switch (info.type) {
       case "headers":
-        return <HeaderRulePreview details={info.details} name={info.name} />;
+        return (
+          <HeaderRulePreview
+            dataOrientation={orientation}
+            details={info.details}
+            name={info.name}
+          />
+        );
       case "redirect":
         return <RedirectRulePreview name={info.name} rule={info} />;
       case "script":
         return <ScriptPreview name={info.name} rule={info} />;
     }
   };
+
   return (
-    <Card
-      data-ui-active={hit}
-      data-ui-error={!!info.error}
-      className={styles.InterpolationCard}
-      variant="surface"
-    >
-      <Collapsible.Root onOpenChange={setIsOpen} open={isOpen}>
-        <Flex justify={"between"} flexGrow="2">
-          <Box>
-            <Flex>{getPreview()}</Flex>
-            <Flex py="1">
-              {hit && !info.error && (
-                <Badge color={recentlyHitColor}>Recently hit</Badge>
-              )}
-              {info.error && (
-                <>
-                  <Tooltip content={info.error}>
-                    <Badge color="ruby">
-                      Error
-                      <QuestionMarkCircledIcon />
-                    </Badge>
-                  </Tooltip>
-                </>
-              )}
+    <Collapsible.Root onOpenChange={handleOpenChange}>
+      <Card
+        ref={ref}
+        data-ui-active={hit}
+        data-ui-error={!!info.error}
+        data-testid={`${info.type}-preview-${info?.details?.id}`}
+        className={styles.InterpolationCard}
+        variant="surface"
+      >
+        <Flex justify="between" align="center">
+          <RuleToggle
+            disabled={!!info.error}
+            onResumeClick={handleResumeClick}
+            onPauseClick={handlePauseClick}
+            isPaused={!enabledByUser || !!info.error}
+          />
+          <Collapsible.Trigger asChild>
+            <Flex px="1" flexGrow="1" justify={"between"}>
+              <Flex p="3" align={"center"}>
+                <Text weight="medium" size="2">
+                  {info.name}
+                </Text>
+              </Flex>
+              <Flex align={"center"}>
+                <Box p="1">
+                  <Badge variant="soft" color={badgeColor()} size="1">
+                    {info.type}
+                  </Badge>
+                </Box>
+                <Tooltip content="options">
+                  <IconButton radius="full" variant="outline">
+                    {isOpen ? <DoubleArrowUpIcon /> : <DoubleArrowDownIcon />}
+                  </IconButton>
+                </Tooltip>
+              </Flex>
             </Flex>
-          </Box>
-          <Flex
-            direction={"column"}
-            justify="between"
-            align={"center"}
-            className={styles.DeleteAction}
-          >
-            <RuleToggle
-              disabled={!!info.error}
-              onResumeClick={handleResumeClick}
-              onPauseClick={handlePauseClick}
-              isPaused={!enabledByUser || !!info.error}
-            />
-            <RuleDeleteAction onDelete={onDelete} />
-          </Flex>
+          </Collapsible.Trigger>
         </Flex>
-      </Collapsible.Root>
-    </Card>
+        <Collapsible.Content>
+          <Flex align={"end"} justify={"between"}>
+            <Flex flexGrow={"1"}>{getPreview()}</Flex>
+            <Box>
+              <RuleDeleteAction onDelete={onDelete} />
+            </Box>
+          </Flex>
+        </Collapsible.Content>
+      </Card>
+    </Collapsible.Root>
   );
 };
