@@ -1,5 +1,5 @@
 import { ScriptInterpolation } from "@/utils/factories/Interpolation";
-import { Badge, Code, DataList } from "@radix-ui/themes";
+import { Code, DataList } from "@radix-ui/themes";
 
 export const ScriptPreview = (props: {
   rule: ScriptInterpolation;
@@ -15,9 +15,7 @@ export const ScriptPreview = (props: {
       </DataList.Item>
       <DataList.Item align="center">
         <DataList.Label>Type:</DataList.Label>
-        <DataList.Value>
-          <Badge color="purple">Script</Badge>
-        </DataList.Value>
+        <DataList.Value>Script</DataList.Value>
       </DataList.Item>
       <DataList.Item>
         <DataList.Label>Snippet:</DataList.Label>

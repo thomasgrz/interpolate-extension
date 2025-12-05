@@ -1,7 +1,6 @@
 import { vi } from "vitest";
 import { AnyInterpolation } from "../../src/utils/factories/Interpolation";
 import { InterpolateStorage } from "../../src/utils/storage/InterpolateStorage/InterpolateStorage";
-import { on } from "events";
 
 type OnChangedArg = {
   [key: string]: {

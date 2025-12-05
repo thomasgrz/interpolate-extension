@@ -14,7 +14,7 @@ export const useInterpolateFormSelection = (defaultForm: FormType) => {
 
     const handleResumedSelection = async () => {
       hasCheckedDefault.current = true;
-      const initialSelectedForm = await chrome.storage.local.get(
+      const initialSelectedForm = await chrome.storage?.local?.get(
         INTERPOLATE_SELECTED_FORM_KEY,
       );
       if (initialSelectedForm[INTERPOLATE_SELECTED_FORM_KEY]) {
@@ -31,7 +31,7 @@ export const useInterpolateFormSelection = (defaultForm: FormType) => {
   }, []);
 
   useEffect(() => {
-    chrome.storage.local.set({
+    chrome.storage?.local?.set({
       [INTERPOLATE_SELECTED_FORM_KEY]: selectedForm,
     });
   }, [selectedForm]);

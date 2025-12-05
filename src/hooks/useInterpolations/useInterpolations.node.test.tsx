@@ -6,8 +6,8 @@ import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpo
 
 describe("useInterpolations", () => {
   beforeEach(() => {
-    chrome.storage.local.clear();
-    chrome.storage.sync.clear();
+    chrome.storage?.local?.clear();
+    chrome.storage?.sync?.clear();
   });
   it("should return current interpolations", async () => {
     const interpolation = createHeaderInterpolation({
@@ -18,7 +18,7 @@ describe("useInterpolations", () => {
     await InterpolateStorage.create([interpolation]);
     const { result } = renderHook(() => useInterpolations());
 
-    await waitFor(() => expect(chrome.storage.sync.get).toBeCalledTimes(3));
+    await waitFor(() => expect(chrome.storage?.sync?.get).toBeCalledTimes(3));
     await waitFor(() =>
       expect(result.current.interpolations[0]).toEqual(interpolation),
     );

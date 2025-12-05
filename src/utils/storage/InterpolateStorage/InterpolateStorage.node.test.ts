@@ -5,7 +5,7 @@ import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpo
 describe("InterpolateStorage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    chrome.storage.sync.clear();
+    chrome.storage?.sync?.clear();
   });
   it("should create a new interpolation", async () => {
     const interpolation = createHeaderInterpolation({
@@ -15,7 +15,7 @@ describe("InterpolateStorage", () => {
     });
     // Test implementation goes here
     await InterpolateStorage.create(interpolation);
-    expect(chrome.storage.sync.set).toHaveBeenCalledExactlyOnceWith({
+    expect(chrome.storage?.sync?.set).toHaveBeenCalledExactlyOnceWith({
       [InterpolateStorage.getInterpolationRecordKey(interpolation.details.id)]:
         interpolation,
     });
@@ -32,7 +32,7 @@ describe("InterpolateStorage", () => {
       headerValue: "Value2",
     });
     await InterpolateStorage.create([interpolation1, interpolation2]);
-    expect(chrome.storage.sync.set).toHaveBeenCalledExactlyOnceWith({
+    expect(chrome.storage?.sync?.set).toHaveBeenCalledExactlyOnceWith({
       [InterpolateStorage.getInterpolationRecordKey(interpolation1.details.id)]:
         interpolation1,
       [InterpolateStorage.getInterpolationRecordKey(interpolation2.details.id)]:

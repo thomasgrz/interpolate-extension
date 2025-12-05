@@ -1,8 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./Sidepanel.css";
 
 import "@radix-ui/themes/styles.css";
+import "./Sidepanel.css";
 
 import { Dashboard } from "@/components/Dashboard/Dashboard";
 import { Theme } from "@radix-ui/themes";

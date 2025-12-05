@@ -1,7 +1,7 @@
 import { FC } from "react";
 import "@radix-ui/themes/styles.css";
 import type { Preview } from "@storybook/react";
-import { Theme, ThemePanel } from "@radix-ui/themes";
+import { Container, Theme, ThemePanel } from "@radix-ui/themes";
 
 const preview: Preview = {
   parameters: {
@@ -17,10 +17,12 @@ const preview: Preview = {
 export const decorators = [
   (Story: FC) => {
     return (
-      <Theme>
-        <Story />
-        <ThemePanel defaultOpen={true} />
-      </Theme>
+      <Container style={{ width: "50dvw", border: "3px dotted grey" }}>
+        <Theme style={{ fontFamily: '"Space Mono", monospace', width: "100%" }}>
+          <Story />
+          <ThemePanel defaultOpen={true} />
+        </Theme>
+      </Container>
     );
   },
 ];

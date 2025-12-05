@@ -54,7 +54,7 @@ try {
 
       if (invokedRule) {
         chrome.runtime.sendMessage(`redirect-${invokedRule.details.id}-hit`);
-        chrome.storage.sync.set({
+        chrome.storage?.sync?.set({
           recentlyUsed: [invokedRule],
         });
       }

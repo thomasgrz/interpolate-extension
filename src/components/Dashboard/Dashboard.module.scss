@@ -4,15 +4,19 @@
   }
 }
 
-.Dashboard {
+@media screen and (max-width: 500px) {
   .RuleCardContainer {
     width: 100%;
   }
-  @media screen and (min-width: 500px) {
-    .RuleCardContainer {
-      width: 50%;
-    }
+}
+
+@media screen and (min-width: 500px) {
+  .RuleCardContainer {
+    width: 50%;
   }
+}
+
+.RuleCardContainer {
 }
 
 .TabsContent {
