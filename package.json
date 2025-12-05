@@ -1,8 +1,9 @@
 {
-  "name": "interpolate",
+  "name": "interpolate_BETA",
   "type": "module",
   "version": "1.0.0",
   "private": true,
+  "description": "THIS EXTENSION IS FOR BETA TESTING",
   "scripts": {
     "dev": "vite",
     "test:component": "vitest run",
