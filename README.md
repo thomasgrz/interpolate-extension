@@ -1,3 +1,4 @@
-# Interpolate web extension 💎
+# Interpolate web extension [beta] 
 
-> [!warning] this is a WIP, personal project not meant for consumption in production environments.
+User Interpolate rules to enforce rules like redirects, append headers to requests, and invoke custom user scripts!
+
