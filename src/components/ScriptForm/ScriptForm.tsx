@@ -1,8 +1,10 @@
 import { SubmitAction } from "@/constants";
 import { dashboardFormOptions } from "@/contexts/dashboard-context";
 import { withForm } from "@/hooks/useForm/useForm";
-import { Box, Flex } from "@radix-ui/themes";
+import { Box, Callout, Flex } from "@radix-ui/themes";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
+import { useEffect, useState } from "react";
+import { ScriptsPermissionWarning } from "../ScriptsPermissionWarning/ScriptsPermissionWarning";
 
 export const ScriptForm = withForm({
   ...dashboardFormOptions,
@@ -12,6 +14,8 @@ export const ScriptForm = withForm({
         value?.trim()?.length ? undefined : "Please enter a valid input.",
     };
 
+    const [showWarning, setShowWarning] = useState<boolean>(true);
+
     const options = ["document_idle", "document_end", "document_start"].map(
       (item) => ({
         label: item,
@@ -19,9 +23,17 @@ export const ScriptForm = withForm({
       }),
     );
 
+    useEffect(() => {
+      try {
+        chrome.userScripts.getScripts();
+        setShowWarning(false);
+      } catch (e) {}
+    }, []);
+
     return (
       <Box p="2">
         <Flex gap="1" direction={"column"}>
+          {showWarning && <ScriptsPermissionWarning />}
           <form.AppField validators={validators} name="scriptForm.name">
             {(field) => (
               <field.TextField
