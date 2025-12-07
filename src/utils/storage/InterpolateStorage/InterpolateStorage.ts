@@ -11,7 +11,6 @@ import { createScriptInterpolation } from "@/utils/factories/createScriptInterpo
 import { addUserScripts } from "@/utils/browser/addUserScripts";
 import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation";
 import { createRedirectInterpolation } from "@/utils/factories/createRedirectInterpolation/createRedirectInterpolation";
-import { match } from "assert";
 import { addDynamicRules } from "@/utils/browser/addDynamicRules";
 
 enum RollbackAction {
