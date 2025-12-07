@@ -246,7 +246,6 @@ export const InterpolateStorage = {
     const caller = "delete";
     this.logInvocation(caller);
     try {
-      debugger;
       let resolvedIds: string[] = [];
       if (Array.isArray(ids)) {
         resolvedIds = ids.map((id) => this.getInterpolationRecordKey(id));
