@@ -159,12 +159,13 @@ describe("useInterpolations", () => {
     ];
 
     await InterpolateStorage.create(interpolations);
-    const { result } = renderHook(() => useInterpolations());
+    const { result, rerender } = renderHook(() => useInterpolations());
     await waitFor(() => {
       return expect(result.current.interpolations.length).toEqual(2);
     });
 
     await result.current.remove(interpolations[0].details.id);
+    rerender();
     await waitFor(() => {
       return expect(result.current.interpolations.length).toEqual(1);
     });
@@ -187,12 +188,14 @@ describe("useInterpolations", () => {
     ];
 
     await InterpolateStorage.create(interpolations);
-    const { result } = renderHook(() => useInterpolations());
+    const { result, rerender } = renderHook(() => useInterpolations());
     await waitFor(() => {
       return expect(result.current.interpolations.length).toEqual(2);
     });
 
     await result.current.removeAll();
+
+    rerender();
     await waitFor(() => {
       return expect(result.current.interpolations.length).toEqual(0);
     });

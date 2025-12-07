@@ -61,6 +61,11 @@ export const useInterpolations = () => {
     }
   };
 
+  const removeAll = async () => {
+    const result = await InterpolateStorage.deleteAll();
+    return result;
+  };
+
   const resumeAll = async () => {
     setAllPaused(false);
     try {
@@ -159,11 +164,6 @@ export const useInterpolations = () => {
 
     getInitAllPaused();
   }, []);
-
-  const removeAll = async () => {
-    const result = await InterpolateStorage.deleteAll();
-    return result;
-  };
 
   return {
     add,

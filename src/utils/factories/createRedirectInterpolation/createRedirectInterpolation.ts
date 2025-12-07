@@ -5,6 +5,7 @@ export const createRedirectInterpolation = (rule: {
   source: string;
   destination: string;
   name: string;
+  id?: number;
 }) => {
   return new RedirectInterpolation({
     name: rule.name,
@@ -19,7 +20,7 @@ export const createRedirectInterpolation = (rule: {
         resourceTypes: ["main_frame"],
         regexFilter: rule.source,
       },
-      id: generateRuleId(),
+      id: rule?.id ?? generateRuleId(),
     },
   });
 };

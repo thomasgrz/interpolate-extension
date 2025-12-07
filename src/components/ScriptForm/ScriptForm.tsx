@@ -14,7 +14,7 @@ export const ScriptForm = withForm({
         value?.trim()?.length ? undefined : "Please enter a valid input.",
     };
 
-    const [showWarning, setShowWarning] = useState<boolean>(true);
+    const [showWarning, setShowWarning] = useState<boolean>(false);
 
     const options = ["document_idle", "document_end", "document_start"].map(
       (item) => ({
@@ -26,8 +26,9 @@ export const ScriptForm = withForm({
     useEffect(() => {
       try {
         chrome.userScripts.getScripts();
-        setShowWarning(false);
-      } catch (e) {}
+      } catch (e) {
+        setShowWarning(true);
+      }
     }, []);
 
     return (

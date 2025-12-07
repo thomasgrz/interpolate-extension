@@ -6,8 +6,18 @@ import { SubmitAction } from "@/constants.ts";
 import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
 import { createScriptInterpolation } from "@/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
 import { useAppForm } from "../useForm/useForm";
+import { useEffect, useRef } from "react";
 
 export const useInterpolationForm = () => {
+  const hasSynced = useRef<boolean>(null);
+
+  useEffect(() => {
+    if (hasSynced.current) return;
+    hasSynced.current = true;
+
+    void InterpolateStorage.syncAll().catch((e) => logger(e));
+  }, []);
+
   const form = useAppForm({
     ...dashboardFormOptions,
     validators: {},
