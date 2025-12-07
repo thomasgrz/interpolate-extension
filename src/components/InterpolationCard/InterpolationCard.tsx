@@ -148,7 +148,7 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
                   </Badge>
                 </Box>
                 <Tooltip content="options">
-                  <IconButton radius="full" variant="outline">
+                  <IconButton size="1" radius="full" variant="outline">
                     {isOpen ? <DoubleArrowUpIcon /> : <DoubleArrowDownIcon />}
                   </IconButton>
                 </Tooltip>
