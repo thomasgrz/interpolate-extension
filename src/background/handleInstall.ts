@@ -43,7 +43,11 @@ export const handleInstall = () => {
     // Update user scripts
     await BrowserRules.updateUserScripts(userScripts);
     // Update declarative net request rules
-    await BrowserRules.updateDynamicRules(dynamicRules);
+    await BrowserRules.updateDynamicRules(dynamicRules, {
+      onError: (id, e) => {
+        InterpolateStorage.setInterpolationError(id, e);
+      },
+    });
   };
 
   const handleInterpolationRemovals = async (

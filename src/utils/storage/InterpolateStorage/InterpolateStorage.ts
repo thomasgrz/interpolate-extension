@@ -26,44 +26,6 @@ export const InterpolateStorage = {
   logError(caller: string, error: unknown) {
     logger(`${caller} threw (error): `, error);
   },
-  getInterpolationRecordKey(id: number | string) {
-    if (typeof id === "string" && id?.startsWith("interp")) {
-      return id;
-    }
-    return `${INTERPOLATE_RECORD_PREFIX}${id}`;
-  },
-  getRollbackRecordKey(id: number | string) {
-    return `rollback-record-${this.getInterpolationRecordKey(id)}`;
-  },
-  async getInterpolationById(id: number | string) {
-    const key = this.getInterpolationRecordKey(id);
-    const interp = await chrome.storage?.sync?.get(key);
-    const value = interp[key];
-    return value;
-  },
-  async setInterpolations(interpolations?: AnyInterpolation[]) {
-    const caller = "set";
-    this.logInvocation(caller);
-    if (!interpolations) return;
-    logger(interpolations);
-
-    const interpolationRecords = interpolations.reduce((acc, curr) => {
-      const isObject = curr && !Array.isArray(curr) && typeof curr === "object";
-      const invalid = !isObject;
-      if (invalid) return acc;
-      return {
-        ...acc,
-        [this.getInterpolationRecordKey(curr.details.id)]: curr,
-      };
-    }, {});
-    try {
-      await chrome.storage?.sync?.set({
-        ...interpolationRecords,
-      });
-    } catch (e) {
-      this.logError(caller, e);
-    }
-  },
   async create(interpolationsToCreate: AnyInterpolation | AnyInterpolation[]) {
     const caller = "create";
     this.logInvocation(caller);
@@ -76,6 +38,32 @@ export const InterpolateStorage = {
     } catch (e) {
       this.logError(caller, e);
     }
+  },
+  async createRollbackRecords(
+    records: {
+      action: RollbackAction;
+      before: AnyInterpolation | null;
+      after: AnyInterpolation | null;
+      id: string | number;
+    }[],
+  ) {
+    const caller = "createRollbackRecord";
+    this.logInvocation(caller);
+    let result;
+    try {
+      const rollbackRecords = records.reduce((acc, curr) => {
+        return {
+          ...acc,
+          [this.getRollbackRecordKey(curr.id)]: {
+            ...curr,
+          },
+        };
+      }, {});
+      result = await chrome.storage?.sync?.set(rollbackRecords);
+    } catch (e) {
+      this.logError(caller, e as string);
+    }
+    return result;
   },
   async disableAll() {
     const caller = "disableAll";
@@ -104,6 +92,30 @@ export const InterpolateStorage = {
         };
       });
       await this.setInterpolations(updatedInterpolations);
+    } catch (e) {
+      this.logError(caller, e as string);
+    }
+  },
+  async deleteAll() {
+    const caller = "deleteAll";
+    this.logInvocation(caller);
+    try {
+      return chrome.storage?.sync?.clear();
+    } catch (e) {
+      this.logError(caller, e as string);
+    }
+  },
+  async delete(ids: (number | string)[] | (string | number)) {
+    const caller = "delete";
+    this.logInvocation(caller);
+    try {
+      let resolvedIds: string[] = [];
+      if (Array.isArray(ids)) {
+        resolvedIds = ids.map((id) => this.getInterpolationRecordKey(id));
+      } else {
+        resolvedIds = [this.getInterpolationRecordKey(ids)];
+      }
+      await chrome.storage?.sync?.remove(resolvedIds);
     } catch (e) {
       this.logError(caller, e as string);
     }
@@ -139,56 +151,20 @@ export const InterpolateStorage = {
       this.logError(caller, e as string);
     }
   },
-  async setIsEnabled(id: string | number, enabledByUser: boolean) {
-    const caller = "setIsEnabled";
-    this.logInvocation(caller);
-    const interpolationToUpdate = await this.getInterpolationById(id);
-    try {
-      await this.createRollbackRecords([
-        {
-          action: enabledByUser
-            ? RollbackAction.RESUMED
-            : RollbackAction.PAUSED,
-          id: interpolationToUpdate?.details?.id,
-          before: interpolationToUpdate,
-          after: {
-            ...interpolationToUpdate,
-            enabledByUser,
-          },
-        },
-      ]);
-      await this.setInterpolations([
-        { ...interpolationToUpdate, enabledByUser },
-      ]);
-    } catch (e) {
-      this.logError(caller, e as string);
+  getInterpolationRecordKey(id: number | string) {
+    if (typeof id === "string" && id?.startsWith("interp")) {
+      return id;
     }
+    return `${INTERPOLATE_RECORD_PREFIX}${id}`;
   },
-  async createRollbackRecords(
-    records: {
-      action: RollbackAction;
-      before: AnyInterpolation | null;
-      after: AnyInterpolation | null;
-      id: string | number;
-    }[],
-  ) {
-    const caller = "createRollbackRecord";
-    this.logInvocation(caller);
-    let result;
-    try {
-      const rollbackRecords = records.reduce((acc, curr) => {
-        return {
-          ...acc,
-          [this.getRollbackRecordKey(curr.id)]: {
-            ...curr,
-          },
-        };
-      }, {});
-      result = await chrome.storage?.sync?.set(rollbackRecords);
-    } catch (e) {
-      this.logError(caller, e as string);
-    }
-    return result;
+  getRollbackRecordKey(id: number | string) {
+    return `rollback-record-${this.getInterpolationRecordKey(id)}`;
+  },
+  async getInterpolationById(id: number | string) {
+    const key = this.getInterpolationRecordKey(id);
+    const interp = await chrome.storage?.sync?.get(key);
+    const value = interp[key];
+    return value;
   },
   async getAllByTypes(types: InterpolationType[]) {
     const caller = "getAllByTypes";
@@ -233,27 +209,63 @@ export const InterpolateStorage = {
       this.logError(caller, e as string);
     }
   },
-  async deleteAll() {
-    const caller = "deleteAll";
-    this.logInvocation(caller);
+  async setInterpolationError(id: number | string, e: Error | string) {
+    const caller = "setInterpolationError";
     try {
-      return chrome.storage?.sync?.clear();
+      const interp = await this.getInterpolationById(id);
+      const updatedInterpolation = {
+        ...interp,
+        error: typeof e === "object" ? e.message : e,
+      };
+      await this.setInterpolations([updatedInterpolation]);
     } catch (e) {
-      this.logError(caller, e as string);
+      this.logError(caller, e);
     }
   },
-  async delete(ids: (number | string)[] | (string | number)) {
-    const caller = "delete";
+  async setInterpolations(interpolations?: AnyInterpolation[]) {
+    const caller = "set";
     this.logInvocation(caller);
+    if (!interpolations) return;
+    logger(interpolations);
+
+    const interpolationRecords = interpolations.reduce((acc, curr) => {
+      const isObject = curr && !Array.isArray(curr) && typeof curr === "object";
+      const invalid = !isObject;
+      if (invalid) return acc;
+      return {
+        ...acc,
+        [this.getInterpolationRecordKey(curr.details.id)]: curr,
+      };
+    }, {});
     try {
-      debugger;
-      let resolvedIds: string[] = [];
-      if (Array.isArray(ids)) {
-        resolvedIds = ids.map((id) => this.getInterpolationRecordKey(id));
-      } else {
-        resolvedIds = [this.getInterpolationRecordKey(ids)];
-      }
-      await chrome.storage?.sync?.remove(resolvedIds);
+      await chrome.storage?.sync?.set({
+        ...interpolationRecords,
+      });
+    } catch (e) {
+      this.logError(caller, e);
+    }
+  },
+  async setIsEnabled(id: string | number, enabledByUser: boolean) {
+    const caller = "setIsEnabled";
+    this.logInvocation(caller);
+    const interpolationToUpdate = await this.getInterpolationById(id);
+    try {
+      await this.createRollbackRecords([
+        {
+          action: enabledByUser
+            ? RollbackAction.RESUMED
+            : RollbackAction.PAUSED,
+          id: interpolationToUpdate?.details?.id,
+          before: interpolationToUpdate,
+          after: {
+            ...interpolationToUpdate,
+            enabledByUser,
+          },
+        },
+      ]);
+      await this.setInterpolations([
+        { ...interpolationToUpdate, enabledByUser },
+      ]);
     } catch (e) {
       this.logError(caller, e as string);
     }

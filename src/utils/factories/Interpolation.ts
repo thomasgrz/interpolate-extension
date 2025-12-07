@@ -15,7 +15,7 @@ export type InterpolationType = "script" | "redirect" | "headers";
 class Interpolation {
   createdAt: number;
   enabledByUser?: boolean;
-  error?: string | null;
+  error?: Error | string | null;
   name: string;
 
   constructor(config: { name: string }) {
