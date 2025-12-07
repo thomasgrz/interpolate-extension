@@ -1,9 +1,17 @@
 import {
   AnyInterpolation,
+  HeaderInterpolation,
   InterpolationType,
+  RedirectInterpolation,
+  ScriptInterpolation,
 } from "@/utils/factories/Interpolation";
 import { logger } from "@/utils/logger";
 import { INTERPOLATE_RECORD_PREFIX } from "../storage.constants";
+import { createScriptInterpolation } from "@/utils/factories/createScriptInterpolation/createScriptInterpolation";
+import { addUserScripts } from "@/utils/browser/addUserScripts";
+import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation";
+import { createRedirectInterpolation } from "@/utils/factories/createRedirectInterpolation/createRedirectInterpolation";
+import { addDynamicRules } from "@/utils/browser/addDynamicRules";
 
 enum RollbackAction {
   RESUMED = "resume",
@@ -19,6 +27,9 @@ export const InterpolateStorage = {
     logger(`${caller} threw (error): `, error);
   },
   getInterpolationRecordKey(id: number | string) {
+    if (typeof id === "string" && id?.startsWith("interp")) {
+      return id;
+    }
     return `${INTERPOLATE_RECORD_PREFIX}${id}`;
   },
   getRollbackRecordKey(id: number | string) {
@@ -235,7 +246,13 @@ export const InterpolateStorage = {
     const caller = "delete";
     this.logInvocation(caller);
     try {
-      await chrome.storage?.sync?.remove(ids);
+      let resolvedIds: string[] = [];
+      if (Array.isArray(ids)) {
+        resolvedIds = ids.map((id) => this.getInterpolationRecordKey(id));
+      } else {
+        resolvedIds = [String(ids)];
+      }
+      await chrome.storage?.sync?.remove(resolvedIds);
     } catch (e) {
       this.logError(caller, e as string);
     }
@@ -307,5 +324,163 @@ export const InterpolateStorage = {
     } catch (e) {
       this.logError(caller, e as string);
     }
+  },
+  /**
+   * Identify any rules enabled in the browser that are not
+   * yet tracked in storage. Then add those rules in storage.
+   *
+   * Likewise, find any rules enabled in storage that are not
+   * yet enabled in the browser. Then add those rules in the browser.
+   */
+  async syncWithUserScripts() {
+    const caller = "syncWithUserScripts";
+    const scriptsFromStorage = (await this.getAllByTypes([
+      "script",
+    ])) as ScriptInterpolation[];
+    const interpolateScriptsMap = new Map(
+      scriptsFromStorage?.map((interp) => [interp.details.id, interp]),
+    );
+    try {
+      const allScriptsInBrowser = await chrome?.userScripts?.getScripts();
+      const browserScriptSet = allScriptsInBrowser.reduce((acc, curr) => {
+        const currentId = curr.id;
+        const matchingInterp = interpolateScriptsMap.get(currentId);
+        acc.add(
+          matchingInterp ??
+            createScriptInterpolation({
+              body: curr.js?.[0]?.code ?? "",
+              name: "unknown-" + currentId,
+              matches: curr?.matches?.[0],
+              runAt: curr?.runAt,
+            }),
+        );
+        return acc;
+      }, new Set<ScriptInterpolation>());
+      const interpolateScriptsSet = interpolateScriptsMap
+        .entries()
+        .reduce((acc, curr) => {
+          const [, interp] = curr;
+          acc.add(interp);
+          return acc;
+        }, new Set<ScriptInterpolation>());
+      const scriptsToAddToStorage = browserScriptSet.difference(
+        interpolateScriptsSet,
+      );
+      const newInterpolations = scriptsToAddToStorage
+        .entries()
+        .reduce<ScriptInterpolation[]>((acc, curr) => {
+          acc.push(curr[0]);
+          return acc;
+        }, []);
+
+      // Add missing browser rules to storage
+      await this.create(newInterpolations);
+      const newScripts = interpolateScriptsSet.difference(browserScriptSet);
+      const newScriptInterpolations = newScripts
+        ?.entries?.()
+        .reduce<chrome.userScripts.RegisteredUserScript[]>((acc, curr) => {
+          acc.push(curr[0].details);
+          return acc;
+        }, []);
+      // Add missing interpolations to browser
+      await addUserScripts(newScriptInterpolations);
+    } catch (e) {
+      this.logError(caller, e);
+    }
+  },
+  /**
+   * Identify any user scripts enabled in the browser that are not
+   * yet tracked in storage. Then add those user scripts in storage.
+   *
+   * Likewise, find any user scripts enabled in storage that are not
+   * yet enabled in the browser. Then add those user scripts in the browser.
+   */
+  async syncWithDynamicRules() {
+    const caller = "syncWithDynamicRules";
+    const dynamicRulesFromStorage = (await this.getAllByTypes([
+      "redirect",
+      "headers",
+    ])) as (HeaderInterpolation | RedirectInterpolation)[];
+    const interpolateDynamicRulesMap = new Map(
+      dynamicRulesFromStorage?.map((interp) => [interp.details.id, interp]),
+    );
+    try {
+      const allRulesInBrowser =
+        await chrome?.declarativeNetRequest?.getDynamicRules?.();
+      const browserScriptSet = allRulesInBrowser.reduce((acc, curr) => {
+        const currentId = curr.id;
+        const matchingInterp = interpolateDynamicRulesMap.get(currentId);
+        if (matchingInterp) {
+          acc.add(matchingInterp);
+        } else {
+          switch (curr.action.type) {
+            case "modifyHeaders":
+              acc.add(
+                createHeaderInterpolation({
+                  headerKey:
+                    curr?.action?.requestHeaders?.[0]?.header ?? "unknown",
+                  headerValue:
+                    curr?.action?.requestHeaders?.[0]?.value ?? "unknown",
+                  name: "orphan-header-" + curr?.id,
+                  id: curr?.id,
+                }),
+              );
+              break;
+            case "redirect":
+              acc.add(
+                createRedirectInterpolation({
+                  source: curr?.condition?.regexFilter ?? "unknown",
+                  destination: curr?.action?.redirect?.url ?? "unknown",
+                  name: "orphan-redirect-" + curr?.id,
+                  id: curr?.id,
+                }),
+              );
+              break;
+            default:
+              break;
+          }
+        }
+
+        return acc;
+      }, new Set<HeaderInterpolation | RedirectInterpolation>());
+      const interpolateScriptsSet = interpolateDynamicRulesMap
+        .entries()
+        .reduce((acc, curr) => {
+          const [, interp] = curr;
+          acc.add(interp);
+          return acc;
+        }, new Set<HeaderInterpolation | RedirectInterpolation>());
+      const scriptsToAddToStorage = browserScriptSet.difference(
+        interpolateScriptsSet,
+      );
+      const newInterpolationsToAddToStorage = scriptsToAddToStorage
+        .entries()
+        .reduce<
+          (HeaderInterpolation | RedirectInterpolation)[]
+        >((acc, curr) => {
+          acc.push(curr[0]);
+          return acc;
+        }, []);
+
+      // Add missing browser rules to storage
+      await this.create(newInterpolationsToAddToStorage);
+      const newRules = interpolateScriptsSet.difference(browserScriptSet);
+      const newRulesToAddToBrowser = newRules
+        ?.entries?.()
+        .reduce<chrome.declarativeNetRequest.Rule[]>((acc, curr) => {
+          acc.push(curr[0].details);
+          return acc;
+        }, []);
+      // Add missing interpolations to browser
+      await addDynamicRules(newRulesToAddToBrowser);
+    } catch (e) {
+      this.logError(caller, e);
+    }
+  },
+  async syncAll() {
+    return Promise.allSettled([
+      this.syncWithDynamicRules(),
+      this.syncWithUserScripts(),
+    ]);
   },
 };

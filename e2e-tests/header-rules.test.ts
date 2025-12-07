@@ -32,7 +32,7 @@ test("should apply header rule", async ({ page, extensionId, network }) => {
     ruleName: "rule #1",
   });
 
-  await page.getByTestId("header-preview-X-Test-Header").waitFor();
+  await page.getByTestId(/headers-preview-.*/).waitFor();
   // Navigate to a test page
   await page.goto("https://httpbin.org/headers");
 

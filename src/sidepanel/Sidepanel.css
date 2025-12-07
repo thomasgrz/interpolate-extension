@@ -6,6 +6,7 @@
 
 .radix-themes {
   --default-font-family: "Space Mono", monospace;
+  --font-weight-medium: 700;
 }
 
 :root {

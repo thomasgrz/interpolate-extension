@@ -17,7 +17,7 @@ export class ChromeStorage {
       this.onChangedCallback = cb;
     },
   };
-  clear = () => {
+  clear = vi.fn(() => {
     const updatedValues = [...this.storageMock.entries()].reduce<{
       [key: string]: { newValue?: unknown; oldValue?: unknown };
     }>((acc, curr) => {
@@ -28,7 +28,7 @@ export class ChromeStorage {
 
     this.onChangedCallback?.(updatedValues);
     this.storageMock.clear();
-  };
+  });
   get = vi.fn(async (keys: string[]) => {
     // get every key, value pair from storageMock and return as object
     const result = Array.isArray(keys)

@@ -5,6 +5,7 @@ export const createHeaderInterpolation = (rule: {
   headerKey: string;
   headerValue: string;
   name: string;
+  id?: number;
 }) => {
   return new HeaderInterpolation({
     name: rule.name,
@@ -34,7 +35,7 @@ export const createHeaderInterpolation = (rule: {
         ],
         regexFilter: ".*",
       },
-      id: generateRuleId(),
+      id: rule?.id ?? generateRuleId(),
     },
   });
 };
