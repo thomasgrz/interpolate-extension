@@ -124,13 +124,7 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
               onPauseAllRules={handleAllPaused}
               onDeleteAllRules={handleDeleteAll}
             />
-            <Flex
-              width="100%"
-              p="1"
-              flexGrow={"1"}
-              direction={"row"}
-              wrap="wrap"
-            >
+            <Flex width="100%" p="1" direction={"row"} wrap="wrap">
               {shouldShowRules &&
                 interpolations?.map((rule) => {
                   return (

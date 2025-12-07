@@ -5,7 +5,12 @@ import {
 
 export const updateDynamicRules = async (
   interpolations: (RedirectInterpolation | HeaderInterpolation)[],
+  cb: {
+    onSuccess?: () => void;
+    onError?: (id: string | number, e: Error) => void;
+  },
 ) => {
+  const { onError } = cb;
   const registeredDynamicRules =
     await chrome.declarativeNetRequest.getDynamicRules();
   const rulesByStatus = interpolations?.reduce(
@@ -52,8 +57,23 @@ export const updateDynamicRules = async (
   });
 
   if (rulesToEnable?.length) {
-    await chrome.declarativeNetRequest.updateDynamicRules({
-      addRules: rulesToEnable?.map((rule) => rule.details),
-    });
+    try {
+      const allPromises = rulesToEnable?.map((rule) => {
+        return new Promise(async (resolve, reject) => {
+          try {
+            await chrome.declarativeNetRequest.updateDynamicRules({
+              addRules: [rule.details],
+            });
+            resolve({ id: rule.details.id, status: "fulfilled" });
+          } catch (e) {
+            onError?.(rule?.details?.id, e as Error);
+            reject({ id: rule.details.id, status: "rejected", reason: e });
+          }
+        });
+      });
+      await Promise.allSettled(allPromises);
+    } catch (e) {
+      // logger
+    }
   }
 };

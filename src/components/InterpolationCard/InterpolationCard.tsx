@@ -10,6 +10,7 @@ import { DoubleArrowDownIcon, DoubleArrowUpIcon } from "@radix-ui/react-icons";
 import {
   Badge,
   Box,
+  Callout,
   Card,
   Flex,
   IconButton,
@@ -32,11 +33,12 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hit, setHit] = useState(false);
   const [_, setRecentlyHitColor] = useState<"green" | "gray">("green");
-  const { enabledByUser } = info;
+  const { enabledByUser, error, type, details, name } = info;
+  const formattedError = error instanceof Error ? error.message : String(error);
 
   useEffect(() => {
     chrome.runtime?.onMessage?.addListener?.((msg) => {
-      if (msg === `redirect-${info.details.id}-hit`) {
+      if (msg === `redirect-${details.id}-hit`) {
         setRecentlyHitColor("green");
         setHit(true);
         setTimeout(() => {
@@ -50,15 +52,15 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   }, [enabledByUser]);
 
   const onDelete = async () => {
-    await InterpolateStorage.delete(info.details.id);
+    await InterpolateStorage.delete(details.id);
   };
 
   const handleResumeClick = async () => {
-    await InterpolateStorage.setIsEnabled(info.details?.id, true);
+    await InterpolateStorage.setIsEnabled(details?.id, true);
   };
 
   const handlePauseClick = async () => {
-    await InterpolateStorage.setIsEnabled(info.details?.id, false);
+    await InterpolateStorage.setIsEnabled(details?.id, false);
   };
 
   const handleOpenChange = (value: boolean) => {
@@ -66,7 +68,7 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   };
 
   const badgeColor = () => {
-    switch (info.type) {
+    switch (type) {
       case "headers":
         return "green";
       case "script":
@@ -101,19 +103,19 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   }, [ref]);
 
   const getPreview = () => {
-    switch (info.type) {
+    switch (type) {
       case "headers":
         return (
           <HeaderRulePreview
             dataOrientation={orientation}
-            details={info.details}
-            name={info.name}
+            details={details}
+            name={name}
           />
         );
       case "redirect":
-        return <RedirectRulePreview name={info.name} rule={info} />;
+        return <RedirectRulePreview name={name} rule={info} />;
       case "script":
-        return <ScriptPreview name={info.name} rule={info} />;
+        return <ScriptPreview name={name} rule={info} />;
     }
   };
 
@@ -123,10 +125,15 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
         ref={ref}
         data-ui-active={hit}
         data-ui-error={!!info.error}
-        data-testid={`${info.type}-preview-${info?.details?.id}`}
+        data-testid={`${type}-preview-${info?.details?.id}`}
         className={styles.InterpolationCard}
         variant="surface"
       >
+        {error && (
+          <Callout.Root color="red">
+            <Callout.Text size={"1"}>{formattedError}</Callout.Text>
+          </Callout.Root>
+        )}
         <Flex justify="between" align="center">
           <RuleToggle
             disabled={!!info.error}
@@ -138,13 +145,13 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
             <Flex px="1" flexGrow="1" justify={"between"}>
               <Flex p="3" align={"center"}>
                 <Text weight="medium" size="2">
-                  {info.name}
+                  {name}
                 </Text>
               </Flex>
               <Flex align={"center"}>
                 <Box p="1">
                   <Badge variant="soft" color={badgeColor()} size="1">
-                    {info.type}
+                    {type}
                   </Badge>
                 </Box>
                 <Tooltip content="options">
