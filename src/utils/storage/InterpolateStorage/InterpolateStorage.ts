@@ -246,11 +246,12 @@ export const InterpolateStorage = {
     const caller = "delete";
     this.logInvocation(caller);
     try {
+      debugger;
       let resolvedIds: string[] = [];
       if (Array.isArray(ids)) {
         resolvedIds = ids.map((id) => this.getInterpolationRecordKey(id));
       } else {
-        resolvedIds = [String(ids)];
+        resolvedIds = [this.getInterpolationRecordKey(ids)];
       }
       await chrome.storage?.sync?.remove(resolvedIds);
     } catch (e) {

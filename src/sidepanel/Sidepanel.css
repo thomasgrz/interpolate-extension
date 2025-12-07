@@ -5,8 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 .radix-themes {
-  --default-font-family: "Space Mono", monospace;
-  --font-weight-medium: 700;
+  --default-font-family: "Google Sans Code", monospace;
 }
 
 :root {
