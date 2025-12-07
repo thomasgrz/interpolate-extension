@@ -4,6 +4,9 @@ import Pause from "../../assets/pause.svg";
 import Play from "../../assets/play.svg";
 import styles from "./DashboardControls.module.scss";
 
+const Count = (props: { count?: number }) =>
+  props.count ? <span>({props.count})</span> : null;
+
 export const DashboardControls = ({
   ruleCount,
   allPaused,
@@ -32,6 +35,7 @@ export const DashboardControls = ({
           >
             <Play />
             Resume
+            <Count count={ruleCount} />
           </Button>
         ) : (
           <Button
@@ -45,6 +49,7 @@ export const DashboardControls = ({
           >
             <Pause />
             Pause
+            <Count count={ruleCount} />
           </Button>
         )}
         {/* <Button
@@ -65,6 +70,7 @@ export const DashboardControls = ({
             >
               <TrashIcon />
               Delete
+              <Count count={ruleCount} />
             </Button>
           </AlertDialog.Trigger>
           <AlertDialog.Content>
