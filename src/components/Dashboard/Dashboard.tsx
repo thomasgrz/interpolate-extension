@@ -1,9 +1,12 @@
 import {
   Box,
   Callout,
+  Card,
+  Container,
   Flex,
   SegmentedControl,
   Separator,
+  Strong,
   Text,
 } from "@radix-ui/themes";
 import { useContext } from "react";
@@ -58,59 +61,92 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
         </Callout.Root>
       }
     >
-      <Box data-testid={"dashboard"} p="2">
-        <Flex p="1" justify={"center"}>
-          <Box height={"1rem"}>
-            <CardStackPlusIcon />
-          </Box>
-        </Flex>
-        <SegmentedControl.Root
-          variant="classic"
-          radius="full"
-          onValueChange={handleFormSelection}
-          size="2"
-          value={selectedForm}
+      <Container minHeight={"100dvh"}>
+        <Flex
+          minHeight={"100dvh"}
+          flexGrow={"1"}
+          justify={"start"}
+          direction={"column"}
         >
-          <SegmentedControl.Item value={FormType.REDIRECT}>
-            <Text size="2">Redirect</Text>
-          </SegmentedControl.Item>
-          <SegmentedControl.Item value={FormType.HEADER}>
-            Header
-          </SegmentedControl.Item>
-          <SegmentedControl.Item value={FormType.SCRIPT}>
-            Script
-          </SegmentedControl.Item>
-        </SegmentedControl.Root>
-      </Box>
-      <Flex height={"100%"} direction="column" flexGrow={"1"}>
-        <form>
-          {selectedForm === FormType.REDIRECT && <RedirectForm form={form} />}
-          {selectedForm === FormType.HEADER && <HeaderForm form={form} />}
-          {selectedForm === FormType.SCRIPT && <ScriptForm form={form} />}
-        </form>
-      </Flex>
-      <DashboardControls
-        ruleCount={interpolations?.length}
-        allPaused={!!allPaused}
-        onResumeAllRules={handleAllResumed}
-        onPauseAllRules={handleAllPaused}
-        onDeleteAllRules={handleDeleteAll}
-      />
-      <Separator size={"4"} my="1" />
-      <Flex width="100%" p="1" flexGrow={"1"} direction={"row"} wrap="wrap">
-        {shouldShowRules &&
-          interpolations?.map((rule) => {
-            return (
-              <Box
-                key={rule.details?.id}
-                p="1"
-                className={styles.RuleCardContainer}
+          <Flex
+            gap="2"
+            direction={"column"}
+            flexGrow={"1"}
+            data-testid={"dashboard"}
+            justify={"start"}
+            p="3"
+          >
+            <SegmentedControl.Root
+              variant="surface"
+              radius="full"
+              onValueChange={handleFormSelection}
+              size="2"
+              value={selectedForm}
+            >
+              <SegmentedControl.Item
+                style={{ cursor: "pointer" }}
+                value={FormType.REDIRECT}
               >
-                <InterpolationCard info={rule} />
-              </Box>
-            );
-          })}
-      </Flex>
+                <Strong>Redirect</Strong>
+              </SegmentedControl.Item>
+              <SegmentedControl.Item
+                style={{ cursor: "pointer" }}
+                value={FormType.HEADER}
+              >
+                <Strong>Header</Strong>
+              </SegmentedControl.Item>
+              <SegmentedControl.Item
+                style={{ cursor: "pointer" }}
+                value={FormType.SCRIPT}
+              >
+                <Strong>Script</Strong>
+              </SegmentedControl.Item>
+            </SegmentedControl.Root>
+            <Card variant="surface">
+              <Flex height={"100%"} direction="column" flexGrow={"1"}>
+                <form>
+                  {selectedForm === FormType.REDIRECT && (
+                    <RedirectForm form={form} />
+                  )}
+                  {selectedForm === FormType.HEADER && (
+                    <HeaderForm form={form} />
+                  )}
+                  {selectedForm === FormType.SCRIPT && (
+                    <ScriptForm form={form} />
+                  )}
+                </form>
+              </Flex>
+            </Card>
+            <DashboardControls
+              ruleCount={interpolations?.length}
+              allPaused={!!allPaused}
+              onResumeAllRules={handleAllResumed}
+              onPauseAllRules={handleAllPaused}
+              onDeleteAllRules={handleDeleteAll}
+            />
+            <Flex
+              width="100%"
+              p="1"
+              flexGrow={"1"}
+              direction={"row"}
+              wrap="wrap"
+            >
+              {shouldShowRules &&
+                interpolations?.map((rule) => {
+                  return (
+                    <Box
+                      key={rule.details?.id}
+                      p="1"
+                      className={styles.RuleCardContainer}
+                    >
+                      <InterpolationCard info={rule} />
+                    </Box>
+                  );
+                })}
+            </Flex>
+          </Flex>
+        </Flex>
+      </Container>
     </ErrorBoundary>
   );
 };
