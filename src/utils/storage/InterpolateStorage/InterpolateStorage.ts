@@ -1,6 +1,5 @@
 import {
   AnyInterpolation,
-  HeaderInterpolation,
   InterpolationType,
   RedirectInterpolation,
   ScriptInterpolation,
@@ -9,9 +8,6 @@ import { logger } from "@/utils/logger";
 import { INTERPOLATE_RECORD_PREFIX } from "../storage.constants";
 import { createScriptInterpolation } from "@/utils/factories/createScriptInterpolation/createScriptInterpolation";
 import { addUserScripts } from "@/utils/browser/addUserScripts";
-import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation";
-import { createRedirectInterpolation } from "@/utils/factories/createRedirectInterpolation/createRedirectInterpolation";
-import { addDynamicRules } from "@/utils/browser/addDynamicRules";
 
 enum RollbackAction {
   RESUMED = "resume",
@@ -151,6 +147,15 @@ export const InterpolateStorage = {
       this.logError(caller, e as string);
     }
   },
+  async getAllMatchingPatterns() {
+    const redirectRules = (await this.getAllByTypes([
+      "redirect",
+    ])) as RedirectInterpolation[];
+    const patterns = redirectRules?.map(
+      (rule) => rule?.details?.condition?.regexFilter,
+    );
+    return patterns;
+  },
   getInterpolationRecordKey(id: number | string) {
     if (typeof id === "string" && id?.startsWith("interp")) {
       return id;
@@ -168,7 +173,7 @@ export const InterpolateStorage = {
   },
   async getAllByTypes(types: InterpolationType[]) {
     const caller = "getAllByTypes";
-    this.logInvocation(caller);
+    // this.logInvocation(caller);
     let result;
     try {
       result = await this.getAllInterpolations();
@@ -181,14 +186,13 @@ export const InterpolateStorage = {
   },
   async getAllInterpolations() {
     const caller = "getAllInterpolations";
-    this.logInvocation(caller);
+    // this.logInvocation(caller);
     try {
       const result = await chrome.storage?.sync?.getKeys();
       const interpolations = result.filter((key) =>
         key.startsWith(INTERPOLATE_RECORD_PREFIX),
       );
       const storageRecords = await chrome.storage?.sync?.get(interpolations);
-      logger(storageRecords);
       const interpolationConfigs = Object.values(storageRecords).reduce<
         AnyInterpolation[]
       >((acc, curr) => {
@@ -226,7 +230,6 @@ export const InterpolateStorage = {
     const caller = "set";
     this.logInvocation(caller);
     if (!interpolations) return;
-    logger(interpolations);
 
     const interpolationRecords = interpolations.reduce((acc, curr) => {
       const isObject = curr && !Array.isArray(curr) && typeof curr === "object";
@@ -401,99 +404,7 @@ export const InterpolateStorage = {
       this.logError(caller, e);
     }
   },
-  /**
-   * Identify any user scripts enabled in the browser that are not
-   * yet tracked in storage. Then add those user scripts in storage.
-   *
-   * Likewise, find any user scripts enabled in storage that are not
-   * yet enabled in the browser. Then add those user scripts in the browser.
-   */
-  async syncWithDynamicRules() {
-    const caller = "syncWithDynamicRules";
-    const dynamicRulesFromStorage = (await this.getAllByTypes([
-      "redirect",
-      "headers",
-    ])) as (HeaderInterpolation | RedirectInterpolation)[];
-    const interpolateDynamicRulesMap = new Map(
-      dynamicRulesFromStorage?.map((interp) => [interp.details.id, interp]),
-    );
-    try {
-      const allRulesInBrowser =
-        await chrome?.declarativeNetRequest?.getDynamicRules?.();
-      const browserScriptSet = allRulesInBrowser.reduce((acc, curr) => {
-        const currentId = curr.id;
-        const matchingInterp = interpolateDynamicRulesMap.get(currentId);
-        if (matchingInterp) {
-          acc.add(matchingInterp);
-        } else {
-          switch (curr.action.type) {
-            case "modifyHeaders":
-              acc.add(
-                createHeaderInterpolation({
-                  headerKey:
-                    curr?.action?.requestHeaders?.[0]?.header ?? "unknown",
-                  headerValue:
-                    curr?.action?.requestHeaders?.[0]?.value ?? "unknown",
-                  name: "orphan-header-" + curr?.id,
-                  id: curr?.id,
-                }),
-              );
-              break;
-            case "redirect":
-              acc.add(
-                createRedirectInterpolation({
-                  source: curr?.condition?.regexFilter ?? "unknown",
-                  destination: curr?.action?.redirect?.url ?? "unknown",
-                  name: "orphan-redirect-" + curr?.id,
-                  id: curr?.id,
-                }),
-              );
-              break;
-            default:
-              break;
-          }
-        }
-
-        return acc;
-      }, new Set<HeaderInterpolation | RedirectInterpolation>());
-      const interpolateScriptsSet = interpolateDynamicRulesMap
-        .entries()
-        .reduce((acc, curr) => {
-          const [, interp] = curr;
-          acc.add(interp);
-          return acc;
-        }, new Set<HeaderInterpolation | RedirectInterpolation>());
-      const scriptsToAddToStorage = browserScriptSet.difference(
-        interpolateScriptsSet,
-      );
-      const newInterpolationsToAddToStorage = scriptsToAddToStorage
-        .entries()
-        .reduce<
-          (HeaderInterpolation | RedirectInterpolation)[]
-        >((acc, curr) => {
-          acc.push(curr[0]);
-          return acc;
-        }, []);
-
-      // Add missing browser rules to storage
-      await this.create(newInterpolationsToAddToStorage);
-      const newRules = interpolateScriptsSet.difference(browserScriptSet);
-      const newRulesToAddToBrowser = newRules
-        ?.entries?.()
-        .reduce<chrome.declarativeNetRequest.Rule[]>((acc, curr) => {
-          acc.push(curr[0].details);
-          return acc;
-        }, []);
-      // Add missing interpolations to browser
-      await addDynamicRules(newRulesToAddToBrowser);
-    } catch (e) {
-      this.logError(caller, e);
-    }
-  },
   async syncAll() {
-    return Promise.allSettled([
-      this.syncWithDynamicRules(),
-      this.syncWithUserScripts(),
-    ]);
+    return Promise.allSettled([this.syncWithUserScripts()]);
   },
 };

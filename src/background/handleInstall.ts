@@ -8,7 +8,7 @@ import {
 import { logger } from "@/utils/logger";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 
-export const handleInstall = () => {
+export const handleInstall = async () => {
   const reducer = (
     acc: {
       dynamicRules: (RedirectInterpolation | HeaderInterpolation)[];
@@ -34,7 +34,6 @@ export const handleInstall = () => {
   const handleInterpolationUpdates = async (
     interpolations: AnyInterpolation[],
   ) => {
-    logger("Handling interpolation updates...");
     const { dynamicRules, userScripts } = interpolations.reduce(reducer, {
       dynamicRules: [],
       userScripts: [],
@@ -53,7 +52,6 @@ export const handleInstall = () => {
   const handleInterpolationRemovals = async (
     interpolations: AnyInterpolation[],
   ) => {
-    logger("Handling interpolation removals...");
     const { dynamicRules, userScripts } = interpolations.reduce(reducer, {
       dynamicRules: [],
       userScripts: [],
@@ -74,17 +72,13 @@ export const handleInstall = () => {
   const handleInterpolationCreations = async (
     interpolations: AnyInterpolation[],
   ) => {
-    logger("Handling interpolation creations...");
-    const { dynamicRules, userScripts } = interpolations.reduce(reducer, {
+    const { userScripts } = interpolations.reduce(reducer, {
       dynamicRules: [],
       userScripts: [],
     });
     const userScriptConfigs = userScripts.map((script) => script.details);
-    const dynamicRuleConfigs = dynamicRules.map((rule) => rule.details);
     // Add user scripts
     await BrowserRules.addUserScripts(userScriptConfigs);
-    // Add declarative net request rules
-    await BrowserRules.addDynamicRules(dynamicRuleConfigs);
   };
 
   const handleInterpolationChanges = async (values: {

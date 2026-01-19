@@ -17,19 +17,21 @@ export default defineManifest({
   },
   devtools_page: "src/sidepanel/side-panel.html",
   permissions: [
+    "action",
     "activeTab",
     "contentSettings",
     "contextMenus", // add an item to the menu displayed on right click
+    "debugger",
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
     "nativeMessaging",
     "offscreen",
     "sidePanel",
     "storage",
+    "tabs",
     "userScripts",
     "webNavigation",
     "webRequest", // intercept request as it goes out (rather than subsequent requests after page load)
-    "webRequestBlocking",
   ],
   content_scripts: [
     {
