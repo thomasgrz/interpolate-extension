@@ -1,4 +1,7 @@
-import { RedirectInterpolation } from "../utils/factories/Interpolation";
+import {
+  HeaderInterpolation,
+  RedirectInterpolation,
+} from "../utils/factories/Interpolation";
 import { logger } from "../utils/logger";
 import { InterpolateStorage } from "../utils/storage/InterpolateStorage/InterpolateStorage";
 import { handleInstall } from "./handleInstall";
@@ -8,7 +11,12 @@ const continueRequest = async ({
   requestId,
   tabId,
   url,
+  headers,
 }: {
+  headers: {
+    name: string;
+    value: string;
+  }[];
   requestId: string;
   tabId: number;
   url?: string;
@@ -19,6 +27,7 @@ const continueRequest = async ({
   chrome.debugger.sendCommand({ tabId }, "Fetch.continueRequest", {
     requestId,
     ...(url ? { url } : {}),
+    ...(headers ? { headers } : {}),
   });
 };
 
@@ -64,7 +73,8 @@ try {
       // Get the latest of all the redirect rules
       const redirectRules = (await InterpolateStorage.getAllByTypes([
         "redirect",
-      ])) as RedirectInterpolation[];
+        "headers",
+      ])) as (RedirectInterpolation | HeaderInterpolation)[];
 
       const noRedirectMatchingpatterns = !redirectRules?.length;
 
@@ -122,6 +132,40 @@ try {
           url: requestUrl,
         });
 
+      const interpolationType = matchingInterpolation?.type;
+      switch (interpolationType) {
+        case "headers":
+          return continueRequest({
+            headers: [
+              {
+                name: matchingInterpolation?.details?.action
+                  ?.requestHeaders?.[0]?.header,
+                value:
+                  matchingInterpolation?.details?.action?.requestHeaders?.[0]
+                    ?.value,
+              },
+            ],
+            tabId,
+            requestId,
+            url: matchingInterpolation?.details?.action?.redirect?.url,
+          });
+          break;
+        case "redirect":
+          // If we've not bailed by now then,
+          // apply the associated redirect rule
+          return continueRequest({
+            tabId,
+            requestId,
+            url: matchingInterpolation?.details?.action?.redirect?.url,
+          });
+          break;
+        default:
+          return continueRequest({
+            tabId,
+            requestId,
+            url: requestUrl,
+          });
+      }
       // If we've not bailed by now then,
       // apply the associated redirect rule
       return continueRequest({
