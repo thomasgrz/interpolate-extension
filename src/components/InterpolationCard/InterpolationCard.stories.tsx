@@ -1,6 +1,5 @@
 // Button.stories.ts
 // Replace your-framework with the framework you are using, e.g. react-vite, nextjs, nextjs-vite, etc.
-import * as React from "react";
 import "../../sidepanel/Sidepanel.css";
 
 import { createRedirectInterpolation } from "@/utils/factories/createRedirectInterpolation/createRedirectInterpolation";
@@ -10,18 +9,15 @@ import { createScriptInterpolation } from "@/utils/factories/createScriptInterpo
 
 import preview from "#.storybook/preview";
 
-type CustomProps = React.ComponentProps<typeof InterpolationCard>;
-
 const meta = preview.meta({
   component: InterpolationCard,
-  // 👇 Correct types
-  render: ({ ...args }) => <InterpolationCard {...args} />,
 });
 
 export default meta;
 
 // 👇 A story named Primary that renders `<Button primary label="Button" />`
 export const RedirectPreview = meta.story({
+  // @ts-expect-error CSF next issue?
   args: {
     info: createRedirectInterpolation({
       source: ".*example.com",
@@ -32,6 +28,7 @@ export const RedirectPreview = meta.story({
 });
 
 export const HeaderPreview = meta.story({
+  // @ts-expect-error CSF next issue?
   args: {
     info: createHeaderInterpolation({
       headerKey: "header key",
@@ -42,6 +39,7 @@ export const HeaderPreview = meta.story({
 });
 
 export const ScriptPreview = meta.story({
+  // @ts-expect-error CSF next issue?
   args: {
     info: createScriptInterpolation({
       body: 'console.log("hello world")!',

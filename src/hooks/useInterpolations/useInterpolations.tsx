@@ -17,7 +17,10 @@ export const useInterpolations = () => {
     [],
   );
   const [recentlyUsed, setRecentlyUsed] = useState<
-    (AnyInterpolation & { hidden: boolean })[]
+    (AnyInterpolation & {
+      hidden: boolean;
+      onOpenChange: (isOpen: boolean) => void;
+    })[]
   >([]);
   const [allPaused, setAllPaused] = useState<boolean>();
   const isInitialized = useRef(false);
@@ -39,7 +42,7 @@ export const useInterpolations = () => {
           {
             ...interpolation,
             hidden: false,
-            onOpenChange: (isOpen) => {
+            onOpenChange: (isOpen: boolean) => {
               setRecentlyUsed((innerPrev) => [
                 ...innerPrev,
                 { ...interpolation, hidden: !isOpen },

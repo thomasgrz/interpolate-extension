@@ -5,6 +5,8 @@ import {
 import { logger } from "../utils/logger";
 import { InterpolateStorage } from "../utils/storage/InterpolateStorage/InterpolateStorage";
 import { handleInstall } from "./handleInstall";
+import { AnyInterpolation } from "@/utils/factories/Interpolation";
+
 const debuggerTabs = new Set<number>();
 
 const continueRequest = async ({
@@ -14,14 +16,14 @@ const continueRequest = async ({
   headers,
   matchingInterpolation,
 }: {
-  headers: {
-    name: string;
-    value: string;
+  headers?: {
+    name?: string;
+    value?: string;
   }[];
   requestId: string;
   tabId: number;
   url?: string;
-  matchingInterpolation: AnyInterpolation;
+  matchingInterpolation?: AnyInterpolation;
 }) => {
   logger(
     "Continuing request in tab: " + tabId + " for request with id " + requestId,
@@ -88,7 +90,7 @@ try {
       if (noRedirectMatchingpatterns)
         return continueRequest({
           requestId,
-          tabId,
+          tabId: tabId as number,
           url: requestUrl,
         });
 
@@ -99,17 +101,17 @@ try {
       if (isChromeExtensionEvent)
         return continueRequest({
           requestId,
-          tabId,
+          tabId: tabId as number,
           url: requestUrl,
         });
 
-      const isNonDebuggingTab = !debuggerTabs.has(tabId);
+      const isNonDebuggingTab = !debuggerTabs.has(tabId!);
 
       // If we are not debugging this tab continue request, exit
       if (isNonDebuggingTab)
         return continueRequest({
           requestId,
-          tabId,
+          tabId: tabId as number,
           url: requestUrl,
         });
 
@@ -125,7 +127,7 @@ try {
       // If we have no matching redirect interpolations continue request, exit
       if (noMatchingInterpolation)
         return continueRequest({
-          tabId,
+          tabId: tabId as number,
           requestId,
           url: requestUrl,
         });
@@ -133,7 +135,7 @@ try {
       const isInterpolationDisabled = !matchingInterpolation.enabledByUser;
       if (isInterpolationDisabled)
         return continueRequest({
-          tabId,
+          tabId: tabId as number,
           requestId,
           url: requestUrl,
         });
@@ -152,7 +154,7 @@ try {
                     ?.value,
               },
             ],
-            tabId,
+            tabId: tabId as number,
             requestId,
             url: matchingInterpolation?.details?.action?.redirect?.url,
           });
@@ -162,14 +164,14 @@ try {
           // apply the associated redirect rule
           return continueRequest({
             matchingInterpolation,
-            tabId,
+            tabId: tabId as number,
             requestId,
             url: matchingInterpolation?.details?.action?.redirect?.url,
           });
           break;
         default:
           return continueRequest({
-            tabId,
+            tabId: tabId as number,
             requestId,
             url: requestUrl,
           });
@@ -177,7 +179,7 @@ try {
       // If we've not bailed by now then,
       // apply the associated redirect rule
       return continueRequest({
-        tabId,
+        tabId: tabId as number,
         requestId,
         url: matchingInterpolation?.details?.action?.redirect?.url,
       });
@@ -228,55 +230,10 @@ try {
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "openSidePanel" && tab?.windowId) {
       // This will open the panel in all the pages on the current window.
-      // chrome.sidePanel.open({ windowId: tab?.windowId });
+      chrome.sidePanel.open({ windowId: tab?.windowId });
       // chrome.action.setPopup({ popup: './popup.html'})
-      chrome.action.setBadgeBackgroundColor(
-        { color: "#00FF00" }, // Also green
-        () => {
-          /* ... */
-        },
-      );
-      chrome.windows.create({
-        url: chrome.runtime.getURL("index.html"),
-        type: "popup",
-        top: data.top,
-        left: data.left - 400,
-        width: 400,
-        height: 600,
-      });
     }
   });
-
-  /**
-   * Listen for redirects so that we can inform the user interface
-   * to display some visual queue to the user that a redirect Interpolation
-   * was enforced during navigation or fetching.
-   */
-  // chrome.webRequest.onBeforeRedirect.addListener(
-  //   async (details) => {
-  //     const redirectUriIfExists = details?.redirectUrl;
-  //     const rulesFromStorage =
-  //       ((await InterpolateStorage.getAllByTypes(["headers", "redirect"])) as (
-  //         | RedirectInterpolation
-  //         | HeaderInterpolation
-  //       )[]) ?? [];
-
-  //     const invokedRule = rulesFromStorage.find((rule) => {
-  //       const ruleRedirectUrl = rule?.details?.action?.redirect?.url;
-  //       return (
-  //         ruleRedirectUrl && redirectUriIfExists.startsWith(ruleRedirectUrl)
-  //       );
-  //     });
-
-  //     if (invokedRule) {
-  //       chrome.runtime.sendMessage(`redirect-${invokedRule.details.id}-hit`);
-  //       chrome.storage?.sync?.set({
-  //         recentlyUsed: [invokedRule],
-  //       });
-  //     }
-  //   },
-  //   { urls: ["<all_urls>"] },
-  // );
 } catch (e) {
   logger("Error in background.ts", e);
 }

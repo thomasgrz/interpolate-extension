@@ -8,6 +8,4 @@ const meta = preview.meta({
 
 export default meta;
 
-export const Example = meta.story({
-  args: {},
-});
+export const Example = meta.story();
