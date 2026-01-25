@@ -17,12 +17,18 @@ jobs:
         run: npm ci
       - name: Build extension
         run: npm run build
-      - name: Install Playwright Browsers
+      - uses: actions/cache@v3
+        name: Check if Playwright browser is cached
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            key: ${{ runner.os }}-playwright-1.56.1
+      - name: Install Playwright browser if not cached
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
       - name: Run Unit tests
         run: npm run test:component
-      - name: Start test server
-        run: npm run dev & sleep 5
       - name: Run Playwright tests
         run: npm run test:e2e
       - uses: actions/upload-artifact@v4
