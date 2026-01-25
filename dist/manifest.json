@@ -1,0 +1,77 @@
+{
+  "manifest_version": 3,
+  "name": "interpolate_BETA",
+  "version": "1.0.0",
+  "icons": {
+    "48": "public/icon.png"
+  },
+  "action": {
+    "default_icon": {
+      "48": "public/icon.png"
+    },
+    "default_title": "click to open sidepanel"
+  },
+  "devtools_page": "src/sidepanel/side-panel.html",
+  "permissions": [
+    "action",
+    "activeTab",
+    "contentSettings",
+    "contextMenus",
+    "debugger",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "nativeMessaging",
+    "notifications",
+    "offscreen",
+    "sidePanel",
+    "storage",
+    "tabs",
+    "userScripts",
+    "web",
+    "webRequest"
+  ],
+  "content_scripts": [
+    {
+      "js": [
+        "src/content/main.tsx-loader.js"
+      ],
+      "matches": [
+        "https://*/*"
+      ]
+    }
+  ],
+  "options_page": "src/options/index.html",
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "side_panel": {
+    "default_path": "src/sidepanel/side-panel.html"
+  },
+  "background": {
+    "service_worker": "service-worker-loader.js",
+    "type": "module"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "public/logo.png"
+      ],
+      "extension_ids": [
+        "*"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "resources": [
+        "**/*",
+        "*"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}

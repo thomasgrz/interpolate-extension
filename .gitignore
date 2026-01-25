@@ -32,9 +32,6 @@ dist-ssr
 /playwright/.auth/
 
 # dev stuff
-src/**/dist
-dist.crx
-dist.pem
-dist
+
 *storybook.log
 storybook-static
