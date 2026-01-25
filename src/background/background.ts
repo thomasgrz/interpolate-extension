@@ -12,6 +12,7 @@ const continueRequest = async ({
   tabId,
   url,
   headers,
+  matchingInterpolation,
 }: {
   headers: {
     name: string;
@@ -20,6 +21,7 @@ const continueRequest = async ({
   requestId: string;
   tabId: number;
   url?: string;
+  matchingInterpolation: AnyInterpolation;
 }) => {
   logger(
     "Continuing request in tab: " + tabId + " for request with id " + requestId,
@@ -29,6 +31,10 @@ const continueRequest = async ({
     ...(url ? { url } : {}),
     ...(headers ? { headers } : {}),
   });
+
+  if (matchingInterpolation) {
+    chrome.tabs.sendMessage(tabId, matchingInterpolation);
+  }
 };
 
 try {
@@ -136,6 +142,7 @@ try {
       switch (interpolationType) {
         case "headers":
           return continueRequest({
+            matchingInterpolation,
             headers: [
               {
                 name: matchingInterpolation?.details?.action
@@ -154,6 +161,7 @@ try {
           // If we've not bailed by now then,
           // apply the associated redirect rule
           return continueRequest({
+            matchingInterpolation,
             tabId,
             requestId,
             url: matchingInterpolation?.details?.action?.redirect?.url,
@@ -220,7 +228,22 @@ try {
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "openSidePanel" && tab?.windowId) {
       // This will open the panel in all the pages on the current window.
-      chrome.sidePanel.open({ windowId: tab?.windowId });
+      // chrome.sidePanel.open({ windowId: tab?.windowId });
+      // chrome.action.setPopup({ popup: './popup.html'})
+      chrome.action.setBadgeBackgroundColor(
+        { color: "#00FF00" }, // Also green
+        () => {
+          /* ... */
+        },
+      );
+      chrome.windows.create({
+        url: chrome.runtime.getURL("index.html"),
+        type: "popup",
+        top: data.top,
+        left: data.left - 400,
+        width: 400,
+        height: 600,
+      });
     }
   });
 

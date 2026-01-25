@@ -284,7 +284,7 @@ export const InterpolateStorage = {
         if (!Object.hasOwn(changes, "recentlyInvoked")) return;
         const recentlyInvoked = changes.recentlyInvoked;
         const { newValue } = recentlyInvoked;
-        cb({ recentlyInvoked: newValue });
+        cb({ recentlyInvoked: JSON.parse(newValue) });
       });
     } catch (e) {}
   },
