@@ -9,6 +9,14 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+      - name: Build extension
+        run: npm run build
       - uses: actions/cache@v3
         name: Check if Playwright browser is cached
         id: playwright-cache
@@ -19,14 +27,6 @@ jobs:
       - name: Install Playwright browser if not cached
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-      - name: Install dependencies
-        run: npm ci
-      - name: Build extension
-        run: npm run build
       - name: Run Unit tests
         run: npm run test:component
       - name: Run Playwright tests
