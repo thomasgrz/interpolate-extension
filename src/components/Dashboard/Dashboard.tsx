@@ -5,9 +5,7 @@ import {
   Container,
   Flex,
   SegmentedControl,
-  Separator,
   Strong,
-  Text,
 } from "@radix-ui/themes";
 import { useContext } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -21,7 +19,6 @@ import { useInterpolateFormSelection } from "@/hooks/useInterpolateFormSelection
 import { useInterpolationForm } from "@/hooks/useInterpolationForm/useInterpolationForm";
 import { FormType } from "@/constants";
 import { InterpolateContext } from "@/contexts/interpolate-context";
-import { CardStackPlusIcon } from "@radix-ui/react-icons";
 
 export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
   const form = useInterpolationForm();

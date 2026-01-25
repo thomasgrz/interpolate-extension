@@ -12,6 +12,6 @@
       "@//*": ["./*"]
     }
   },
-  "exclude": ["src/stories"],
+  "exclude": ["node_modules"],
   "files": []
 }
