@@ -17,6 +17,7 @@
     "test:component:ui": "vitest --ui",
     "test:e2e": "playwright test -c playwright.config.ts -x",
     "test:e2e:ui": "playwright test --ui -c playwright.config.ts",
+    "build:debug": "CI=true tsc -b --stopBuildOnErrors && vite build",
     "build": "tsc -b && vite build",
     "check": "tsc --noEmit",
     "preview": "vite preview",

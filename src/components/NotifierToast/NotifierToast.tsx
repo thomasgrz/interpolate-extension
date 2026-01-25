@@ -1,13 +1,17 @@
 import { Toast } from "radix-ui";
 import React from "react";
 import styles from "./NotifierToast.module.scss";
-import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
 
-export const NotifierToast: React.PropsWithChildren<{
-  title: string;
+export const NotifierToast = ({
+  children,
+  title,
+  open,
+  onOpenChange,
+}: React.PropsWithChildren<{
+  title?: string;
   open: boolean;
   onOpenChange: (value: boolean) => void;
-}> = ({ children, title, open, onOpenChange }) => {
+}>) => {
   return (
     <Toast.Provider>
       <Toast.Root
