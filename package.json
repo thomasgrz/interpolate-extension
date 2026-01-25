@@ -4,6 +4,13 @@
   "version": "1.0.0",
   "private": true,
   "description": "THIS EXTENSION IS FOR BETA TESTING",
+  "imports": {
+    "#*": [
+      "./*",
+      "./*.ts",
+      "./*.tsx"
+    ]
+  },
   "scripts": {
     "dev": "vite",
     "test:component": "vitest run",

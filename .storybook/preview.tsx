@@ -1,18 +1,7 @@
 import { FC } from "react";
 import "@radix-ui/themes/styles.css";
-import type { Preview } from "@storybook/react";
+import { definePreview } from "@storybook/react-vite";
 import { Container, Theme, ThemePanel } from "@radix-ui/themes";
-
-const preview: Preview = {
-  parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
-  },
-};
 
 export const decorators = [
   (Story: FC) => {
@@ -27,4 +16,14 @@ export const decorators = [
   },
 ];
 
-export default preview;
+export default definePreview({
+  decorators,
+  parameters: {
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
+    },
+  },
+});

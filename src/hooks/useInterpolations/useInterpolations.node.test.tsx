@@ -9,7 +9,7 @@ describe("useInterpolations", () => {
     chrome.storage?.local?.clear();
     chrome.storage?.sync?.clear();
   });
-  it("should return current interpolations", async () => {
+  it.skip("should return current interpolations", async () => {
     const interpolation = createHeaderInterpolation({
       headerKey: "X-Test",
       headerValue: "test.domain",

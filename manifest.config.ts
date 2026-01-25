@@ -25,12 +25,13 @@ export default defineManifest({
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
     "nativeMessaging",
+    "notifications",
     "offscreen",
     "sidePanel",
     "storage",
     "tabs",
     "userScripts",
-    "webNavigation",
+    "web",
     "webRequest", // intercept request as it goes out (rather than subsequent requests after page load)
   ],
   content_scripts: [
@@ -48,4 +49,11 @@ export default defineManifest({
     service_worker: "src/background/background.ts",
     type: "module",
   },
+  web_accessible_resources: [
+    {
+      resources: ["public/logo.png"],
+      extension_ids: ["*"],
+      matches: ["*://*/*"],
+    },
+  ],
 });

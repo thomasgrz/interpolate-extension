@@ -1,6 +1,6 @@
 // Button.stories.ts
 // Replace your-framework with the framework you are using, e.g. react-vite, nextjs, nextjs-vite, etc.
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import * as React from "react";
 import "../../sidepanel/Sidepanel.css";
 
 import { createRedirectInterpolation } from "@/utils/factories/createRedirectInterpolation/createRedirectInterpolation";
@@ -8,17 +8,20 @@ import { InterpolationCard } from "./InterpolationCard";
 import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation";
 import { createScriptInterpolation } from "@/utils/factories/createScriptInterpolation/createScriptInterpolation";
 
-const meta = {
-  // 👇 The component you're working on
+import preview from "#.storybook/preview";
+
+type CustomProps = React.ComponentProps<typeof InterpolationCard>;
+
+const meta = preview.meta({
   component: InterpolationCard,
-} satisfies Meta<typeof InterpolationCard>;
+  // 👇 Correct types
+  render: ({ ...args }) => <InterpolationCard {...args} />,
+});
 
 export default meta;
-// 👇 Type helper to reduce boilerplate
-type Story = StoryObj<typeof meta>;
 
 // 👇 A story named Primary that renders `<Button primary label="Button" />`
-export const RedirectPreview: Story = {
+export const RedirectPreview = meta.story({
   args: {
     info: createRedirectInterpolation({
       source: ".*example.com",
@@ -26,9 +29,9 @@ export const RedirectPreview: Story = {
       name: "rule name",
     }),
   },
-};
+});
 
-export const HeaderPreview: Story = {
+export const HeaderPreview = meta.story({
   args: {
     info: createHeaderInterpolation({
       headerKey: "header key",
@@ -36,13 +39,13 @@ export const HeaderPreview: Story = {
       name: "rule name",
     }),
   },
-};
+});
 
-export const ScriptPreview: Story = {
+export const ScriptPreview = meta.story({
   args: {
     info: createScriptInterpolation({
       body: 'console.log("hello world")!',
       name: "say hello world",
     }),
   },
-};
+});

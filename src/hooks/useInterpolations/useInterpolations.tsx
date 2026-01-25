@@ -1,6 +1,7 @@
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import { useEffect, useRef, useState } from "react";
+import { logger } from "@/utils/logger";
 
 const getIsEveryRulePaused = async () => {
   const rulesInStorage = await InterpolateStorage.getAllInterpolations();
@@ -15,19 +16,41 @@ export const useInterpolations = () => {
   const [interpolations, setInterpolations] = useState<AnyInterpolation[] | []>(
     [],
   );
-  const [recentlyUsed, setRecentlyUsed] = useState<AnyInterpolation[]>([]);
+  const [recentlyUsed, setRecentlyUsed] = useState<
+    (AnyInterpolation & { hidden: boolean })[]
+  >([]);
   const [allPaused, setAllPaused] = useState<boolean>();
   const isInitialized = useRef(false);
-
   useEffect(() => {
-    const updateRecentlyInvoked = async () => {
-      const result = await chrome.storage?.sync?.get("recentlyUsed");
-      if (!Object.hasOwn(result, "recentlyUsed")) return;
-      const { recentlyUsed } = result;
-      setRecentlyUsed(recentlyUsed);
-    };
+    try {
+      chrome.runtime.onMessage.addListener((message) => {
+        // In background.ts we send a message
+        // to the content script whenever an interpolation is used
+        // (this happens on a tab by tab basis)
+        const isRedirect = message?.type === "redirect";
+        const isHeader = message?.type === "headers";
+        const isNonInterpolationEvent = !isRedirect && !isHeader;
 
-    updateRecentlyInvoked();
+        if (isNonInterpolationEvent) return;
+        const interpolation = message;
+
+        setRecentlyUsed((topLevelPrev) => [
+          ...topLevelPrev,
+          {
+            ...interpolation,
+            hidden: false,
+            onOpenChange: (isOpen) => {
+              setRecentlyUsed((innerPrev) => [
+                ...innerPrev,
+                { ...interpolation, hidden: !isOpen },
+              ]);
+            },
+          },
+        ]);
+      });
+    } catch (e) {
+      logger(e);
+    }
   }, []);
 
   const add = (interp: AnyInterpolation[] | AnyInterpolation) => {
