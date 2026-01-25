@@ -1,0 +1,67 @@
+{
+  "../../../../../../@crx/manifest": {
+    "file": "assets/crx-manifest.js-DVq8eGjd.js",
+    "name": "crx-manifest.js",
+    "src": "../../../../../../@crx/manifest",
+    "isEntry": true
+  },
+  "_InterpolateStorage-BI30zlBt.js": {
+    "file": "assets/InterpolateStorage-BI30zlBt.js",
+    "name": "InterpolateStorage"
+  },
+  "_Sidepanel-CnRLmOm0.js": {
+    "file": "assets/Sidepanel-CnRLmOm0.js",
+    "name": "Sidepanel",
+    "imports": [
+      "_useInterpolations-CTcpeT-h.js",
+      "_InterpolateStorage-BI30zlBt.js"
+    ],
+    "css": [
+      "assets/Sidepanel-Eq9p7iBp.css"
+    ]
+  },
+  "_Sidepanel-Eq9p7iBp.css": {
+    "file": "assets/Sidepanel-Eq9p7iBp.css",
+    "src": "_Sidepanel-Eq9p7iBp.css"
+  },
+  "_main.tsx-loader-BOlKYKRF.js": {
+    "file": "assets/main.tsx-loader-BOlKYKRF.js",
+    "src": "_main.tsx-loader-BOlKYKRF.js"
+  },
+  "_useInterpolations-CTcpeT-h.js": {
+    "file": "assets/useInterpolations-CTcpeT-h.js",
+    "name": "useInterpolations",
+    "imports": [
+      "_InterpolateStorage-BI30zlBt.js"
+    ],
+    "css": [
+      "assets/useInterpolations-D9qxMV4o.css"
+    ]
+  },
+  "_useInterpolations-D9qxMV4o.css": {
+    "file": "assets/useInterpolations-D9qxMV4o.css",
+    "src": "_useInterpolations-D9qxMV4o.css"
+  },
+  "src/background/background.ts": {
+    "file": "assets/background.ts-DGU5ij4H.js",
+    "name": "background.ts",
+    "src": "src/background/background.ts",
+    "isEntry": true,
+    "imports": [
+      "_InterpolateStorage-BI30zlBt.js"
+    ]
+  },
+  "src/content/main.tsx": {
+    "file": "assets/main.tsx-qoB55E_v.js",
+    "name": "main.tsx",
+    "src": "src/content/main.tsx",
+    "isEntry": true,
+    "imports": [
+      "_useInterpolations-CTcpeT-h.js",
+      "_InterpolateStorage-BI30zlBt.js"
+    ],
+    "css": [
+      "assets/main-CltbtjxY.css"
+    ]
+  }
+}

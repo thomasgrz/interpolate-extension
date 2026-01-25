@@ -206,13 +206,6 @@ try {
     chrome.debugger.sendCommand({ tabId }, "Fetch.enable");
   });
 
-  chrome.runtime.onInstalled.addListener(({ reason }) => {
-    if (reason === "install") {
-      chrome.tabs.create({
-        url: "onboarding.html",
-      });
-    }
-  });
   chrome.sidePanel
     .setPanelBehavior({ openPanelOnActionClick: true })
     .catch((error) => console.error(error));
