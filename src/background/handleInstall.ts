@@ -1,8 +1,6 @@
 import { BrowserRules } from "@/utils/browser/BrowserRules";
 import {
   AnyInterpolation,
-  HeaderInterpolation,
-  RedirectInterpolation,
   ScriptInterpolation,
 } from "@/utils/factories/Interpolation";
 import { logger } from "@/utils/logger";
@@ -40,7 +38,7 @@ export const handleInstall = async () => {
   const handleInterpolationRemovals = async (
     interpolations: AnyInterpolation[],
   ) => {
-    const { dynamicRules, userScripts } = interpolations.reduce(reducer, {
+    const { userScripts } = interpolations.reduce(reducer, {
       userScripts: [],
     });
     // Remove user scripts

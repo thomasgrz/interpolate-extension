@@ -221,13 +221,9 @@ try {
           urlOverride: matchingInterpolation?.details?.action?.redirect?.url,
         });
       } catch (e) {
-        console.log(
-          "RESUMING FROM BACKGROUND DEFAULT, requestId: " +
-            requestInfo?.requestId,
-        );
         const { tabId } = source;
         chrome.debugger.sendCommand({ tabId }, "Fetch.continueRequest", {
-          requestId: requestInfo?.requestId,
+          requestId: (requestInfo as { requestId: string })?.requestId,
         });
       }
     },
