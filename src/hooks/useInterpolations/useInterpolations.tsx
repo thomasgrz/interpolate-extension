@@ -19,6 +19,7 @@ export const useInterpolations = () => {
   const [recentlyUsed, setRecentlyUsed] = useState<
     (AnyInterpolation & {
       hidden: boolean;
+      url?: string;
       onOpenChange: (isOpen: boolean) => void;
     })[]
   >([]);
@@ -37,6 +38,7 @@ export const useInterpolations = () => {
         if (isNonInterpolationEvent) return;
         const interpolation = message;
 
+        logger("notification");
         setRecentlyUsed((topLevelPrev) => [
           ...topLevelPrev,
           {

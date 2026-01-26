@@ -11,17 +11,12 @@ import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/Interpola
 export const handleInstall = async () => {
   const reducer = (
     acc: {
-      dynamicRules: (RedirectInterpolation | HeaderInterpolation)[];
       userScripts: ScriptInterpolation[];
     },
     curr: AnyInterpolation,
   ) => {
     const { type } = curr;
     switch (type) {
-      case "headers":
-      case "redirect":
-        acc.dynamicRules.push(curr);
-        break;
       case "script":
         acc.userScripts.push(curr);
         break;
@@ -34,26 +29,18 @@ export const handleInstall = async () => {
   const handleInterpolationUpdates = async (
     interpolations: AnyInterpolation[],
   ) => {
-    const { dynamicRules, userScripts } = interpolations.reduce(reducer, {
-      dynamicRules: [],
+    const { userScripts } = interpolations.reduce(reducer, {
       userScripts: [],
     });
 
     // Update user scripts
     await BrowserRules.updateUserScripts(userScripts);
-    // Update declarative net request rules
-    await BrowserRules.updateDynamicRules(dynamicRules, {
-      onError: (id, e) => {
-        InterpolateStorage.setInterpolationError(id, e);
-      },
-    });
   };
 
   const handleInterpolationRemovals = async (
     interpolations: AnyInterpolation[],
   ) => {
     const { dynamicRules, userScripts } = interpolations.reduce(reducer, {
-      dynamicRules: [],
       userScripts: [],
     });
     // Remove user scripts
@@ -62,10 +49,6 @@ export const handleInstall = async () => {
     );
     await chrome.userScripts?.unregister({ ids: userScriptIdsToRemove });
 
-    const dynamicRuleIdsToRemove = dynamicRules.map((rule) => rule.details.id);
-    // Remove declarative net request rules
-    await BrowserRules.removeDynamicRulesById(dynamicRuleIdsToRemove);
-
     // Remove user scripts from browser
     await BrowserRules.removeUserScriptsById(userScriptIdsToRemove);
   };
@@ -73,7 +56,6 @@ export const handleInstall = async () => {
     interpolations: AnyInterpolation[],
   ) => {
     const { userScripts } = interpolations.reduce(reducer, {
-      dynamicRules: [],
       userScripts: [],
     });
     const userScriptConfigs = userScripts.map((script) => script.details);

@@ -14,7 +14,9 @@ const continueRequest = async ({
   tabId,
   url,
   headers,
-  matchingInterpolation,
+  interpolation,
+  urlOverride,
+  type,
 }: {
   headers?: {
     name?: string;
@@ -23,19 +25,37 @@ const continueRequest = async ({
   requestId: string;
   tabId: number;
   url?: string;
-  matchingInterpolation?: AnyInterpolation;
+  urlOverride?: string;
+  interpolation?: AnyInterpolation;
+  type?:
+    | "headers"
+    | "redirect"
+    | "non-matching"
+    | "chrome-extension"
+    | "non-debug"
+    | "disabled";
 }) => {
   logger(
-    "Continuing request in tab: " + tabId + " for request with id " + requestId,
+    "type: " +
+      type +
+      ". Continuing request in tab: " +
+      tabId +
+      " for request with url: " +
+      url,
   );
+  logger("url override value: " + urlOverride);
   chrome.debugger.sendCommand({ tabId }, "Fetch.continueRequest", {
     requestId,
-    ...(url ? { url } : {}),
+    url: urlOverride ?? url,
     ...(headers ? { headers } : {}),
   });
 
-  if (matchingInterpolation) {
-    chrome.tabs.sendMessage(tabId, matchingInterpolation);
+  if (interpolation) {
+    chrome.tabs.sendMessage(tabId, {
+      interpolation,
+      url,
+      urlOverride,
+    });
   }
 };
 
@@ -48,6 +68,7 @@ try {
 
   const attachToRelatedTargetsInTab = () => {
     chrome.debugger.onEvent.addListener(async (source, method, params) => {
+      console.log({ source, method, params });
       if (method === "Target.attachedToTarget") {
         // `source` identifies the parent session, but we need to construct a new
         // identifier for the child session
@@ -68,121 +89,147 @@ try {
   // request paused events
   chrome.debugger.onEvent.addListener(
     async (source, event, requestInfo: unknown) => {
+      console.log({ source, event, requestInfo });
       const isIrrelevantEvent = event !== "Fetch.requestPaused";
 
       // If is not a request paused event do nothing, exit early
       if (isIrrelevantEvent) return;
+      // If this `try` block fails we just continue the request unaltered
+      try {
+        const { tabId } = source;
+        const { request, requestId } =
+          (requestInfo as { requestId: string; request: { url: string } }) ??
+          {};
 
-      const { tabId } = source;
-      const { request, requestId } =
-        (requestInfo as { requestId: string; request: { url: string } }) ?? {};
+        const { url: requestUrl } = request;
+        // Get the latest of all the redirect rules
+        const redirectRules = (await InterpolateStorage.getAllByTypes([
+          "redirect",
+          "headers",
+        ])) as (RedirectInterpolation | HeaderInterpolation)[];
 
-      const { url: requestUrl } = request;
-      // Get the latest of all the redirect rules
-      const redirectRules = (await InterpolateStorage.getAllByTypes([
-        "redirect",
-        "headers",
-      ])) as (RedirectInterpolation | HeaderInterpolation)[];
+        console.log({ redirectRules, requestUrl, requestInfo, source, event });
+        const noRedirectMatchingpatterns = !redirectRules?.length;
 
-      const noRedirectMatchingpatterns = !redirectRules?.length;
-
-      // If we have no redirect rules continue request, exit
-      if (noRedirectMatchingpatterns)
-        return continueRequest({
-          requestId,
-          tabId: tabId as number,
-          url: requestUrl,
-        });
-
-      const isChromeExtensionEvent =
-        request?.url?.startsWith("chrome-extension");
-
-      // If we it's a chrome extension request do nothing, exit
-      if (isChromeExtensionEvent)
-        return continueRequest({
-          requestId,
-          tabId: tabId as number,
-          url: requestUrl,
-        });
-
-      const isNonDebuggingTab = !debuggerTabs.has(tabId!);
-
-      // If we are not debugging this tab continue request, exit
-      if (isNonDebuggingTab)
-        return continueRequest({
-          requestId,
-          tabId: tabId as number,
-          url: requestUrl,
-        });
-
-      const matchingInterpolation = redirectRules.find((rule) => {
-        const regexMatcher = rule?.details?.condition?.regexFilter;
-        const isMatchPatternMissing = !regexMatcher;
-        if (isMatchPatternMissing) return false;
-        const isMatch = new RegExp(regexMatcher).test(requestUrl);
-        return isMatch;
-      });
-
-      const noMatchingInterpolation = !matchingInterpolation;
-      // If we have no matching redirect interpolations continue request, exit
-      if (noMatchingInterpolation)
-        return continueRequest({
-          tabId: tabId as number,
-          requestId,
-          url: requestUrl,
-        });
-
-      const isInterpolationDisabled = !matchingInterpolation.enabledByUser;
-      if (isInterpolationDisabled)
-        return continueRequest({
-          tabId: tabId as number,
-          requestId,
-          url: requestUrl,
-        });
-
-      const interpolationType = matchingInterpolation?.type;
-      switch (interpolationType) {
-        case "headers":
+        // If we have no redirect rules continue request, exit
+        if (noRedirectMatchingpatterns)
           return continueRequest({
-            matchingInterpolation,
-            headers: [
-              {
-                name: matchingInterpolation?.details?.action
-                  ?.requestHeaders?.[0]?.header,
-                value:
-                  matchingInterpolation?.details?.action?.requestHeaders?.[0]
-                    ?.value,
-              },
-            ],
-            tabId: tabId as number,
             requestId,
-            url: matchingInterpolation?.details?.action?.redirect?.url,
+            tabId: tabId as number,
+            url: requestUrl,
+            type: "non-matching",
           });
-          break;
-        case "redirect":
-          // If we've not bailed by now then,
-          // apply the associated redirect rule
+
+        const isChromeExtensionEvent =
+          request?.url?.startsWith("chrome-extension");
+
+        // If we it's a chrome extension request do nothing, exit
+        if (isChromeExtensionEvent)
           return continueRequest({
-            matchingInterpolation,
-            tabId: tabId as number,
             requestId,
-            url: matchingInterpolation?.details?.action?.redirect?.url,
+            tabId: tabId as number,
+            url: requestUrl,
+            type: "chrome-extension",
           });
-          break;
-        default:
+
+        const isNonDebuggingTab = !debuggerTabs.has(tabId!);
+
+        // If we are not debugging this tab continue request, exit
+        if (isNonDebuggingTab)
+          return continueRequest({
+            requestId,
+            tabId: tabId as number,
+            url: requestUrl,
+            type: "non-debug",
+          });
+
+        const matchingInterpolation = redirectRules.find((rule) => {
+          const regexMatcher = rule?.details?.condition?.regexFilter;
+          const isMatchPatternMissing = !regexMatcher;
+          if (isMatchPatternMissing) return false;
+          const isMatch = new RegExp(regexMatcher).test(requestUrl);
+          return isMatch;
+        });
+
+        const noMatchingInterpolation = !matchingInterpolation;
+        // If we have no matching redirect interpolations continue request, exit
+        if (noMatchingInterpolation)
           return continueRequest({
             tabId: tabId as number,
             requestId,
             url: requestUrl,
+            type: "non-matching",
           });
+
+        const isInterpolationDisabled = !matchingInterpolation.enabledByUser;
+        if (isInterpolationDisabled)
+          return continueRequest({
+            tabId: tabId as number,
+            requestId,
+            url: requestUrl,
+            type: "disabled",
+          });
+
+        const interpolationType = matchingInterpolation?.type;
+        switch (interpolationType) {
+          case "headers":
+            return continueRequest({
+              interpolation: matchingInterpolation,
+              headers: [
+                {
+                  name: matchingInterpolation?.details?.action
+                    ?.requestHeaders?.[0]?.header,
+                  value:
+                    matchingInterpolation?.details?.action?.requestHeaders?.[0]
+                      ?.value,
+                },
+              ],
+              tabId: tabId as number,
+              requestId,
+              url: requestUrl,
+              type: "headers",
+              urlOverride:
+                matchingInterpolation?.details?.action?.redirect?.url,
+            });
+            break;
+          case "redirect":
+            // If we've not bailed by now then,
+            // apply the associated redirect rule
+            return continueRequest({
+              interpolation: matchingInterpolation,
+              tabId: tabId as number,
+              requestId,
+              url: requestUrl,
+              urlOverride:
+                matchingInterpolation?.details?.action?.redirect?.url,
+              type: "redirect",
+            });
+            break;
+          default:
+            return continueRequest({
+              tabId: tabId as number,
+              requestId,
+              url: requestUrl,
+            });
+        }
+        // If we've not bailed by now then,
+        // apply the associated redirect rule
+        return continueRequest({
+          tabId: tabId as number,
+          requestId,
+          url: requestUrl,
+          urlOverride: matchingInterpolation?.details?.action?.redirect?.url,
+        });
+      } catch (e) {
+        console.log(
+          "RESUMING FROM BACKGROUND DEFAULT, requestId: " +
+            requestInfo?.requestId,
+        );
+        const { tabId } = source;
+        chrome.debugger.sendCommand({ tabId }, "Fetch.continueRequest", {
+          requestId: requestInfo?.requestId,
+        });
       }
-      // If we've not bailed by now then,
-      // apply the associated redirect rule
-      return continueRequest({
-        tabId: tabId as number,
-        requestId,
-        url: matchingInterpolation?.details?.action?.redirect?.url,
-      });
     },
   );
   // Set up initial listeners whenever a new tab is updated.
