@@ -18,43 +18,17 @@ export const useInterpolations = () => {
   );
   const [recentlyUsed, setRecentlyUsed] = useState<
     (AnyInterpolation & {
+      requestId: string;
+      requestUrl: string;
+      urlOverride: string;
       hidden: boolean;
       onOpenChange: (isOpen: boolean) => void;
     })[]
   >([]);
   const [allPaused, setAllPaused] = useState<boolean>();
   const isInitialized = useRef(false);
-  useEffect(() => {
-    try {
-      chrome.runtime.onMessage.addListener((message) => {
-        // In background.ts we send a message
-        // to the content script whenever an interpolation is used
-        // (this happens on a tab by tab basis)
-        const isRedirect = message?.type === "redirect";
-        const isHeader = message?.type === "headers";
-        const isNonInterpolationEvent = !isRedirect && !isHeader;
 
-        if (isNonInterpolationEvent) return;
-        const interpolation = message;
-
-        setRecentlyUsed((topLevelPrev) => [
-          ...topLevelPrev,
-          {
-            ...interpolation,
-            hidden: false,
-            onOpenChange: (isOpen: boolean) => {
-              setRecentlyUsed((innerPrev) => [
-                ...innerPrev,
-                { ...interpolation, hidden: !isOpen },
-              ]);
-            },
-          },
-        ]);
-      });
-    } catch (e) {
-      logger(e);
-    }
-  }, []);
+  useEffect(() => {}, []);
 
   const add = (interp: AnyInterpolation[] | AnyInterpolation) => {
     const result = InterpolateStorage.create(
@@ -174,6 +148,51 @@ export const useInterpolations = () => {
     if (!initialInterps) return;
 
     setInterpolations(initialInterps);
+
+    try {
+      chrome.runtime.onMessage.addListener((message) => {
+        // In background.ts we send a message
+        // to the content script whenever an interpolation is used
+        // (this happens on a tab by tab basis)
+        const isRedirect = message?.type === "redirect";
+        const isHeader = message?.type === "headers";
+        const isNonInterpolationEvent = !isRedirect && !isHeader;
+
+        if (isNonInterpolationEvent) return;
+        const interpolation = message;
+
+        const isAlreadyTracked = recentlyUsed.find(
+          (interp) => interp?.details?.id === interpolation?.details?.id,
+        );
+
+        if (isAlreadyTracked) return;
+
+        setRecentlyUsed((topLevelPrev) => [
+          ...topLevelPrev,
+          {
+            ...interpolation,
+            hidden: false,
+            onOpenChange: (isOpen: boolean) => {
+              setRecentlyUsed((innerPrev) =>
+                innerPrev.map((interp) => {
+                  const isMatchingInterpId =
+                    interp.details?.id === interpolation.details.id;
+                  const isMatchingRequestId =
+                    interp.requestId === interpolation?.requestId;
+                  const isMatched = isMatchingInterpId && isMatchingRequestId;
+                  if (isMatched) {
+                    return { ...interp, hidden: true };
+                  }
+                  return interp;
+                }),
+              );
+            },
+          },
+        ]);
+      });
+    } catch (e) {
+      logger(e);
+    }
   };
 
   useEffect(() => {

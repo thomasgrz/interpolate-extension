@@ -12,9 +12,10 @@ const debuggerTabs = new Set<number>();
 const continueRequest = async ({
   requestId,
   tabId,
-  url,
+  requestUrl,
   headers,
-  matchingInterpolation,
+  interpolation,
+  urlOverride,
 }: {
   headers?: {
     name?: string;
@@ -22,20 +23,27 @@ const continueRequest = async ({
   }[];
   requestId: string;
   tabId: number;
-  url?: string;
-  matchingInterpolation?: AnyInterpolation;
+  requestUrl?: string;
+  urlOverride?: string;
+  interpolation?: AnyInterpolation;
 }) => {
   logger(
     "Continuing request in tab: " + tabId + " for request with id " + requestId,
   );
   chrome.debugger.sendCommand({ tabId }, "Fetch.continueRequest", {
     requestId,
-    ...(url ? { url } : {}),
+    url: urlOverride ?? requestUrl,
     ...(headers ? { headers } : {}),
   });
 
-  if (matchingInterpolation) {
-    chrome.tabs.sendMessage(tabId, matchingInterpolation);
+  if (interpolation) {
+    chrome.tabs.sendMessage(tabId, {
+      ...interpolation,
+      requestUrl,
+      urlOverride,
+      requestId,
+      tabId,
+    });
   }
 };
 
@@ -91,7 +99,7 @@ try {
         return continueRequest({
           requestId,
           tabId: tabId as number,
-          url: requestUrl,
+          requestUrl,
         });
 
       const isChromeExtensionEvent =
@@ -102,7 +110,7 @@ try {
         return continueRequest({
           requestId,
           tabId: tabId as number,
-          url: requestUrl,
+          requestUrl,
         });
 
       const isNonDebuggingTab = !debuggerTabs.has(tabId!);
@@ -112,7 +120,7 @@ try {
         return continueRequest({
           requestId,
           tabId: tabId as number,
-          url: requestUrl,
+          requestUrl,
         });
 
       const matchingInterpolation = redirectRules.find((rule) => {
@@ -129,7 +137,7 @@ try {
         return continueRequest({
           tabId: tabId as number,
           requestId,
-          url: requestUrl,
+          requestUrl,
         });
 
       const isInterpolationDisabled = !matchingInterpolation.enabledByUser;
@@ -137,14 +145,14 @@ try {
         return continueRequest({
           tabId: tabId as number,
           requestId,
-          url: requestUrl,
+          requestUrl,
         });
 
       const interpolationType = matchingInterpolation?.type;
       switch (interpolationType) {
         case "headers":
           return continueRequest({
-            matchingInterpolation,
+            interpolation: matchingInterpolation,
             headers: [
               {
                 name: matchingInterpolation?.details?.action
@@ -156,33 +164,27 @@ try {
             ],
             tabId: tabId as number,
             requestId,
-            url: matchingInterpolation?.details?.action?.redirect?.url,
+            requestUrl,
           });
           break;
         case "redirect":
           // If we've not bailed by now then,
           // apply the associated redirect rule
           return continueRequest({
-            matchingInterpolation,
+            interpolation: matchingInterpolation,
             tabId: tabId as number,
             requestId,
-            url: matchingInterpolation?.details?.action?.redirect?.url,
+            urlOverride: matchingInterpolation?.details?.action?.redirect?.url,
+            requestUrl,
           });
           break;
         default:
           return continueRequest({
             tabId: tabId as number,
             requestId,
-            url: requestUrl,
+            requestUrl,
           });
       }
-      // If we've not bailed by now then,
-      // apply the associated redirect rule
-      return continueRequest({
-        tabId: tabId as number,
-        requestId,
-        url: matchingInterpolation?.details?.action?.redirect?.url,
-      });
     },
   );
   // Set up initial listeners whenever a new tab is updated.

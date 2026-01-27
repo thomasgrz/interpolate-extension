@@ -8,15 +8,24 @@ const meta = preview.meta({
   component: NotifierToast,
   // @ts-expect-error CSF next issue?
   render: (args) => (
-    <NotifierToast {...args}>
-      <InterpolationCard
-        info={createHeaderInterpolation({
-          name: "example notification for interpolation",
-          headerKey: "test",
-          headerValue: "value",
-        })}
-      />
-    </NotifierToast>
+    <div
+      style={{
+        "z-index": 100000000,
+        position: "fixed",
+        bottom: 0,
+        right: 0,
+      }}
+    >
+      <NotifierToast {...args}>
+        <InterpolationCard
+          info={createHeaderInterpolation({
+            name: "example notification for interpolation",
+            headerKey: "test",
+            headerValue: "value",
+          })}
+        />
+      </NotifierToast>
+    </div>
   ),
 });
 
