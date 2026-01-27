@@ -19,6 +19,7 @@ export const Notifier = () => {
           <NotifierToast
             onOpenChange={interp?.onOpenChange}
             open={!interp?.hidden}
+            title={interp?.requestUrl}
           >
             <InterpolationCard info={interp} />
           </NotifierToast>
