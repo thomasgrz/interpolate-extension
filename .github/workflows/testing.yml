@@ -30,9 +30,8 @@ jobs:
         name: Check if Playwright browser is cached
         id: playwright-cache
         with:
-          path: |
-            ~/.cache/ms-playwright
-            key: ${{ runner.os }}-playwright-1.56.1
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-1.56.1
       - name: Install Playwright browser if not cached
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps
