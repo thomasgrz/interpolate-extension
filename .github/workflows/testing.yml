@@ -8,29 +8,37 @@ jobs:
   test:
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [24]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: lts/*
+          version: 10
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
       - name: Build extension
-        run: npm run build
+        run: pnpm run build
       - uses: actions/cache@v3
         name: Check if Playwright browser is cached
         id: playwright-cache
         with:
-          path: |
-            ~/.cache/ms-playwright
-            key: ${{ runner.os }}-playwright-1.56.1
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-1.56.1
       - name: Install Playwright browser if not cached
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
       - name: Run Unit tests
-        run: npm run test:component
+        run: pnpm run test:component
       - name: Run Playwright tests
-        run: npm run test:e2e
+        run: pnpm run test:e2e
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
