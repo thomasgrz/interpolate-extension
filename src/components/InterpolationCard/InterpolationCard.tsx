@@ -6,7 +6,11 @@ import {
   ScriptInterpolation,
 } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import { DoubleArrowDownIcon, DoubleArrowUpIcon } from "@radix-ui/react-icons";
+import {
+  DoubleArrowDownIcon,
+  DoubleArrowUpIcon,
+  DotsHorizontalIcon,
+} from "@radix-ui/react-icons";
 import {
   Badge,
   Box,
@@ -16,6 +20,7 @@ import {
   IconButton,
   Text,
   Tooltip,
+  Separator,
 } from "@radix-ui/themes";
 import { Collapsible } from "radix-ui";
 import { HeaderRulePreview } from "../HeaderPreview/HeaderPreview";
@@ -134,42 +139,46 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
             <Callout.Text size={"1"}>{formattedError}</Callout.Text>
           </Callout.Root>
         )}
-        <Flex justify="between" align="center">
-          <RuleToggle
-            disabled={!!info.error}
-            onResumeClick={handleResumeClick}
-            onPauseClick={handlePauseClick}
-            isPaused={!enabledByUser || !!info.error}
-          />
-          <Collapsible.Trigger asChild>
-            <Flex px="1" flexGrow="1" justify={"between"}>
-              <Flex p="3" align={"center"}>
-                <Text weight="medium" size="2">
-                  {name}
-                </Text>
-              </Flex>
-              <Flex align={"center"}>
+        <Flex width="100%">
+          <Box width="50px">
+            <RuleToggle
+              disabled={!!info.error}
+              onResumeClick={handleResumeClick}
+              onPauseClick={handlePauseClick}
+              isPaused={!enabledByUser || !!info.error}
+            />
+          </Box>
+          <Flex width="100%" direction="column">
+            <Flex width="100%" justify="between" align="center" pl="2">
+              <Text weight="medium" size="2">
+                {name}
+              </Text>
+              <Flex gap="2" p="2" align="center">
                 <Box p="1">
                   <Badge variant="soft" color={badgeColor()} size="1">
                     {type}
                   </Badge>
                 </Box>
-                <Tooltip content="options">
-                  <IconButton size="1" radius="full" variant="outline">
-                    {isOpen ? <DoubleArrowUpIcon /> : <DoubleArrowDownIcon />}
-                  </IconButton>
-                </Tooltip>
+                <DotsHorizontalIcon pl="2" />
               </Flex>
             </Flex>
-          </Collapsible.Trigger>
+            <Tooltip content="options">
+              <Collapsible.Trigger asChild>
+                <IconButton
+                  className={styles.ToggleCollapse}
+                  boxShadow="none"
+                  size="1"
+                  radius="none"
+                  variant="outline"
+                >
+                  {isOpen ? <DoubleArrowUpIcon /> : <DoubleArrowDownIcon />}
+                </IconButton>
+              </Collapsible.Trigger>
+            </Tooltip>
+          </Flex>
         </Flex>
         <Collapsible.Content>
-          <Flex align={"end"} justify={"between"}>
-            <Flex flexGrow={"1"}>{getPreview()}</Flex>
-            <Box>
-              <RuleDeleteAction onDelete={onDelete} />
-            </Box>
-          </Flex>
+          <Box>{getPreview()}</Box>
         </Collapsible.Content>
       </Card>
     </Collapsible.Root>

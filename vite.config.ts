@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => ({
       },
       include: "**/*.svg",
     }),
-    mode === "unit-test" ? null : crx({ manifest }),
+    // mode === "unit-test" ? null : crx({ manifest }),
     zip({ outDir: "release", outFileName: `crx-${name}-${version}.zip` }),
   ],
   server: {
