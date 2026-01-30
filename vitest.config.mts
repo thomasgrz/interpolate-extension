@@ -6,6 +6,9 @@ export default defineConfig((configEnv) => {
   return mergeConfig(
     viteConfig({ ...configEnv, mode: "unit-test" }),
     defineConfig({
+      define: {
+        TEST: "true",
+      },
       test: {
         exclude: [...configDefaults.exclude, "browser-tests"],
         projects: [

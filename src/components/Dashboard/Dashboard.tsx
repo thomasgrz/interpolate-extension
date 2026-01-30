@@ -1,12 +1,16 @@
 import {
   Box,
+  Button,
   Callout,
   Card,
   Container,
   Flex,
+  IconButton,
   SegmentedControl,
   Strong,
+  DropdownMenu,
 } from "@radix-ui/themes";
+import { UploadIcon } from "@radix-ui/react-icons";
 import { useContext } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { DashboardControls } from "../DashboardControls/DashboardControls";
@@ -19,7 +23,8 @@ import { useInterpolateFormSelection } from "@/hooks/useInterpolateFormSelection
 import { useInterpolationForm } from "@/hooks/useInterpolationForm/useInterpolationForm";
 import { FormType } from "@/constants";
 import { InterpolateContext } from "@/contexts/interpolate-context";
-
+import { Import } from "../Import/Import.tsx";
+import { Exporter } from "../Exporter/Exporter.tsx";
 export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
   const form = useInterpolationForm();
 
@@ -58,15 +63,23 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
         </Callout.Root>
       }
     >
-      <Container minHeight={"100dvh"}>
+      <Container className={styles.Container} minHeight={"100dvh"}>
         <Flex
           minHeight={"100dvh"}
           flexGrow={"1"}
           justify={"start"}
           direction={"column"}
         >
+          <Flex p="2" className={styles.ImportExportCTAs} justify="between">
+            <Import />
+            <Exporter
+              interpolations={interpolations}
+              disabled={!interpolations?.length}
+            />
+          </Flex>
           <Flex
             gap="2"
+            wrap
             direction={"column"}
             flexGrow={"1"}
             data-testid={"dashboard"}
@@ -114,6 +127,7 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
                 </form>
               </Flex>
             </Card>
+            <Flex direction="row" width="100%"></Flex>
             <DashboardControls
               ruleCount={interpolations?.length}
               allPaused={!!allPaused}

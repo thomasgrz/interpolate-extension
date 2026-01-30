@@ -6,7 +6,11 @@ import {
   ScriptInterpolation,
 } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import { DoubleArrowDownIcon, DoubleArrowUpIcon } from "@radix-ui/react-icons";
+import {
+  DoubleArrowDownIcon,
+  DoubleArrowUpIcon,
+  DotsHorizontalIcon,
+} from "@radix-ui/react-icons";
 import {
   Badge,
   Box,
@@ -16,6 +20,7 @@ import {
   IconButton,
   Text,
   Tooltip,
+  Separator,
 } from "@radix-ui/themes";
 import { Collapsible } from "radix-ui";
 import { HeaderRulePreview } from "../HeaderPreview/HeaderPreview";
@@ -24,12 +29,16 @@ import { RuleDeleteAction } from "../RuleDeleteAction/RuleDeleteAction";
 import { RuleToggle } from "../RuleToggle/RuleToggle";
 import styles from "./InterpolationCard.module.scss";
 import { ScriptPreview } from "../ScriptPreview/ScriptPreview";
+import { InterpolationOptions } from "../InterpolationOptions/InterpolationOptions";
 
 type InterpolationCardProps = {
   info: RedirectInterpolation | HeaderInterpolation | ScriptInterpolation;
 };
 
-export const InterpolationCard = ({ info }: InterpolationCardProps) => {
+export const InterpolationCard = ({
+  info,
+  hideRuleToggle,
+}: { hideRuleToggle?: boolean } & InterpolationCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hit, setHit] = useState(false);
   const [_, setRecentlyHitColor] = useState<"green" | "gray">("green");
@@ -120,7 +129,10 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   };
 
   return (
-    <Collapsible.Root onOpenChange={handleOpenChange}>
+    <Collapsible.Root
+      className={styles.CollapsibleRoot}
+      onOpenChange={handleOpenChange}
+    >
       <Card
         ref={ref}
         data-ui-active={hit}
@@ -134,42 +146,49 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
             <Callout.Text size={"1"}>{formattedError}</Callout.Text>
           </Callout.Root>
         )}
-        <Flex justify="between" align="center">
-          <RuleToggle
-            disabled={!!info.error}
-            onResumeClick={handleResumeClick}
-            onPauseClick={handlePauseClick}
-            isPaused={!enabledByUser || !!info.error}
-          />
-          <Collapsible.Trigger asChild>
-            <Flex px="1" flexGrow="1" justify={"between"}>
-              <Flex p="3" align={"center"}>
-                <Text weight="medium" size="2">
-                  {name}
-                </Text>
-              </Flex>
-              <Flex align={"center"}>
+        <Flex width="stretch">
+          {hideRuleToggle ? null : (
+            <Box width="50px">
+              <RuleToggle
+                disabled={!!info.error}
+                onResumeClick={handleResumeClick}
+                onPauseClick={handlePauseClick}
+                isPaused={!enabledByUser || !!info.error}
+              />
+            </Box>
+          )}
+
+          <Flex width="100%" direction="column">
+            <Flex width="100%" justify="between" align="center" pl="2">
+              <Text weight="medium" size="2">
+                {name}
+              </Text>
+              <Flex gap="2" p="2" align="center">
                 <Box p="1">
                   <Badge variant="soft" color={badgeColor()} size="1">
                     {type}
                   </Badge>
                 </Box>
-                <Tooltip content="options">
-                  <IconButton size="1" radius="full" variant="outline">
-                    {isOpen ? <DoubleArrowUpIcon /> : <DoubleArrowDownIcon />}
-                  </IconButton>
-                </Tooltip>
+                <InterpolationOptions config={info} />
               </Flex>
             </Flex>
-          </Collapsible.Trigger>
+            <Tooltip content="options">
+              <Collapsible.Trigger asChild>
+                <IconButton
+                  className={styles.ToggleCollapse}
+                  boxShadow="none"
+                  size="1"
+                  radius="none"
+                  variant="outline"
+                >
+                  {isOpen ? <DoubleArrowUpIcon /> : <DoubleArrowDownIcon />}
+                </IconButton>
+              </Collapsible.Trigger>
+            </Tooltip>
+          </Flex>
         </Flex>
         <Collapsible.Content>
-          <Flex align={"end"} justify={"between"}>
-            <Flex flexGrow={"1"}>{getPreview()}</Flex>
-            <Box>
-              <RuleDeleteAction onDelete={onDelete} />
-            </Box>
-          </Flex>
+          <Box>{getPreview()}</Box>
         </Collapsible.Content>
       </Card>
     </Collapsible.Root>

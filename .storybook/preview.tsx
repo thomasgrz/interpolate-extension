@@ -7,14 +7,10 @@ export default definePreview({
     // @ts-expect-error CSF next issue?
     (Story) => {
       return (
-        <Container style={{ width: "50dvw", border: "3px dotted grey" }}>
-          <Theme
-            style={{ fontFamily: '"Space Mono", monospace', width: "100%" }}
-          >
-            <Story />
-            <ThemePanel defaultOpen={true} />
-          </Theme>
-        </Container>
+        <Theme style={{ fontFamily: '"Space Mono", monospace', width: "100%" }}>
+          <Story />
+          <ThemePanel defaultOpen={true} />
+        </Theme>
       );
     },
   ],

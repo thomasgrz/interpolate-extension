@@ -8,4 +8,5 @@ export enum FormType {
   SCRIPT = "script",
   HEADER = "header",
   REDIRECT = "redirect",
+  IMPORT_RULES = "import_rules",
 }

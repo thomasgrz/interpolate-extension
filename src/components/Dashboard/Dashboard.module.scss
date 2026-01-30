@@ -24,3 +24,19 @@
   flex-direction: column;
   height: 100%;
 }
+
+.UploadCallToAction {
+  position: absolute;
+  bottom: 20;
+  right: 20;
+}
+
+.Container {
+  position: relative;
+}
+
+.ImportExportCTAs {
+  button {
+    width: 48%;
+  }
+}

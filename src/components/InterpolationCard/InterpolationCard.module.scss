@@ -1,8 +1,19 @@
 .InterpolationCard {
   box-shadow: var(--shadow-5);
+  padding: 0;
+}
+
+.CollapsibleRoot {
+  width: stretch;
 }
 
 .DeleteAction {
   position: absolute;
   right: 4px;
+}
+
+.ToggleCollapse {
+  box-shadow: none;
+  width: 100%;
+  height: unset;
 }
