@@ -29,12 +29,16 @@ import { RuleDeleteAction } from "../RuleDeleteAction/RuleDeleteAction";
 import { RuleToggle } from "../RuleToggle/RuleToggle";
 import styles from "./InterpolationCard.module.scss";
 import { ScriptPreview } from "../ScriptPreview/ScriptPreview";
+import { InterpolationOptions } from "../InterpolationOptions/InterpolationOptions";
 
 type InterpolationCardProps = {
   info: RedirectInterpolation | HeaderInterpolation | ScriptInterpolation;
 };
 
-export const InterpolationCard = ({ info }: InterpolationCardProps) => {
+export const InterpolationCard = ({
+  info,
+  hideRuleToggle,
+}: { hideRuleToggle?: boolean } & InterpolationCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hit, setHit] = useState(false);
   const [_, setRecentlyHitColor] = useState<"green" | "gray">("green");
@@ -125,7 +129,10 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
   };
 
   return (
-    <Collapsible.Root onOpenChange={handleOpenChange}>
+    <Collapsible.Root
+      className={styles.CollapsibleRoot}
+      onOpenChange={handleOpenChange}
+    >
       <Card
         ref={ref}
         data-ui-active={hit}
@@ -139,15 +146,18 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
             <Callout.Text size={"1"}>{formattedError}</Callout.Text>
           </Callout.Root>
         )}
-        <Flex width="100%">
-          <Box width="50px">
-            <RuleToggle
-              disabled={!!info.error}
-              onResumeClick={handleResumeClick}
-              onPauseClick={handlePauseClick}
-              isPaused={!enabledByUser || !!info.error}
-            />
-          </Box>
+        <Flex width="stretch">
+          {hideRuleToggle ? null : (
+            <Box width="50px">
+              <RuleToggle
+                disabled={!!info.error}
+                onResumeClick={handleResumeClick}
+                onPauseClick={handlePauseClick}
+                isPaused={!enabledByUser || !!info.error}
+              />
+            </Box>
+          )}
+
           <Flex width="100%" direction="column">
             <Flex width="100%" justify="between" align="center" pl="2">
               <Text weight="medium" size="2">
@@ -159,7 +169,7 @@ export const InterpolationCard = ({ info }: InterpolationCardProps) => {
                     {type}
                   </Badge>
                 </Box>
-                <DotsHorizontalIcon pl="2" />
+                <InterpolationOptions config={info} />
               </Flex>
             </Flex>
             <Tooltip content="options">

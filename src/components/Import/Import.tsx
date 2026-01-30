@@ -8,11 +8,11 @@ import {
   TextArea,
 } from "@radix-ui/themes";
 
-import { UploadIcon } from "@radix-ui/react-icons";
+import { DownloadIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { InterpolateStorage } from "../../utils/storage/InterpolateStorage/InterpolateStorage";
 
-export const UploadFlow = () => {
+export const Import = () => {
   const [isModalOpen, setIsModalOpen] = useState();
   const [textareaInput, setTextAreaInput] = useState();
   const [isLoading, setIsLoading] = useState();
@@ -39,8 +39,8 @@ export const UploadFlow = () => {
   return (
     <Dialog.Root>
       <Dialog.Trigger>
-        <Button>
-          Upload interpolations <UploadIcon />
+        <Button color="blue">
+          Import <DownloadIcon />
         </Button>
       </Dialog.Trigger>
       <Dialog.Content>

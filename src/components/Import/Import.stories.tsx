@@ -1,9 +1,9 @@
 import preview from "#.storybook/preview";
 
-import { UploadFlow } from "./UploadFlow.tsx";
+import { Import } from "./Import.tsx";
 
 const meta = preview.meta({
-  component: UploadFlow,
+  component: Import,
 });
 
 export default meta;

@@ -23,8 +23,8 @@ import { useInterpolateFormSelection } from "@/hooks/useInterpolateFormSelection
 import { useInterpolationForm } from "@/hooks/useInterpolationForm/useInterpolationForm";
 import { FormType } from "@/constants";
 import { InterpolateContext } from "@/contexts/interpolate-context";
-import { UploadFlow } from "../UploadFlow/UploadFlow.tsx";
-
+import { Import } from "../Import/Import.tsx";
+import { Exporter } from "../Exporter/Exporter.tsx";
 export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
   const form = useInterpolationForm();
 
@@ -70,6 +70,13 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
           justify={"start"}
           direction={"column"}
         >
+          <Flex p="2" className={styles.ImportExportCTAs} justify="between">
+            <Import />
+            <Exporter
+              interpolations={interpolations}
+              disabled={!interpolations?.length}
+            />
+          </Flex>
           <Flex
             gap="2"
             wrap
@@ -121,7 +128,6 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
               </Flex>
             </Card>
             <Flex direction="row" width="100%"></Flex>
-            <UploadFlow />
             <DashboardControls
               ruleCount={interpolations?.length}
               allPaused={!!allPaused}
@@ -145,9 +151,6 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
             </Flex>
           </Flex>
         </Flex>
-        <IconButton className={styles.UploadCallToAction}>
-          <UploadIcon />
-        </IconButton>
       </Container>
     </ErrorBoundary>
   );

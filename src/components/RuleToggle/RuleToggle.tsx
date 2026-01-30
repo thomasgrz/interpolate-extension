@@ -13,7 +13,7 @@ export const RuleToggle = ({
   onPauseClick: () => void;
   onResumeClick: () => void;
 }) => {
-  const handleClick = isPaused ? onPauseClick : onResumeClick;
+  const handleClick = isPaused ? onResumeClick : onPauseClick;
   const buttonColor = isPaused ? "green" : "blue";
   return (
     <Flex
