@@ -4,6 +4,7 @@ import {
   HeaderInterpolation,
   RedirectInterpolation,
   ScriptInterpolation,
+  InterpolationType,
 } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import {
@@ -14,8 +15,10 @@ import {
 import {
   Badge,
   Box,
+  Button,
   Callout,
   Card,
+  Dialog,
   Flex,
   IconButton,
   Text,
@@ -30,6 +33,10 @@ import { RuleToggle } from "../RuleToggle/RuleToggle";
 import styles from "./InterpolationCard.module.scss";
 import { ScriptPreview } from "../ScriptPreview/ScriptPreview";
 import { InterpolationOptions } from "../InterpolationOptions/InterpolationOptions";
+import { EditRedirectForm } from "../EditRedirectForm/EditRedirectForm.tsx";
+import { EditHeaderForm } from "../EditHeaderForm/EditHeaderForm.tsx";
+import { ScriptForm } from "../ScriptForm/ScriptForm.tsx";
+import { useInterpolationForm } from "../../hooks/useInterpolationForm/useInterpolationForm.ts";
 
 type InterpolationCardProps = {
   info: RedirectInterpolation | HeaderInterpolation | ScriptInterpolation;
@@ -43,7 +50,10 @@ export const InterpolationCard = ({
   const [hit, setHit] = useState(false);
   const [_, setRecentlyHitColor] = useState<"green" | "gray">("green");
   const { enabledByUser, error, type, details, name } = info;
+  const { id } = details ?? {};
   const formattedError = error instanceof Error ? error.message : String(error);
+  const [editModeEnabled, setEditModeEnabled] = useState();
+  const form = useInterpolationForm();
 
   useEffect(() => {
     chrome.runtime?.onMessage?.addListener?.((msg) => {
@@ -128,18 +138,62 @@ export const InterpolationCard = ({
     }
   };
 
+  const getEditForm = () => {
+    switch (type) {
+      case "redirect":
+        return (
+          <EditRedirectForm
+            onSuccess={() => setEditModeEnabled(false)}
+            defaultValues={{
+              id,
+              source: details?.condition?.regexFilter,
+              name,
+              destination: details?.action?.redirect?.url,
+            }}
+          />
+        );
+      case "headers":
+        return (
+          <EditHeaderForm
+            onSuccess={() => setEditModeEnabled(false)}
+            defaultValues={{
+              id,
+              name,
+              key: details?.action?.requestHeaders?.[0]?.header,
+              value: details?.action?.requestHeaders?.[0]?.value,
+            }}
+          />
+        );
+      case "scripts":
+        return <ScriptForm editModeEnabled form={form} />;
+      default:
+        return <div>something went wrong</div>;
+    }
+  };
+
+  const onEditSelected = () => {
+    setEditModeEnabled(true);
+  };
+
+  const onEditModalCloseClick = () => {
+    setEditModeEnabled(false);
+  };
+
+  const onEditModalSaveClick = () => {
+    setEditModeEnabled(false);
+  };
   return (
-    <Collapsible.Root
-      className={styles.CollapsibleRoot}
-      onOpenChange={handleOpenChange}
+    <Card
+      ref={ref}
+      data-ui-active={hit}
+      data-ui-error={!!info.error}
+      data-testid={`${type}-preview-${info?.details?.id}`}
+      className={styles.InterpolationCard}
+      variant="surface"
     >
-      <Card
-        ref={ref}
-        data-ui-active={hit}
-        data-ui-error={!!info.error}
-        data-testid={`${type}-preview-${info?.details?.id}`}
-        className={styles.InterpolationCard}
-        variant="surface"
+      <Collapsible.Root
+        className={styles.CollapsibleRoot}
+        onOpenChange={handleOpenChange}
       >
         {error && (
           <Callout.Root color="red">
@@ -157,7 +211,6 @@ export const InterpolationCard = ({
               />
             </Box>
           )}
-
           <Flex width="100%" direction="column">
             <Flex width="100%" justify="between" align="center" pl="2">
               <Text weight="medium" size="2">
@@ -169,7 +222,10 @@ export const InterpolationCard = ({
                     {type}
                   </Badge>
                 </Box>
-                <InterpolationOptions config={info} />
+                <InterpolationOptions
+                  onEditSelected={onEditSelected}
+                  config={info}
+                />
               </Flex>
             </Flex>
             <Tooltip content="options">
@@ -190,7 +246,19 @@ export const InterpolationCard = ({
         <Collapsible.Content>
           <Box>{getPreview()}</Box>
         </Collapsible.Content>
-      </Card>
-    </Collapsible.Root>
+      </Collapsible.Root>
+      <Dialog.Root open={editModeEnabled}>
+        <Dialog.Content>
+          {getEditForm()}
+          <Flex gap="3" justify="end">
+            <Dialog.Close>
+              <Button onClick={onEditModalCloseClick} color="red">
+                Cancel
+              </Button>
+            </Dialog.Close>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
+    </Card>
   );
 };

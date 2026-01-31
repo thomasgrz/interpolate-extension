@@ -6,7 +6,7 @@ import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 export const HeaderForm = withForm({
   ...dashboardFormOptions,
-  render: ({ form }) => {
+  render: ({ form, onSuccess }) => {
     const validators = {
       onChange: ({ value }: { value?: string }) =>
         value?.trim()?.length ? undefined : "Please enter a valid input.",
@@ -47,7 +47,10 @@ export const HeaderForm = withForm({
             )}
           />
           <SubmitButton
-            onClick={() => form.handleSubmit({ submitAction: "add-header" })}
+            onClick={() => {
+              form.handleSubmit({ submitAction: "add-header" });
+              onSuccess?.();
+            }}
           >
             Create header
           </SubmitButton>
