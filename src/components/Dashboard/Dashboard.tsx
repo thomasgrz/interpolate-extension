@@ -25,7 +25,7 @@ import { FormType } from "@/constants";
 import { InterpolateContext } from "@/contexts/interpolate-context";
 import { Import } from "../Import/Import.tsx";
 import { Exporter } from "../Exporter/Exporter.tsx";
-import { useInterpolationsContext } from "../../hooks/useInterpolationsContext/useInterpolationsContext.ts";
+import { useInterpolations } from "../../hooks/useInterpolations/useInterpolations.ts";
 import { DashboardNav } from "../DashboardNav/DashboardNav.tsx";
 import { InterpolationsList } from "../InterpolationsList/InterpolationsList.tsx";
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
@@ -38,7 +38,7 @@ export const Dashboard = ({ showRules = true }: { showRules?: boolean }) => {
   );
 
   const { interpolations, pauseAll, resumeAll, removeAll, allPaused } =
-    useInterpolationsContext();
+    useInterpolations();
 
   const handleAllPaused = async () => {
     pauseAll();

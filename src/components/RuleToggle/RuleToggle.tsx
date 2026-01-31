@@ -1,12 +1,11 @@
 import { PauseIcon, PlayIcon } from "@radix-ui/react-icons";
-import { Flex, Button, IconButton, Tooltip } from "@radix-ui/themes";
+import { Flex, IconButton } from "@radix-ui/themes";
 import styles from "./RuleToggle.module.scss";
 
 export const RuleToggle = ({
   isPaused,
   onPauseClick,
   onResumeClick,
-  disabled,
 }: {
   disabled?: boolean;
   isPaused: boolean;
@@ -22,12 +21,7 @@ export const RuleToggle = ({
       align="center"
       data-testid={`${isPaused ? "play" : "pause"}-rule-toggle`}
     >
-      <IconButton
-        height="stretch"
-        radius="none"
-        onClick={handleClick}
-        color={buttonColor}
-      >
+      <IconButton radius="none" onClick={handleClick} color={buttonColor}>
         {isPaused ? <PlayIcon /> : <PauseIcon />}
       </IconButton>
     </Flex>

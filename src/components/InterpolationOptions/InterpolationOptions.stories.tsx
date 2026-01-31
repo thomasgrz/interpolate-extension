@@ -9,7 +9,12 @@ const meta = preview.meta({
 export default meta;
 
 export const Example = meta.story({
+  // @ts-expect-error TODO: fix types
   args: {
-    config: createRedirectInterpolation({ name: "test" }),
+    config: createRedirectInterpolation({
+      name: "test",
+      source: "",
+      destination: "",
+    }),
   },
 });

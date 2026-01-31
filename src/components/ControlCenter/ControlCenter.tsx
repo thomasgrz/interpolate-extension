@@ -6,7 +6,7 @@ import { RedirectForm } from "../RedirectForm/RedirectForm.tsx";
 import { HeaderForm } from "../HeaderForm/HeaderForm.tsx";
 import { ScriptForm } from "../ScriptForm/ScriptForm.tsx";
 import { DashboardControls } from "../DashboardControls/DashboardControls.tsx";
-import { useInterpolationsContext } from "../../hooks/useInterpolationsContext/useInterpolationsContext.ts";
+import { useInterpolations } from "../../hooks/useInterpolations/useInterpolations.ts";
 import { useInterpolateFormSelection } from "../../hooks/useInterpolateFormSelection/useInterpolateFormSelection.ts";
 import styles from "./ControlCenter.module.scss";
 import { FormType } from "@/constants";
@@ -19,7 +19,7 @@ export const ControlCenter = () => {
     handleAllPaused,
     handleAllResumed,
     handleDeleteAll,
-  } = useInterpolationsContext();
+  } = useInterpolations();
   const { selectedForm, setSelectedForm } = useInterpolateFormSelection();
   const form = useInterpolationForm();
   return (

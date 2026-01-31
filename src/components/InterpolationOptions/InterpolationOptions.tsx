@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { DropdownMenu, IconButton } from "@radix-ui/themes";
 import {
   DotsHorizontalIcon,
@@ -6,6 +5,7 @@ import {
   ClipboardCopyIcon,
 } from "@radix-ui/react-icons";
 import styles from "./InterpolationOptions.module.scss";
+import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 
 export const InterpolationOptions = ({
   config,
@@ -14,7 +14,6 @@ export const InterpolationOptions = ({
   config: AnyInterpolation;
   onEditSelected: () => void;
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
   const handleCopyConfig = () => {
     const json = JSON.stringify(config);
     const data = [new ClipboardItem({ "text/plain": json })];

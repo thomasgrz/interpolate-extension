@@ -10,7 +10,6 @@ const meta = preview.meta({
   render: (args) => (
     <div
       style={{
-        "z-index": 100000000,
         position: "fixed",
         bottom: 0,
         right: 0,

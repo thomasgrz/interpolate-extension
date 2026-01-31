@@ -15,10 +15,10 @@ export const InterpolateContext = createContext({
 
 export const InterpolateProvider = ({
   children,
-  initialValue,
+  initialValue = [],
 }: {
   children: ReactNode;
-  initialValue: AnyInterpolation[];
+  initialValue?: AnyInterpolation[];
 }) => {
   const value = useInterpolations(initialValue);
   return <InterpolateContext value={value}>{children}</InterpolateContext>;

@@ -22,7 +22,7 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
       requestUrl: string;
       urlOverride: string;
       hidden: boolean;
-      onOpenChange: (isOpen: boolean) => void;
+      onOpenChange: () => void;
     })[]
   >([]);
   const [allPaused, setAllPaused] = useState<boolean>();
@@ -172,7 +172,7 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
           {
             ...interpolation,
             hidden: false,
-            onOpenChange: (isOpen: boolean) => {
+            onOpenChange: () => {
               setRecentlyUsed((innerPrev) =>
                 innerPrev.map((interp) => {
                   const isMatchingInterpId =

@@ -8,7 +8,28 @@ import { createScriptInterpolation } from "@/utils/factories/createScriptInterpo
 import { useAppForm } from "../useForm/useForm";
 import { useEffect, useRef } from "react";
 
-export const useInterpolationForm = (defaultValues: unknown) => {
+export const useInterpolationForm = (defaultValues: {
+  redirectRuleForm: {
+    name: string;
+    source: string;
+    destination: string;
+    id?: number | null;
+  };
+  headerRuleForm: {
+    name: string;
+    key: string;
+    value: string;
+    id?: number | null;
+  };
+  scriptForm: {
+    name: string;
+    body: string;
+    runAt: string;
+    allFrames: boolean;
+    matches: string;
+    id?: string | null;
+  };
+}) => {
   const hasSynced = useRef<boolean>(null);
 
   useEffect(() => {
@@ -20,19 +41,21 @@ export const useInterpolationForm = (defaultValues: unknown) => {
 
   const form = useAppForm({
     ...dashboardFormOptions,
-    ...(defaultValues ? { defaultValues } : {}),
+    ...(defaultValues
+      ? { defaultValues }
+      : { defaultValues: dashboardFormOptions.defaultValues }),
     validators: {},
     onSubmitMeta: {
       submitAction: null,
     },
     onSubmit: async ({ value, meta }) => {
-      const { submitAction, id } = meta;
+      const { submitAction } = meta;
       logger(`Selected action - ${submitAction}`);
       if (submitAction === SubmitAction.AddRedirect) {
         debugger;
         await InterpolateStorage.create([
           createRedirectInterpolation({
-            id: value.redirectRuleForm.id,
+            id: value.redirectRuleForm.id ?? 0,
             source: value.redirectRuleForm.source,
             destination: value.redirectRuleForm.destination,
             name: value.redirectRuleForm.name || "Redirect Rule",
@@ -43,7 +66,7 @@ export const useInterpolationForm = (defaultValues: unknown) => {
       if (submitAction === SubmitAction.AddHeader) {
         await InterpolateStorage.create([
           createHeaderInterpolation({
-            id: value.headerRuleForm.id,
+            id: value.headerRuleForm.id ?? 0,
             headerKey: value.headerRuleForm.key,
             headerValue: value.headerRuleForm.value,
             name: value.headerRuleForm.name,
@@ -54,7 +77,7 @@ export const useInterpolationForm = (defaultValues: unknown) => {
       if (submitAction === SubmitAction.CreateScript) {
         await InterpolateStorage.create([
           createScriptInterpolation({
-            id,
+            id: value.scriptForm?.id ?? null,
             name: value.scriptForm.name,
             body: value.scriptForm.body,
             matches: value.scriptForm.matches,
