@@ -16,7 +16,6 @@ export const SubmitButton = ({
       className={styles.Button}
       onClick={onClick}
     >
-      <PlusCircledIcon />
       {children}
     </Button>
   );

@@ -6,7 +6,7 @@ import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 export const RedirectForm = withForm({
   ...dashboardFormOptions,
-  render: ({ form }) => {
+  render: ({ form, editModeEnabled, onSuccess }) => {
     const validators = {
       onChange: ({ value }: { value?: string }) =>
         value?.trim()?.length ? undefined : "Please enter a valid input.",
@@ -18,14 +18,16 @@ export const RedirectForm = withForm({
             <form.AppField
               validators={validators}
               name="redirectRuleForm.name"
-              children={(field) => (
-                <div className={styles.Input}>
-                  <field.TextField
-                    placeholder="Cool Redirect"
-                    label="Rule name:"
-                  />
-                </div>
-              )}
+              children={(field) => {
+                return (
+                  <div className={styles.Input}>
+                    <field.TextField
+                      placeholder="Cool Redirect"
+                      label="Rule name:"
+                    />
+                  </div>
+                );
+              }}
             />
             <form.AppField
               validators={validators}
@@ -49,9 +51,14 @@ export const RedirectForm = withForm({
             />
           </Flex>
           <SubmitButton
-            onClick={() => form.handleSubmit({ submitAction: "add-redirect" })}
+            onClick={() => {
+              form.handleSubmit({
+                submitAction: "add-redirect",
+              });
+              onSuccess?.();
+            }}
           >
-            Create redirect
+            {editModeEnabled ? "Save redirect" : "Create redirect"}
           </SubmitButton>
         </Flex>
       </Box>

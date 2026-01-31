@@ -12,9 +12,9 @@ const getIsEveryRulePaused = async () => {
   return !!isEveryRulePaused;
 };
 
-export const useInterpolations = () => {
+export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
   const [interpolations, setInterpolations] = useState<AnyInterpolation[] | []>(
-    [],
+    initialValue ?? [],
   );
   const [recentlyUsed, setRecentlyUsed] = useState<
     (AnyInterpolation & {

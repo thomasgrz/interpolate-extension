@@ -28,9 +28,7 @@ export const Import = () => {
       const parsedConfig = JSON.parse(textareaInput);
       await InterpolateStorage.create(parsedConfig);
       setIsLoading(false);
-      console.log("SUCCESS");
     } catch (e) {
-      console.log("FAILURE" + e);
       setIsLoading(false);
       setError(String(e.message));
     }

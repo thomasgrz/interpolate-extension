@@ -1,12 +1,20 @@
+import { useState } from "react";
 import { DropdownMenu, IconButton } from "@radix-ui/themes";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import {
+  DotsHorizontalIcon,
+  GearIcon,
+  ClipboardCopyIcon,
+} from "@radix-ui/react-icons";
 import styles from "./InterpolationOptions.module.scss";
 
 export const InterpolationOptions = ({
   config,
+  onEditSelected,
 }: {
   config: AnyInterpolation;
+  onEditSelected: () => void;
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const handleCopyConfig = () => {
     const json = JSON.stringify(config);
     const data = [new ClipboardItem({ "text/plain": json })];
@@ -22,7 +30,10 @@ export const InterpolationOptions = ({
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>
         <DropdownMenu.Item onSelect={handleCopyConfig}>
-          Copy config
+          <ClipboardCopyIcon /> Copy
+        </DropdownMenu.Item>
+        <DropdownMenu.Item onSelect={onEditSelected}>
+          <GearIcon /> Edit
         </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>

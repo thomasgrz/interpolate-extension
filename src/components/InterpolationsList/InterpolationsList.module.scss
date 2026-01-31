@@ -1,0 +1,14 @@
+@media screen and (max-width: 500px) {
+  .InterpolationsCardContainer {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 500px) {
+  .InterpolationsCardContainer {
+    width: 50%;
+  }
+}
+
+.InterpolationsCardContainer {
+}

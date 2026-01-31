@@ -66,12 +66,12 @@ export const Exporter = ({
         <Flex gap="2" direction="column">
           {interpolations?.map?.((interp) => {
             return (
-              <Flex gap="2" align="center">
+              <Flex width="stretch" flexGrow="1" gap="2" align="center">
                 <Checkbox
                   key={interp?.details?.id}
                   onClick={(e) => handleChange(e, interp)}
                 />
-                <InterpolationCard hideRuleToggle info={interp} />{" "}
+                <InterpolationCard hideRuleToggle info={interp} />
               </Flex>
             );
           })}

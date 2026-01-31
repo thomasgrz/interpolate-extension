@@ -8,7 +8,7 @@ import { createScriptInterpolation } from "@/utils/factories/createScriptInterpo
 import { useAppForm } from "../useForm/useForm";
 import { useEffect, useRef } from "react";
 
-export const useInterpolationForm = () => {
+export const useInterpolationForm = (defaultValues: unknown) => {
   const hasSynced = useRef<boolean>(null);
 
   useEffect(() => {
@@ -20,15 +20,19 @@ export const useInterpolationForm = () => {
 
   const form = useAppForm({
     ...dashboardFormOptions,
+    ...(defaultValues ? { defaultValues } : {}),
     validators: {},
     onSubmitMeta: {
       submitAction: null,
     },
     onSubmit: async ({ value, meta }) => {
-      logger(`Selected action - ${meta?.submitAction}`);
-      if (meta.submitAction === SubmitAction.AddRedirect) {
+      const { submitAction, id } = meta;
+      logger(`Selected action - ${submitAction}`);
+      if (submitAction === SubmitAction.AddRedirect) {
+        debugger;
         await InterpolateStorage.create([
           createRedirectInterpolation({
+            id: value.redirectRuleForm.id,
             source: value.redirectRuleForm.source,
             destination: value.redirectRuleForm.destination,
             name: value.redirectRuleForm.name || "Redirect Rule",
@@ -36,9 +40,10 @@ export const useInterpolationForm = () => {
         ]);
         return;
       }
-      if (meta.submitAction === SubmitAction.AddHeader) {
+      if (submitAction === SubmitAction.AddHeader) {
         await InterpolateStorage.create([
           createHeaderInterpolation({
+            id: value.headerRuleForm.id,
             headerKey: value.headerRuleForm.key,
             headerValue: value.headerRuleForm.value,
             name: value.headerRuleForm.name,
@@ -46,9 +51,10 @@ export const useInterpolationForm = () => {
         ]);
         return;
       }
-      if (meta.submitAction === SubmitAction.CreateScript) {
+      if (submitAction === SubmitAction.CreateScript) {
         await InterpolateStorage.create([
           createScriptInterpolation({
+            id,
             name: value.scriptForm.name,
             body: value.scriptForm.body,
             matches: value.scriptForm.matches,

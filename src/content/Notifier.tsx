@@ -1,11 +1,11 @@
 import { InterpolationCard } from "@/components/InterpolationCard/InterpolationCard";
-import { useInterpolations } from "@/hooks/useInterpolations/useInterpolations";
+import { useInterpolationsContext } from "@/hooks/useInterpolationsContext/useInterpolationsContext";
 import styles from "./Notifier.module.scss";
 import { Flex, Theme } from "@radix-ui/themes";
 import { NotifierToast } from "../components/NotifierToast/NotifierToast.tsx";
 
 export const Notifier = () => {
-  const { recentlyUsed } = useInterpolations();
+  const { recentlyUsed } = useInterpolationsContext();
 
   return (
     <Theme

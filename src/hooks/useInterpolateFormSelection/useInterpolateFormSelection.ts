@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 export const useInterpolateFormSelection = (defaultForm: FormType) => {
   const [selectedForm, setSelectedForm] = useState<FormType | null>(
-    defaultForm,
+    defaultForm ?? FormType.REDIRECT,
   );
   const hasCheckedDefault = useRef<true | null>(null);
 
