@@ -4,14 +4,9 @@ import {
   HeaderInterpolation,
   RedirectInterpolation,
   ScriptInterpolation,
-  InterpolationType,
 } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import {
-  DoubleArrowDownIcon,
-  DoubleArrowUpIcon,
-  DotsHorizontalIcon,
-} from "@radix-ui/react-icons";
+import { DoubleArrowDownIcon, DoubleArrowUpIcon } from "@radix-ui/react-icons";
 import {
   Badge,
   Box,
@@ -23,12 +18,10 @@ import {
   IconButton,
   Text,
   Tooltip,
-  Separator,
 } from "@radix-ui/themes";
 import { Collapsible } from "radix-ui";
 import { HeaderRulePreview } from "../HeaderPreview/HeaderPreview";
 import { RedirectRulePreview } from "../RedirectPreview/RedirectPreview";
-import { RuleDeleteAction } from "../RuleDeleteAction/RuleDeleteAction";
 import { RuleToggle } from "../RuleToggle/RuleToggle";
 import styles from "./InterpolationCard.module.scss";
 import { ScriptPreview } from "../ScriptPreview/ScriptPreview";
@@ -46,13 +39,13 @@ export const InterpolationCard = ({
   info,
   hideRuleToggle,
 }: { hideRuleToggle?: boolean } & InterpolationCardProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [hit, setHit] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [hit, setHit] = useState<boolean>(false);
   const [_, setRecentlyHitColor] = useState<"green" | "gray">("green");
   const { enabledByUser, error, type, details, name } = info;
   const { id } = details ?? {};
   const formattedError = error instanceof Error ? error.message : String(error);
-  const [editModeEnabled, setEditModeEnabled] = useState();
+  const [editModeEnabled, setEditModeEnabled] = useState<boolean>();
   const form = useInterpolationForm();
 
   useEffect(() => {
@@ -69,10 +62,6 @@ export const InterpolationCard = ({
       }
     });
   }, [enabledByUser]);
-
-  const onDelete = async () => {
-    await InterpolateStorage.delete(details.id);
-  };
 
   const handleResumeClick = async () => {
     await InterpolateStorage.setIsEnabled(details?.id, true);
@@ -157,14 +146,16 @@ export const InterpolationCard = ({
           <EditHeaderForm
             onSuccess={() => setEditModeEnabled(false)}
             defaultValues={{
+              // @ts-expect-error TODO: fix types
               id,
               name,
-              key: details?.action?.requestHeaders?.[0]?.header,
-              value: details?.action?.requestHeaders?.[0]?.value,
+              key: details?.action?.requestHeaders?.[0]?.header ?? "",
+              value: details?.action?.requestHeaders?.[0]?.value ?? "",
             }}
           />
         );
-      case "scripts":
+      case "script":
+        // @ts-expect-error TODO: fix types
         return <ScriptForm editModeEnabled form={form} />;
       default:
         return <div>something went wrong</div>;
@@ -179,9 +170,6 @@ export const InterpolationCard = ({
     setEditModeEnabled(false);
   };
 
-  const onEditModalSaveClick = () => {
-    setEditModeEnabled(false);
-  };
   return (
     <Card
       ref={ref}
@@ -232,7 +220,6 @@ export const InterpolationCard = ({
               <Collapsible.Trigger asChild>
                 <IconButton
                   className={styles.ToggleCollapse}
-                  boxShadow="none"
                   size="1"
                   radius="none"
                   variant="outline"

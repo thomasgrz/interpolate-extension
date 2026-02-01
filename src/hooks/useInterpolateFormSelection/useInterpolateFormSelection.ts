@@ -3,7 +3,7 @@ import { logger } from "@/utils/logger";
 import { INTERPOLATE_SELECTED_FORM_KEY } from "@/utils/storage/storage.constants";
 import { useEffect, useRef, useState } from "react";
 
-export const useInterpolateFormSelection = (defaultForm: FormType) => {
+export const useInterpolateFormSelection = (defaultForm?: FormType) => {
   const [selectedForm, setSelectedForm] = useState<FormType | null>(
     defaultForm ?? FormType.REDIRECT,
   );

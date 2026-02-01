@@ -8,7 +8,7 @@ import { createScriptInterpolation } from "@/utils/factories/createScriptInterpo
 import { useAppForm } from "../useForm/useForm";
 import { useEffect, useRef } from "react";
 
-export const useInterpolationForm = (defaultValues: {
+export const useInterpolationForm = (defaultValues?: {
   redirectRuleForm: {
     name: string;
     source: string;

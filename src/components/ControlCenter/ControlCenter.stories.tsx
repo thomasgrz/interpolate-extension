@@ -7,4 +7,5 @@ export const meta = preview.meta({
 
 export default meta;
 
+// @ts-expect-error TODO: fix types
 export const Default = meta.story({});

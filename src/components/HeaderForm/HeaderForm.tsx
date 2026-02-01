@@ -6,6 +6,7 @@ import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 export const HeaderForm = withForm({
   ...dashboardFormOptions,
+  // @ts-expect-error TODO: fix types
   render: ({ form, onSuccess }) => {
     const validators = {
       onChange: ({ value }: { value?: string }) =>

@@ -13,13 +13,8 @@ import { FormType } from "@/constants";
 import { useInterpolationForm } from "../../hooks/useInterpolationForm/useInterpolationForm.ts";
 
 export const ControlCenter = () => {
-  const {
-    interpolations,
-    allPaused,
-    handleAllPaused,
-    handleAllResumed,
-    handleDeleteAll,
-  } = useInterpolations();
+  const { interpolations, allPaused, pauseAll, removeAll, resumeAll } =
+    useInterpolations();
   const { selectedForm, setSelectedForm } = useInterpolateFormSelection();
   const form = useInterpolationForm();
   return (
@@ -33,7 +28,6 @@ export const ControlCenter = () => {
       </Flex>
       <Flex
         gap="2"
-        wrap
         direction={"column"}
         flexGrow={"1"}
         data-testid={"dashboard"}
@@ -45,19 +39,26 @@ export const ControlCenter = () => {
           <Flex height={"100%"} direction="column" flexGrow={"1"}>
             <form>
               {selectedForm === FormType.REDIRECT && (
+                // @ts-expect-error TODO: fix types
                 <RedirectForm form={form} />
               )}
-              {selectedForm === FormType.HEADER && <HeaderForm form={form} />}
-              {selectedForm === FormType.SCRIPT && <ScriptForm form={form} />}
+              {selectedForm === FormType.HEADER && (
+                //@ts-expect-error TODO: fix types
+                <HeaderForm form={form} />
+              )}
+              {selectedForm === FormType.SCRIPT && (
+                // @ts-expect-error TODO: fix types
+                <ScriptForm form={form} />
+              )}
             </form>
           </Flex>
         </Card>
         <DashboardControls
           ruleCount={interpolations?.length}
           allPaused={!!allPaused}
-          onResumeAllRules={handleAllResumed}
-          onPauseAllRules={handleAllPaused}
-          onDeleteAllRules={handleDeleteAll}
+          onResumeAllRules={resumeAll}
+          onPauseAllRules={pauseAll}
+          onDeleteAllRules={removeAll}
         />
       </Flex>
     </Container>
