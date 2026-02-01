@@ -1,5 +1,5 @@
 import { Toast } from "radix-ui";
-import { Flex, Card, Container, IconButton, Box } from "@radix-ui/themes";
+import { Container, IconButton, Box } from "@radix-ui/themes";
 import React from "react";
 import styles from "./NotifierToast.module.scss";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
@@ -12,7 +12,7 @@ export const NotifierToast = ({
 }: React.PropsWithChildren<{
   title?: string;
   open: boolean;
-  onOpenChange: (value: boolean) => void;
+  onOpenChange: () => void;
 }>) => {
   return (
     <Toast.Provider>
@@ -22,7 +22,7 @@ export const NotifierToast = ({
         className={styles.ToastRoot}
       >
         <Container className={styles.ToastContainer}>
-          <Box radius="full" className={styles.InterpWithLabel}>
+          <Box className={styles.InterpWithLabel}>
             <Toast.Description className={styles.ToastDescription}>
               {children}
             </Toast.Description>

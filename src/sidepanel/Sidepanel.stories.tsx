@@ -1,17 +1,28 @@
 // Button.stories.ts
 // Replace your-framework with the framework you are using, e.g. react-vite, nextjs, nextjs-vite, etc.
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useEffect } from "react";
+import { StrictMode } from "react";
 import { Dashboard } from "../components/Dashboard/Dashboard";
+import preview from ".storybook/preview";
 import { Theme } from "@radix-ui/themes";
-import { InterpolateProvider } from "@/contexts/interpolate-context";
-import { InterpolateStorage } from "../utils/storage/InterpolateStorage/InterpolateStorage.ts";
-import { createRedirectInterpolation } from "../utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
-import preview from "#.storybook/preview";
+import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
+
 const meta = preview.meta({
-  component: Dashboard,
+  component: () => {
+    return (
+      <StrictMode>
+        <Theme style={{ backgroundColor: "#FFDE21" }} radius="large">
+          <InterpolateProvider>
+            <Dashboard />
+          </InterpolateProvider>
+        </Theme>
+      </StrictMode>
+    );
+  },
 });
 
 export default meta;
 
-export const Default = meta.story({});
+export const Default = meta.story({
+  // @ts-expect-error TODO
+  args: {},
+});

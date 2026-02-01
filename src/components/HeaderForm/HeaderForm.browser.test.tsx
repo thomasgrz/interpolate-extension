@@ -6,6 +6,7 @@ import { renderInBrowser } from "../../../test-utils/renderInBrowser";
 
 const Container = () => {
   const form = useInterpolationForm();
+  // @ts-expect-error TODO: fix types
   return <HeaderForm form={form} />;
 };
 

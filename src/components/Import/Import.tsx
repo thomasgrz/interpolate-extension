@@ -1,36 +1,27 @@
-import {
-  Callout,
-  DropdownMenu,
-  Box,
-  Flex,
-  Button,
-  Dialog,
-  TextArea,
-} from "@radix-ui/themes";
+import { Callout, Box, Flex, Button, Dialog, TextArea } from "@radix-ui/themes";
 
 import { DownloadIcon } from "@radix-ui/react-icons";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { InterpolateStorage } from "../../utils/storage/InterpolateStorage/InterpolateStorage";
 
 export const Import = () => {
-  const [isModalOpen, setIsModalOpen] = useState();
-  const [textareaInput, setTextAreaInput] = useState();
-  const [isLoading, setIsLoading] = useState();
-  const [error, setError] = useState();
+  const [textareaInput, setTextAreaInput] = useState<string>();
+  const [isLoading, setIsLoading] = useState<boolean>();
+  const [error, setError] = useState<string>();
 
-  const onChange = (event) => {
+  const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setTextAreaInput(event.target?.value);
   };
 
   const onSave = async () => {
     setIsLoading(true);
     try {
-      const parsedConfig = JSON.parse(textareaInput);
+      const parsedConfig = JSON.parse(textareaInput ?? "");
       await InterpolateStorage.create(parsedConfig);
       setIsLoading(false);
     } catch (e) {
       setIsLoading(false);
-      setError(String(e.message));
+      setError(String((e as Error).message));
     }
   };
 
@@ -43,13 +34,12 @@ export const Import = () => {
       </Dialog.Trigger>
       <Dialog.Content>
         <TextArea
-          padding="0"
           value={textareaInput}
           onChange={onChange}
           size="3"
           placeholder="paste config here..."
         />
-        <Flex flexGrow justify="end">
+        <Flex justify="end">
           {error && (
             <Callout.Root>
               <Callout.Text>{error}</Callout.Text>

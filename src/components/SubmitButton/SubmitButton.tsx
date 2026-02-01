@@ -1,6 +1,5 @@
 import { Button } from "@radix-ui/themes";
 import styles from "./SubmitButton.module.scss";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 export const SubmitButton = ({
   onClick,

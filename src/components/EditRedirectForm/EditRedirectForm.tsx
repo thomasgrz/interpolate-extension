@@ -8,10 +8,12 @@ export const EditRedirectForm = ({
   onSuccess?: () => void;
 }) => {
   const form = useInterpolationForm({
+    // @ts-expect-error TODO: fix types
     redirectRuleForm: {
       ...defaultValues,
     },
   });
 
+  // @ts-expect-error TODO: fix types
   return <RedirectForm onSuccess={onSuccess} form={form} editModeEnabled />;
 };

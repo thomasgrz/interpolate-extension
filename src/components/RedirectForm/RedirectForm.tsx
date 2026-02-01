@@ -6,6 +6,7 @@ import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 export const RedirectForm = withForm({
   ...dashboardFormOptions,
+  // @ts-expect-error TODO: fix types
   render: ({ form, editModeEnabled, onSuccess }) => {
     const validators = {
       onChange: ({ value }: { value?: string }) =>

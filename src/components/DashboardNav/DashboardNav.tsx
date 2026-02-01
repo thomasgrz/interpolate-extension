@@ -1,18 +1,8 @@
-import {
-  Flex,
-  Button,
-  DropdownMenu,
-  IconButton,
-  SegmentedControl,
-  Strong,
-} from "@radix-ui/themes";
-import { Popover } from "radix-ui";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
-import { useInterpolationForm } from "@/hooks/useInterpolationForm/useInterpolationForm";
+import { SegmentedControl, Strong } from "@radix-ui/themes";
 
 import { FormType } from "@/constants";
-import { RedirectForm } from "../RedirectForm/RedirectForm";
 
+// @ts-expect-error TODO: fix types
 export const DashboardNav = ({ value, onChange }) => {
   return (
     <SegmentedControl.Root

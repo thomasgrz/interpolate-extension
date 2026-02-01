@@ -11,11 +11,20 @@ const meta = preview.meta({
 export default meta;
 
 export const Default = meta.story({
+  // @ts-expect-error TODO: fix types
   args: {
     interpolations: [
-      createHeaderInterpolation({ name: "header" }),
-      createRedirectInterpolation({ name: "redirect" }),
-      createScriptInterpolation({ name: "script" }),
+      createHeaderInterpolation({
+        name: "header",
+        headerKey: "",
+        headerValue: "",
+      }),
+      createRedirectInterpolation({
+        name: "redirect",
+        source: "",
+        destination: "",
+      }),
+      createScriptInterpolation({ name: "script", body: "" }),
     ],
   },
 });

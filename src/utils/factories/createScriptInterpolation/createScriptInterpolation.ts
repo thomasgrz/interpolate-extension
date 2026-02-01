@@ -2,6 +2,7 @@ import { ScriptInterpolation } from "@/utils/factories/Interpolation";
 import { generateRuleId } from "@/utils/id/generateRedirectRuleId";
 
 export const createScriptInterpolation = (scriptForm: {
+  id?: string | null;
   body: string;
   runAt?: string;
   matches?: string;
@@ -11,7 +12,7 @@ export const createScriptInterpolation = (scriptForm: {
     name: scriptForm.name,
     details: {
       js: [{ code: `${scriptForm.body}` }],
-      id: generateRuleId().toString(),
+      id: scriptForm?.id ?? generateRuleId().toString(),
       matches: [scriptForm.matches || "*://*/*"],
     },
   });

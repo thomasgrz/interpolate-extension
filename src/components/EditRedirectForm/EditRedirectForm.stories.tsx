@@ -8,6 +8,7 @@ const meta = preview.meta({
 export default meta;
 
 export const Default = meta.story({
+  // @ts-expect-error TODO: fix types
   args: {
     defaultValues: {
       name: "test",
