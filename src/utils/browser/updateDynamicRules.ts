@@ -11,8 +11,8 @@ export const updateDynamicRules = async (
   },
 ) => {
   const { onError } = cb;
-  const registeredDynamicRules =
-    await chrome.declarativeNetRequest.getDynamicRules();
+  const registeredDynamicRules = [];
+  // await chrome.declarativeNetRequest.getDynamicRules();
   const rulesByStatus = interpolations?.reduce(
     (
       acc: {
@@ -45,9 +45,9 @@ export const updateDynamicRules = async (
   });
 
   if (rulesToPause?.length) {
-    await chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: rulesToPause?.map((rule) => rule.id),
-    });
+    //await chrome.declarativeNetRequest.updateDynamicRules({
+    //  removeRuleIds: rulesToPause?.map((rule) => rule.id),
+    // });
   }
   // register any enabled rules
   const rulesToEnable = rulesByStatus?.enabledRules?.filter((interp) => {
@@ -61,9 +61,9 @@ export const updateDynamicRules = async (
       const allPromises = rulesToEnable?.map((rule) => {
         return new Promise(async (resolve, reject) => {
           try {
-            await chrome.declarativeNetRequest.updateDynamicRules({
-              addRules: [rule.details],
-            });
+            // await chrome.declarativeNetRequest.updateDynamicRules({
+            //  addRules: [rule.details],
+            // });
             resolve({ id: rule.details.id, status: "fulfilled" });
           } catch (e) {
             onError?.(rule?.details?.id, e as Error);

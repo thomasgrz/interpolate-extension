@@ -13,6 +13,7 @@ export type HeaderInterpolationConfig = {
 export type InterpolationType = "script" | "redirect" | "headers";
 
 class Interpolation {
+  isActive: boolean;
   createdAt: number;
   enabledByUser?: boolean;
   error?: Error | string | null;
@@ -23,6 +24,7 @@ class Interpolation {
     this.enabledByUser = true;
     this.error = null;
     this.name = config.name;
+    this.isActive = false;
   }
 }
 

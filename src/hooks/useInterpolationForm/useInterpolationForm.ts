@@ -55,7 +55,7 @@ export const useInterpolationForm = (defaultValues?: {
         debugger;
         await InterpolateStorage.create([
           createRedirectInterpolation({
-            id: value.redirectRuleForm.id ?? 0,
+            id: value.redirectRuleForm.id,
             source: value.redirectRuleForm.source,
             destination: value.redirectRuleForm.destination,
             name: value.redirectRuleForm.name || "Redirect Rule",
@@ -66,7 +66,7 @@ export const useInterpolationForm = (defaultValues?: {
       if (submitAction === SubmitAction.AddHeader) {
         await InterpolateStorage.create([
           createHeaderInterpolation({
-            id: value.headerRuleForm.id ?? 0,
+            id: value.headerRuleForm.id,
             headerKey: value.headerRuleForm.key,
             headerValue: value.headerRuleForm.value,
             name: value.headerRuleForm.name,

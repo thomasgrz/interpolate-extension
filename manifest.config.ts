@@ -21,8 +21,6 @@ export default defineManifest({
     "contentSettings",
     "contextMenus", // add an item to the menu displayed on right click
     "debugger",
-    "declarativeNetRequest",
-    "declarativeNetRequestFeedback",
     "nativeMessaging",
     "notifications",
     "offscreen",
@@ -30,6 +28,7 @@ export default defineManifest({
     "storage",
     "tabs",
     "userScripts",
+    "webNavigation",
   ],
   content_scripts: [
     {

@@ -5,7 +5,7 @@ import { Flex, Theme } from "@radix-ui/themes";
 import { NotifierToast } from "../components/NotifierToast/NotifierToast.tsx";
 
 export const Notifier = () => {
-  const { recentlyUsed } = useInterpolations();
+  const { notifications } = useInterpolations();
 
   return (
     <Theme
@@ -15,7 +15,7 @@ export const Notifier = () => {
       }}
     >
       <Flex direction="column" className={styles.Root}>
-        {recentlyUsed.map((interp) => (
+        {notifications.map((interp) => (
           <NotifierToast
             onOpenChange={interp?.onOpenChange}
             open={!interp?.hidden}

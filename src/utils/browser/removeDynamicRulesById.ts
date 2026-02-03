@@ -1,5 +1,5 @@
 export const removeDynamicRulesById = async (ids: number[]) => {
-  await chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: ids,
-  });
+  // await chrome.declarativeNetRequest.updateDynamicRules({
+  //  removeRuleIds: ids,
+  // });
 };

@@ -6,15 +6,17 @@ import { createRedirectInterpolation } from "../src/utils/factories/createRedire
 
 export default definePreview({
   decorators: [
-    // @ts-expect-error TODO: fix types
-    (Story) => {
+    (Story, contexts) => {
+      const { parameters } = contexts;
       const initialValue = [
         createRedirectInterpolation({
           name: "test",
           source: ".*something.*",
           destination: "http://www.example.com",
         }),
+        ...(parameters?.interpolations ?? []),
       ];
+      console.log("HIT");
       return (
         <Theme style={{ backgroundColor: "#FFDE21" }} radius="large">
           <InterpolateProvider initialValue={initialValue}>
@@ -24,13 +26,4 @@ export default definePreview({
       );
     },
   ],
-  // @ts-expect-error CSF next issue?
-  parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
-  },
 });

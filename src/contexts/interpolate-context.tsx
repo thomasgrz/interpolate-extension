@@ -4,13 +4,16 @@ import { createContext, ReactNode } from "react";
 
 export const InterpolateContext = createContext({
   interpolations: [] as AnyInterpolation[] | [] | undefined,
+  isActive: (_interp: AnyInterpolation): boolean => false,
   allPaused: undefined as boolean | undefined,
   pause: (_id: string) => {},
   pauseAll: () => {},
+  recentlyActive: [] as AnyInterpolation[] | [] | undefined,
   resume: (_id: string) => {},
   resumeAll: () => {},
   remove: (_id: string) => {},
   removeAll: () => {},
+  notifications: [] as AnyInterpolation[] | [],
 });
 
 export const InterpolateProvider = ({

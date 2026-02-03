@@ -16,19 +16,38 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
   const [interpolations, setInterpolations] = useState<AnyInterpolation[] | []>(
     initialValue ?? [],
   );
-  const [recentlyUsed, setRecentlyUsed] = useState<
-    (AnyInterpolation & {
-      requestId: string;
-      requestUrl: string;
-      urlOverride: string;
-      hidden: boolean;
-      onOpenChange: () => void;
-    })[]
+  const [notifications, setNotifications] = useState<
+    | (AnyInterpolation & {
+        requestId: string;
+        requestUrl: string;
+        urlOverride: string;
+        hidden: boolean;
+        onOpenChange: () => void;
+      })[]
+    | []
   >([]);
+  const [recentlyActive, setRecentlyActive] = useState<
+    AnyInterpolation[] | []
+  >();
+
+  useEffect(() => {
+    chrome.storage.sync.onChanged.addListener(async (changes) => {
+      const isNonActivityChange = !Object.entries(changes).some(([key]) =>
+        key.includes("-active"),
+      );
+      if (isNonActivityChange) return;
+      const activeTab = await InterpolateStorage.getActiveTab();
+
+      const activeTabActivity = (await InterpolateStorage.getTabActivity(
+        activeTab,
+      )) as AnyInterpolation[];
+
+      setRecentlyActive(activeTabActivity);
+    });
+  }, []);
+
   const [allPaused, setAllPaused] = useState<boolean>();
   const isInitialized = useRef(false);
-
-  useEffect(() => {}, []);
 
   const add = (interp: AnyInterpolation[] | AnyInterpolation) => {
     const result = InterpolateStorage.create(
@@ -154,26 +173,23 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
         // In background.ts we send a message
         // to the content script whenever an interpolation is used
         // (this happens on a tab by tab basis)
-        const isRedirect = message?.type === "redirect";
-        const isHeader = message?.type === "headers";
-        const isNonInterpolationEvent = !isRedirect && !isHeader;
-
+        const isNonInterpolationEvent = !message?.isInterpolation;
         if (isNonInterpolationEvent) return;
         const interpolation = message;
 
-        const isAlreadyTracked = recentlyUsed.find(
+        const isAlreadyTracked = notifications.find(
           (interp) => interp?.details?.id === interpolation?.details?.id,
         );
 
         if (isAlreadyTracked) return;
 
-        setRecentlyUsed((topLevelPrev) => [
+        setNotifications((topLevelPrev) => [
           ...topLevelPrev,
           {
             ...interpolation,
             hidden: false,
             onOpenChange: () => {
-              setRecentlyUsed((innerPrev) =>
+              setNotifications((innerPrev) =>
                 innerPrev.map((interp) => {
                   const isMatchingInterpId =
                     interp.details?.id === interpolation.details.id;
@@ -215,10 +231,11 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
     allPaused,
     remove,
     removeAll,
-    recentlyUsed,
+    notifications,
     interpolations,
     pause,
     pauseAll,
+    recentlyActive,
     resume,
     resumeAll,
   };
