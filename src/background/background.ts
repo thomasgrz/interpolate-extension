@@ -200,7 +200,7 @@ try {
   // This should ensure that we're listening to this tab's target
   // and all other related targets from that tab (iframes, service workers, third party sources etc)
   // NOTE: onUpdated can happen in the background too so we shouldnt
-  chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  chrome.tabs.onUpdated.addListener(async (tabId, _, tab) => {
     const isNotDebuggable = !tab.url?.startsWith("http");
     if (isNotDebuggable) return;
 
@@ -245,10 +245,13 @@ try {
     const activeTab = tabIds[0];
     await InterpolateStorage.setActiveTab(activeTab);
   });
-  chrome.webNavigation.onCommitted.addListener(async (details) => {
-    const { tabId } = details;
-    await InterpolateStorage.setTabActivity({ tabId, interpolations: [] });
-  });
+  chrome.webNavigation.onBeforeNavigate.addListener(
+    ({ parentFrameId, tabId }) => {
+      if (parentFrameId !== -1) return;
+
+      InterpolateStorage.setTabActivity({ tabId, interpolations: [] });
+    },
+  );
 } catch (e) {
   logger("Error in background.ts", e);
 }

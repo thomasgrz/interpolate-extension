@@ -4,8 +4,7 @@ import styles from "./InterpolationsList.module.scss";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 
 export const InterpolationsList = () => {
-  const { interpolations, recentlyActive, ...args } =
-    useInterpolationsContext();
+  const { interpolations, recentlyActive } = useInterpolationsContext();
 
   return (
     <Flex width="100%" p="1" direction={"row"} wrap="wrap">

@@ -52,7 +52,6 @@ export const useInterpolationForm = (defaultValues?: {
       const { submitAction } = meta;
       logger(`Selected action - ${submitAction}`);
       if (submitAction === SubmitAction.AddRedirect) {
-        debugger;
         await InterpolateStorage.create([
           createRedirectInterpolation({
             id: value.redirectRuleForm.id,

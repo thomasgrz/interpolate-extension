@@ -31,18 +31,23 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
   >();
 
   useEffect(() => {
-    chrome.storage.sync.onChanged.addListener(async (changes) => {
-      const isNonActivityChange = !Object.entries(changes).some(([key]) =>
-        key.includes("-active"),
-      );
-      if (isNonActivityChange) return;
-      const activeTab = await InterpolateStorage.getActiveTab();
+    // Update recentlyActive when a user switches tabs
+    chrome.tabs?.onActivated?.addListener(async ({ tabId }) => {
+      const currentActivity = await InterpolateStorage.getTabActivity(tabId);
+      setRecentlyActive(currentActivity);
+    });
 
-      const activeTabActivity = (await InterpolateStorage.getTabActivity(
-        activeTab,
-      )) as AnyInterpolation[];
+    // Update recentlyActive when an active tab invokes interpolation
+    chrome?.storage?.sync?.onChanged?.addListener(async (changes) => {
+      const currentTabActivityKey = await InterpolateStorage.getActiveTab();
+      const currentTabChanges =
+        changes[InterpolateStorage.getTabActivityId(currentTabActivityKey)]
+          ?.newValue;
+      const noChangesForCurrentTab = !currentTabChanges;
 
-      setRecentlyActive(activeTabActivity);
+      if (noChangesForCurrentTab) return;
+
+      setRecentlyActive(currentTabChanges);
     });
   }, []);
 

@@ -4,7 +4,6 @@ import { createContext, ReactNode } from "react";
 
 export const InterpolateContext = createContext({
   interpolations: [] as AnyInterpolation[] | [] | undefined,
-  isActive: (_interp: AnyInterpolation): boolean => false,
   allPaused: undefined as boolean | undefined,
   pause: (_id: string) => {},
   pauseAll: () => {},

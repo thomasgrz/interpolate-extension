@@ -6,6 +6,7 @@ import { createRedirectInterpolation } from "../src/utils/factories/createRedire
 
 export default definePreview({
   decorators: [
+    // @ts-expect-error TODO: fix
     (Story, contexts) => {
       const { parameters } = contexts;
       const initialValue = [
