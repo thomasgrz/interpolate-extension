@@ -28,23 +28,37 @@ const continueRequest = async ({
   interpolation?: AnyInterpolation;
 }) => {
   logger(
-    "Continuing request in tab: " + tabId + " for request with id " + requestId,
+    "OVERRIDE:" +
+      !!urlOverride +
+      " Request URL:" +
+      requestUrl +
+      " urlOverride:" +
+      urlOverride,
   );
+  if (interpolation) {
+    InterpolateStorage.pushTabActivity({ tabId, interpolation });
+
+    setTimeout(() => {
+      // TODO: find a more robust solution for updating activity
+      // and sending messages..
+      // the delay here is just a rough workaround to ensure that if the
+      // interpolation is a redirect at the top level, the page
+      // will still show the notifs (rather than have them eschewed instantly during navigation)
+      chrome.tabs.sendMessage(tabId, {
+        ...interpolation,
+        isInterpolation: true,
+        requestUrl,
+        urlOverride,
+        requestId,
+        tabId,
+      });
+    }, 2000);
+  }
   chrome.debugger.sendCommand({ tabId }, "Fetch.continueRequest", {
     requestId,
     url: urlOverride ?? requestUrl,
     ...(headers ? { headers } : {}),
   });
-
-  if (interpolation) {
-    chrome.tabs.sendMessage(tabId, {
-      ...interpolation,
-      requestUrl,
-      urlOverride,
-      requestId,
-      tabId,
-    });
-  }
 };
 
 try {
@@ -54,14 +68,16 @@ try {
     debuggerTabs.delete(tabId);
   });
 
-  const attachToRelatedTargetsInTab = () => {
-    chrome.debugger.onEvent.addListener(async (source, method, params) => {
-      if (method === "Target.attachedToTarget") {
+  // For this tab, make sure we only handle
+  // request paused events
+  chrome.debugger.onEvent.addListener(
+    async (source, event, requestInfo: unknown) => {
+      if (event === "Target.attachedToTarget") {
         // `source` identifies the parent session, but we need to construct a new
         // identifier for the child session
         const session = {
           ...source,
-          sessionId: (params as { sessionId: number })?.sessionId!,
+          sessionId: (requestInfo as { sessionId: number })?.sessionId!,
         };
         logger("Target.attachedToTarget", session);
 
@@ -69,13 +85,6 @@ try {
         // @ts-expect-error debugging rn
         return chrome.debugger.sendCommand(session, "Fetch.enable");
       }
-    });
-  };
-
-  // For this tab, make sure we only handle
-  // request paused events
-  chrome.debugger.onEvent.addListener(
-    async (source, event, requestInfo: unknown) => {
       const isIrrelevantEvent = event !== "Fetch.requestPaused";
 
       // If is not a request paused event do nothing, exit early
@@ -191,21 +200,23 @@ try {
   // This should ensure that we're listening to this tab's target
   // and all other related targets from that tab (iframes, service workers, third party sources etc)
   // NOTE: onUpdated can happen in the background too so we shouldnt
-  chrome.tabs.onUpdated.addListener(async (tabId) => {
-    const isDebuggerAttached = debuggerTabs.has(tabId);
-    // If the initial listeners have been setup we can exit early
-    if (isDebuggerAttached) return;
-    console.count("tabId onUpdated setup logic called for: " + tabId);
+  chrome.tabs.onUpdated.addListener(async (tabId, _, tab) => {
+    const isNotDebuggable = !tab.url?.startsWith("http");
+    if (isNotDebuggable) return;
 
+    const isTabMissing = !tabId;
+    if (isTabMissing) return;
+    const isDebuggerAttached = debuggerTabs.has(tabId);
+    if (isDebuggerAttached) return;
     // Attach to the tab's debugger session.
-    chrome.debugger.attach({ tabId }, "1.3");
-    // Ensure that we attach to related targets in the tab (like 3rd party scripts etc.)
-    attachToRelatedTargetsInTab();
-    // Track which tabs we've attached to already.
-    debuggerTabs.add(tabId);
-    // Assert that debugger should run all Fetch requests
-    // through Interpolate (by default)
-    chrome.debugger.sendCommand({ tabId }, "Fetch.enable");
+    chrome.debugger.attach({ tabId }, "1.3", () => {
+      debuggerTabs.add(tabId);
+      chrome.debugger.sendCommand({ tabId }, "Fetch.enable", {}, () => {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError);
+        }
+      });
+    });
   });
 
   chrome.sidePanel
@@ -229,6 +240,18 @@ try {
       // chrome.action.setPopup({ popup: './popup.html'})
     }
   });
+  chrome.tabs.onHighlighted.addListener(async (highlightInfo) => {
+    const { tabIds } = highlightInfo;
+    const activeTab = tabIds[0];
+    await InterpolateStorage.setActiveTab(activeTab);
+  });
+  chrome.webNavigation.onBeforeNavigate.addListener(
+    ({ parentFrameId, tabId }) => {
+      if (parentFrameId !== -1) return;
+
+      InterpolateStorage.setTabActivity({ tabId, interpolations: [] });
+    },
+  );
 } catch (e) {
   logger("Error in background.ts", e);
 }

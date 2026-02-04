@@ -22,6 +22,64 @@ export const InterpolateStorage = {
   logError(caller: string, error: unknown) {
     logger(`${caller} threw (error): `, error);
   },
+  getTabActivityId(tabId: number) {
+    return `${tabId}-active`;
+  },
+  async getActiveTab() {
+    const { activeTab } = await chrome.storage.sync.get("activeTab");
+    return activeTab;
+  },
+  async getTabActivity(tabId: number) {
+    try {
+      const key = this.getTabActivityId(tabId);
+      const activity = await chrome.storage.sync.get([key]);
+      const tabActivity = activity[key].newValue ?? activity[key];
+      const isInvalidValueType = !Array.isArray(tabActivity);
+      if (isInvalidValueType) return [];
+      return tabActivity ?? [];
+    } catch (e) {
+      logger("Error in getTabActivity: " + String((e as Error).message));
+    }
+  },
+  async setActiveTab(tabId: number) {
+    await chrome.storage.sync.set({ activeTab: tabId });
+  },
+  async pushTabActivity({
+    tabId,
+    interpolation,
+  }: {
+    tabId: number;
+    interpolation: AnyInterpolation;
+  }) {
+    const currentActivity = await this.getTabActivity(tabId);
+    const isActivityAlreadyTracked = currentActivity?.some?.(
+      (interp: AnyInterpolation) =>
+        interp?.details?.id === interpolation?.details?.id,
+    );
+    if (isActivityAlreadyTracked) return;
+
+    const newActivity = currentActivity?.concat?.(
+      interpolation,
+    ) as AnyInterpolation[];
+    await this.setTabActivity({ tabId, interpolations: newActivity });
+  },
+  async setTabActivity({
+    tabId,
+    interpolations,
+  }: {
+    tabId: number;
+    interpolations: AnyInterpolation[];
+  }) {
+    const key = this.getTabActivityId(tabId);
+
+    try {
+      await chrome.storage.sync.set({
+        [key]: interpolations,
+      });
+    } catch (e) {
+      logger("Error with setTabActivity: " + String((e as Error).message));
+    }
+  },
   async create(interpolationsToCreate: AnyInterpolation | AnyInterpolation[]) {
     const caller = "create";
     this.logInvocation(caller);
@@ -156,6 +214,13 @@ export const InterpolateStorage = {
     );
     return patterns;
   },
+  async getAllActive() {
+    const interpolations = await this.getAllInterpolations();
+
+    const active = interpolations?.filter?.((interp) => interp.isActive);
+
+    return active;
+  },
   getInterpolationRecordKey(id: number | string) {
     if (typeof id === "string" && id?.startsWith("interp")) {
       return id;
@@ -246,6 +311,22 @@ export const InterpolateStorage = {
       });
     } catch (e) {
       this.logError(caller, e);
+    }
+  },
+  async setInterpolationActive({
+    interpolation,
+    isActive,
+  }: {
+    interpolation: AnyInterpolation | string;
+    isActive: boolean;
+  }) {
+    const isInterpolationId = typeof interpolation === "string";
+
+    if (isInterpolationId) {
+      const target = await this.getInterpolationById(interpolation);
+      await this.setInterpolations([{ ...target, isActive }]);
+    } else {
+      await this.setInterpolations([{ ...interpolation, isActive }]);
     }
   },
   async setIsEnabled(id: string | number, enabledByUser: boolean) {
@@ -357,7 +438,8 @@ export const InterpolateStorage = {
       scriptsFromStorage?.map((interp) => [interp.details.id, interp]),
     );
     try {
-      const allScriptsInBrowser = await chrome?.userScripts?.getScripts();
+      const allScriptsInBrowser =
+        (await chrome?.userScripts?.getScripts()) ?? [];
       const browserScriptSet = allScriptsInBrowser.reduce((acc, curr) => {
         const currentId = curr.id;
         const matchingInterp = interpolateScriptsMap.get(currentId);

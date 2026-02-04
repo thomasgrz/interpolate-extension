@@ -12,3 +12,20 @@
 
 .InterpolationsCardContainer {
 }
+
+.ActiveIndicator {
+  background-color: #bcbbb5;
+  height: stretch;
+  width: 100px;
+}
+
+.TabsRoot {
+  width: stretch;
+}
+
+.Tabs {
+  width: stretch;
+  button {
+    outline: none;
+  }
+}

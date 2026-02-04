@@ -5,7 +5,7 @@ export const createRedirectInterpolation = (rule: {
   source: string;
   destination: string;
   name: string;
-  id?: number;
+  id?: number | null;
 }) => {
   return new RedirectInterpolation({
     name: rule.name,

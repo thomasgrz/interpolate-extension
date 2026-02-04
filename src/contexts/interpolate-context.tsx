@@ -7,10 +7,12 @@ export const InterpolateContext = createContext({
   allPaused: undefined as boolean | undefined,
   pause: (_id: string) => {},
   pauseAll: () => {},
+  recentlyActive: [] as AnyInterpolation[] | [] | undefined,
   resume: (_id: string) => {},
   resumeAll: () => {},
   remove: (_id: string) => {},
   removeAll: () => {},
+  notifications: [] as AnyInterpolation[] | [],
 });
 
 export const InterpolateProvider = ({
