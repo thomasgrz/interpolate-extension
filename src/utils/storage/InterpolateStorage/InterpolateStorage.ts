@@ -46,22 +46,25 @@ export const InterpolateStorage = {
   },
   async pushTabActivity({
     tabId,
-    interpolation,
+    interpolations,
   }: {
     tabId: number;
-    interpolation: AnyInterpolation;
+    interpolations: AnyInterpolation[];
   }) {
-    const currentActivity = await this.getTabActivity(tabId);
-    const isActivityAlreadyTracked = currentActivity?.some?.(
-      (interp: AnyInterpolation) =>
-        interp?.details?.id === interpolation?.details?.id,
-    );
-    if (isActivityAlreadyTracked) return;
+    const currentActivity = (await this.getTabActivity(tabId)) ?? [];
+    const uniqueNewActivity = interpolations.filter((interp) => {
+      const isAlreadyTracked = currentActivity.some(
+        (value) => value?.details?.id === interp?.details?.id,
+      );
+      if (isAlreadyTracked) return false;
 
-    const newActivity = currentActivity?.concat?.(
-      interpolation,
-    ) as AnyInterpolation[];
-    await this.setTabActivity({ tabId, interpolations: newActivity });
+      return true;
+    });
+
+    await this.setTabActivity({
+      tabId,
+      interpolations: [...currentActivity, ...uniqueNewActivity],
+    });
   },
   async setTabActivity({
     tabId,
