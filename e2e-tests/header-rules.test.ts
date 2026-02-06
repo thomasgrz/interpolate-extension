@@ -20,6 +20,10 @@ const createHeaderRule = async (arg: {
   await page.getByPlaceholder(/Cool Header/).fill(ruleName);
   await page.getByPlaceholder(/http/).fill(headerValue);
   await page.getByText("Create header").click();
+  await page.goto("https://httpbin.org/headers");
+  await page.goto(
+    `chrome-extension://${arg.extensionId}/src/options/index.html`,
+  );
 };
 
 test("should apply header rule", async ({ page, extensionId, network }) => {

@@ -10,22 +10,25 @@ import { AnyInterpolation } from "@/utils/factories/Interpolation";
 const debuggerTabs = new Set<number>();
 
 const continueRequest = async ({
+  request,
   requestId,
   tabId,
   requestUrl,
-  headers,
-  interpolation,
+  headerOverrides = [],
+  interpolations,
   urlOverride,
 }: {
-  headers?: {
+  headerOverrides?: {
     name?: string;
     value?: string;
+    interpolationId: number;
   }[];
+  request: { headers: Record<string, unknown> };
   requestId: string;
   tabId: number;
   requestUrl?: string;
   urlOverride?: string;
-  interpolation?: AnyInterpolation;
+  interpolations?: AnyInterpolation[];
 }) => {
   logger(
     "OVERRIDE:" +
@@ -35,8 +38,8 @@ const continueRequest = async ({
       " urlOverride:" +
       urlOverride,
   );
-  if (interpolation) {
-    InterpolateStorage.pushTabActivity({ tabId, interpolation });
+  if (interpolations) {
+    InterpolateStorage.pushTabActivity({ tabId, interpolations });
 
     setTimeout(() => {
       // TODO: find a more robust solution for updating activity
@@ -45,7 +48,7 @@ const continueRequest = async ({
       // interpolation is a redirect at the top level, the page
       // will still show the notifs (rather than have them eschewed instantly during navigation)
       chrome.tabs.sendMessage(tabId, {
-        ...interpolation,
+        ...interpolations,
         isInterpolation: true,
         requestUrl,
         urlOverride,
@@ -54,10 +57,20 @@ const continueRequest = async ({
       });
     }, 2000);
   }
+
+  const requestHeaders = Object.entries(request.headers).map(
+    ([key, value]) => ({ name: key, value }),
+  );
   chrome.debugger.sendCommand({ tabId }, "Fetch.continueRequest", {
     requestId,
     url: urlOverride ?? requestUrl,
-    ...(headers ? { headers } : {}),
+    headers: [
+      ...requestHeaders,
+      ...headerOverrides.map((header) => ({
+        name: header.name,
+        value: header.value,
+      })),
+    ],
   });
 };
 
@@ -92,7 +105,10 @@ try {
 
       const { tabId } = source;
       const { request, requestId } =
-        (requestInfo as { requestId: string; request: { url: string } }) ?? {};
+        (requestInfo as {
+          requestId: string;
+          request: { url: string; headers: { [key: string]: string } };
+        }) ?? {};
 
       const { url: requestUrl } = request;
       // Get the latest of all the redirect rules
@@ -109,6 +125,7 @@ try {
           requestId,
           tabId: tabId as number,
           requestUrl,
+          request,
         });
 
       const isChromeExtensionEvent =
@@ -120,6 +137,7 @@ try {
           requestId,
           tabId: tabId as number,
           requestUrl,
+          request,
         });
 
       const isNonDebuggingTab = !debuggerTabs.has(tabId!);
@@ -130,9 +148,10 @@ try {
           requestId,
           tabId: tabId as number,
           requestUrl,
+          request,
         });
 
-      const matchingInterpolation = redirectRules.find((rule) => {
+      const matchingInterpolations = redirectRules.filter((rule) => {
         const regexMatcher = rule?.details?.condition?.regexFilter;
         const isMatchPatternMissing = !regexMatcher;
         if (isMatchPatternMissing) return false;
@@ -140,60 +159,86 @@ try {
         return isMatch;
       });
 
-      const noMatchingInterpolation = !matchingInterpolation;
+      const noMatchingInterpolation = !matchingInterpolations.length;
       // If we have no matching redirect interpolations continue request, exit
       if (noMatchingInterpolation)
         return continueRequest({
           tabId: tabId as number,
           requestId,
           requestUrl,
+          request,
         });
 
-      const isInterpolationDisabled = !matchingInterpolation.enabledByUser;
-      if (isInterpolationDisabled)
+      const isEveryInterpolationDisabled = matchingInterpolations.every(
+        (interp) => !interp?.enabledByUser,
+      );
+      if (isEveryInterpolationDisabled)
         return continueRequest({
           tabId: tabId as number,
           requestId,
           requestUrl,
+          request,
         });
 
-      const interpolationType = matchingInterpolation?.type;
-      switch (interpolationType) {
-        case "headers":
-          return continueRequest({
-            interpolation: matchingInterpolation,
-            headers: [
+      const headerOverrides = matchingInterpolations.reduce(
+        (acc, curr: HeaderInterpolation | RedirectInterpolation) => {
+          if (curr.type === "headers") {
+            const isHeaderInvalid =
+              !curr?.details?.action?.requestHeaders?.[0]?.header ||
+              !curr?.details?.action?.requestHeaders?.[0]?.value;
+
+            if (isHeaderInvalid) return acc;
+
+            return [
+              ...acc,
               {
-                name: matchingInterpolation?.details?.action
-                  ?.requestHeaders?.[0]?.header,
-                value:
-                  matchingInterpolation?.details?.action?.requestHeaders?.[0]
-                    ?.value,
+                interpolationId: curr.details.id ?? 0,
+                name: curr?.details?.action?.requestHeaders?.[0]?.header ?? "",
+                value: curr?.details?.action?.requestHeaders?.[0]?.value ?? "",
               },
-            ],
-            tabId: tabId as number,
-            requestId,
-            requestUrl,
-          });
-          break;
-        case "redirect":
-          // If we've not bailed by now then,
-          // apply the associated redirect rule
-          return continueRequest({
-            interpolation: matchingInterpolation,
-            tabId: tabId as number,
-            requestId,
-            urlOverride: matchingInterpolation?.details?.action?.redirect?.url,
-            requestUrl,
-          });
-          break;
-        default:
-          return continueRequest({
-            tabId: tabId as number,
-            requestId,
-            requestUrl,
-          });
+            ];
+          }
+          return acc;
+        },
+        [] as { name: string; value: string; interpolationId: number }[],
+      );
+
+      const redirectInterpolation = matchingInterpolations?.find(
+        (interp) => interp?.type === "redirect",
+      );
+
+      const containsRedirectInterpolation = !!redirectInterpolation;
+
+      if (containsRedirectInterpolation) {
+        return continueRequest({
+          interpolations: matchingInterpolations,
+          tabId: tabId as number,
+          requestId,
+          urlOverride: redirectInterpolation?.details?.action?.redirect?.url,
+          requestUrl,
+          headerOverrides,
+          request,
+        });
       }
+
+      const ifContainsHeaderOverrides = !!headerOverrides.length;
+
+      if (ifContainsHeaderOverrides) {
+        return continueRequest({
+          tabId: tabId as number,
+          requestId,
+          requestUrl,
+          headerOverrides,
+          interpolations: matchingInterpolations,
+          request,
+        });
+      }
+
+      return continueRequest({
+        tabId: tabId as number,
+        request,
+        requestId,
+      });
     },
   );
   // Set up initial listeners whenever a new tab is updated.
