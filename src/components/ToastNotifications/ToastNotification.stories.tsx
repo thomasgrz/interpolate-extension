@@ -1,11 +1,8 @@
 import preview from "#.storybook/preview";
 import { Button } from "@radix-ui/themes";
-import {
-  ToastNotification,
-  ToastNotificationsContainer,
-  useToastCreationContext,
-} from "./ToastNotification.tsx";
 import "./ToastNotification.module.scss";
+import { useToastCreationContext } from "#src/hooks/useToastCreationContext/useToastCreationContext.ts";
+import { ToastNotificationsContainer } from "./ToastNotificationsContainer.component";
 
 const meta = preview.meta({
   component: () => {

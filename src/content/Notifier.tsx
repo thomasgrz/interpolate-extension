@@ -2,29 +2,26 @@ import { InterpolationCard } from "@/components/InterpolationCard/InterpolationC
 import { useInterpolations } from "@/hooks/useInterpolations/useInterpolations";
 import styles from "./Notifier.module.scss";
 import { Flex, Theme } from "@radix-ui/themes";
-import { NotifierToast } from "../components/NotifierToast/NotifierToast.tsx";
+import { useToastCreationContext } from "#src/hooks/useToastCreationContext/useToastCreationContext.ts";
+import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
+import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 
 export const Notifier = () => {
-  const { notifications } = useInterpolations();
+  const createToast = useToastCreationContext();
+  const handleInterpolationNotifications = (interps: AnyInterpolation[]) => {
+    interps?.forEach((interp) =>
+      createToast({
+        title: interp.name,
+        content: <InterpolationCard info={interp} />,
+      }),
+    );
+  };
 
   return (
-    <Theme
-      style={{
-        minHeight: 0,
-        backgroundColor: "transparent",
-      }}
-    >
-      <Flex direction="column" className={styles.Root}>
-        {notifications.map((interp) => (
-          <NotifierToast
-            onOpenChange={interp?.onOpenChange}
-            open={!interp?.hidden}
-            title={interp?.requestUrl}
-          >
-            <InterpolationCard info={interp} />
-          </NotifierToast>
-        ))}
-      </Flex>
-    </Theme>
+    <Flex direction="column" className={styles.Root}>
+      <InterpolateProvider
+        handleInterpolationNotifications={handleInterpolationNotifications}
+      />
+    </Flex>
   );
 };
