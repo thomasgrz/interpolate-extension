@@ -4,6 +4,7 @@ import { Flex } from "@radix-ui/themes";
 import { useToastCreationContext } from "#src/hooks/useToastCreationContext/useToastCreationContext.ts";
 import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
+import { GlobalInterpolationOptions } from "#src/components/GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
 
 export const Notifier = () => {
   const createToast = useToastCreationContext();
@@ -17,10 +18,15 @@ export const Notifier = () => {
   };
 
   return (
-    <Flex direction="column" className={styles.Root}>
-      <InterpolateProvider
-        handleInterpolationNotifications={handleInterpolationNotifications}
-      />
-    </Flex>
+    <InterpolateProvider
+      handleInterpolationNotifications={handleInterpolationNotifications}
+    >
+      <Flex
+        align="center"
+        className={styles.GlobalInterpolationOptionsContainer}
+      >
+        <GlobalInterpolationOptions allowDelete={false} />
+      </Flex>
+    </InterpolateProvider>
   );
 };

@@ -12,7 +12,7 @@ container.className = styles.Root;
 document.body.prepend(container);
 createRoot(container).render(
   <StrictMode>
-    <Theme>
+    <Theme radius="full">
       <ToastNotificationsContainer>
         <Notifier />
       </ToastNotificationsContainer>

@@ -9,6 +9,47 @@ import { AnyInterpolation } from "@/utils/factories/Interpolation";
 
 const debuggerTabs = new Set<number>();
 
+/**
+ * Returns an id string like <tabId>:<number>,<number>... (ex: "1234:6789,1011,1213")
+ */
+const getRecentTabActivitySetKey = ({
+  tabId,
+  interpolations,
+}: {
+  tabId: number;
+  interpolations: AnyInterpolation[];
+}) => {
+  return `${tabId}:${interpolations?.map((interp) => interp.details.id).join(",")}`;
+};
+
+const recentTabActivity = new Set<string>();
+
+/**
+ * There's a storage quota that can be easily reached
+ * with things like headers added to every request.
+ * (For example, if a page is sending constant vitals to the server from the client)
+ */
+const debouncedPushTabActivity = ({
+  tabId,
+  interpolations,
+}: {
+  tabId: number;
+  interpolations: AnyInterpolation[];
+}) => {
+  let tabActivityKey = getRecentTabActivitySetKey({ tabId, interpolations });
+  const alreadyRecentlyTracked = recentTabActivity.has(tabActivityKey);
+
+  if (alreadyRecentlyTracked) return;
+
+  InterpolateStorage.pushTabActivity({ tabId, interpolations });
+
+  recentTabActivity.add(tabActivityKey);
+
+  setTimeout(() => {
+    recentTabActivity.delete(tabActivityKey);
+  }, 2000);
+};
+
 const continueRequest = async ({
   request,
   requestId,
@@ -39,8 +80,7 @@ const continueRequest = async ({
       urlOverride,
   );
   if (interpolations) {
-    InterpolateStorage.pushTabActivity({ tabId, interpolations });
-
+    debouncedPushTabActivity({ tabId, interpolations });
     setTimeout(() => {
       // TODO: find a more robust solution for updating activity
       // and sending messages..
