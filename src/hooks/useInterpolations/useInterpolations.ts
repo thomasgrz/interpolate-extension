@@ -12,7 +12,15 @@ const getIsEveryRulePaused = async () => {
   return !!isEveryRulePaused;
 };
 
-export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
+export const useInterpolations = (
+  initialValue?: AnyInterpolation[],
+  options?:
+    | {
+        handleInterpolationNotifications?: (interp: AnyInterpolation[]) => void;
+      }
+    | undefined,
+) => {
+  const { handleInterpolationNotifications } = options ?? {};
   const [interpolations, setInterpolations] = useState<AnyInterpolation[] | []>(
     initialValue ?? [],
   );
@@ -178,7 +186,7 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
         // In background.ts we send a message
         // to the content script whenever an interpolation is used
         // (this happens on a tab by tab basis)
-        const isNonInterpolationEvent = !message?.isInterpolation;
+        const isNonInterpolationEvent = !message?.interpolations;
         if (isNonInterpolationEvent) return;
         const interpolation = message;
 
@@ -187,6 +195,8 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
         );
 
         if (isAlreadyTracked) return;
+
+        handleInterpolationNotifications?.(message?.interpolations);
 
         setNotifications((topLevelPrev) => [
           ...topLevelPrev,

@@ -48,7 +48,7 @@ const continueRequest = async ({
       // interpolation is a redirect at the top level, the page
       // will still show the notifs (rather than have them eschewed instantly during navigation)
       chrome.tabs.sendMessage(tabId, {
-        ...interpolations,
+        interpolations,
         isInterpolation: true,
         requestUrl,
         urlOverride,

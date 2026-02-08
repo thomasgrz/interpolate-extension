@@ -19,7 +19,7 @@ export default definePreview({
       ];
       console.log("HIT");
       return (
-        <Theme style={{ backgroundColor: "#FFDE21" }} radius="large">
+        <Theme radius="large">
           <InterpolateProvider initialValue={initialValue}>
             <Story />
           </InterpolateProvider>
