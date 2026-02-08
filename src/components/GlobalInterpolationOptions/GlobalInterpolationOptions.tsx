@@ -3,7 +3,6 @@ import { AlertDialog, Box, Button, Flex } from "@radix-ui/themes";
 import Pause from "../../assets/pause.svg";
 import Play from "../../assets/play.svg";
 import styles from "./GlobalInterpolationOptions.module.scss";
-import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 import { useInterpolations } from "#src/hooks/useInterpolations/useInterpolations.ts";
 import { useMemo } from "react";
 

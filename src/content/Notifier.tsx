@@ -5,7 +5,6 @@ import { useToastCreationContext } from "#src/hooks/useToastCreationContext/useT
 import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { GlobalInterpolationOptions } from "#src/components/GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
-import { Heading } from "@radix-ui/themes";
 
 export const Notifier = () => {
   const createToast = useToastCreationContext();

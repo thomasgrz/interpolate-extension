@@ -38,10 +38,17 @@ export const ControlCenter = () => {
           <Flex height={"100%"} direction="column" flexGrow={"1"}>
             <form>
               {selectedForm === FormType.REDIRECT && (
+                // @ts-expect-error id default not defined
                 <RedirectForm form={form} />
               )}
-              {selectedForm === FormType.HEADER && <HeaderForm form={form} />}
-              {selectedForm === FormType.SCRIPT && <ScriptForm form={form} />}
+              {selectedForm === FormType.HEADER && (
+                // @ts-expect-error id default not defined
+                <HeaderForm form={form} />
+              )}
+              {selectedForm === FormType.SCRIPT && (
+                // @ts-expect-error id default not defined
+                <ScriptForm form={form} />
+              )}
             </form>
           </Flex>
         </Card>
