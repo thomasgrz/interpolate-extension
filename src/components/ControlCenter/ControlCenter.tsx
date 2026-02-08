@@ -5,7 +5,7 @@ import { DashboardNav } from "../DashboardNav/DashboardNav.tsx";
 import { RedirectForm } from "../RedirectForm/RedirectForm.tsx";
 import { HeaderForm } from "../HeaderForm/HeaderForm.tsx";
 import { ScriptForm } from "../ScriptForm/ScriptForm.tsx";
-import { DashboardControls } from "../DashboardControls/DashboardControls.tsx";
+import { GlobalInterpolationOptions } from "../GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
 import { useInterpolations } from "../../hooks/useInterpolations/useInterpolations.ts";
 import { useInterpolateFormSelection } from "../../hooks/useInterpolateFormSelection/useInterpolateFormSelection.ts";
 import styles from "./ControlCenter.module.scss";
@@ -13,8 +13,7 @@ import { FormType } from "@/constants";
 import { useInterpolationForm } from "../../hooks/useInterpolationForm/useInterpolationForm.ts";
 
 export const ControlCenter = () => {
-  const { interpolations, allPaused, pauseAll, removeAll, resumeAll } =
-    useInterpolations();
+  const { interpolations } = useInterpolations();
   const { selectedForm, setSelectedForm } = useInterpolateFormSelection();
   const form = useInterpolationForm();
   return (
@@ -39,27 +38,14 @@ export const ControlCenter = () => {
           <Flex height={"100%"} direction="column" flexGrow={"1"}>
             <form>
               {selectedForm === FormType.REDIRECT && (
-                // @ts-expect-error TODO: fix types
                 <RedirectForm form={form} />
               )}
-              {selectedForm === FormType.HEADER && (
-                //@ts-expect-error TODO: fix types
-                <HeaderForm form={form} />
-              )}
-              {selectedForm === FormType.SCRIPT && (
-                // @ts-expect-error TODO: fix types
-                <ScriptForm form={form} />
-              )}
+              {selectedForm === FormType.HEADER && <HeaderForm form={form} />}
+              {selectedForm === FormType.SCRIPT && <ScriptForm form={form} />}
             </form>
           </Flex>
         </Card>
-        <DashboardControls
-          ruleCount={interpolations?.length}
-          allPaused={!!allPaused}
-          onResumeAllRules={resumeAll}
-          onPauseAllRules={pauseAll}
-          onDeleteAllRules={removeAll}
-        />
+        <GlobalInterpolationOptions />
       </Flex>
     </Container>
   );
