@@ -2,7 +2,6 @@ import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import { useEffect, useRef, useState } from "react";
 import { logger } from "@/utils/logger";
-import { Interpolation } from "storybook/theming";
 
 const getIsEveryRulePaused = async () => {
   const rulesInStorage = await InterpolateStorage.getAllInterpolations();

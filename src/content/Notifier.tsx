@@ -1,7 +1,6 @@
 import { InterpolationCard } from "@/components/InterpolationCard/InterpolationCard";
-import { useInterpolations } from "@/hooks/useInterpolations/useInterpolations";
 import styles from "./Notifier.module.scss";
-import { Flex, Theme } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { useToastCreationContext } from "#src/hooks/useToastCreationContext/useToastCreationContext.ts";
 import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
