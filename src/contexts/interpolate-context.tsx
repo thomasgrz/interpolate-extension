@@ -12,20 +12,15 @@ export const InterpolateContext = createContext({
   resumeAll: () => {},
   remove: (_id: string) => {},
   removeAll: () => {},
-  notifications: [] as AnyInterpolation[] | [],
 });
 
 export const InterpolateProvider = ({
   children,
   initialValue = [],
-  handleInterpolationNotifications,
 }: {
   children?: ReactNode;
   initialValue?: AnyInterpolation[];
-  handleInterpolationNotifications?: (interps: AnyInterpolation[]) => void;
 }) => {
-  const value = useInterpolations(initialValue, {
-    handleInterpolationNotifications,
-  });
+  const value = useInterpolations(initialValue);
   return <InterpolateContext value={value}>{children}</InterpolateContext>;
 };

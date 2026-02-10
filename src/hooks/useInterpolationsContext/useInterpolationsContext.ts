@@ -9,7 +9,6 @@ export const useInterpolationsContext = () => {
     resumeAll,
     removeAll,
     allPaused,
-    notifications,
   } = useContext(InterpolateContext);
   return {
     interpolations,
@@ -18,6 +17,5 @@ export const useInterpolationsContext = () => {
     resumeAll,
     removeAll,
     allPaused,
-    notifications,
   };
 };

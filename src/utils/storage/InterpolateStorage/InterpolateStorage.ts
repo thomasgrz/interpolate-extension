@@ -143,6 +143,10 @@ export const InterpolateStorage = {
       await this.createRollbackRecords(rollbackRecords);
 
       const updatedInterpolations = allCurrent?.map((interpolation) => {
+        chrome.runtime.sendMessage(
+          `interpolation-${interpolation?.details?.id}-paused`,
+        );
+
         return {
           ...interpolation,
           enabledByUser: false,
@@ -198,6 +202,10 @@ export const InterpolateStorage = {
       await this.createRollbackRecords(rollbackRecords);
 
       const updatedInterpolations = allCurrent?.map((interpolation) => {
+        chrome.runtime.sendMessage(
+          `interpolation-${interpolation?.details?.id}-resumed`,
+        );
+
         return {
           ...interpolation,
           enabledByUser: true,
@@ -353,6 +361,9 @@ export const InterpolateStorage = {
       await this.setInterpolations([
         { ...interpolationToUpdate, enabledByUser },
       ]);
+      chrome.runtime.sendMessage(
+        `interpolation-${id}-${enabledByUser ? "resumed" : "paused"}`,
+      );
     } catch (e) {
       this.logError(caller, e as string);
     }

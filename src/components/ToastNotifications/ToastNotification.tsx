@@ -2,7 +2,6 @@ import * as ToastPrimitive from "@radix-ui/react-toast";
 import { useLayoutEffect, useRef } from "react";
 import styles from "./ToastNotification.module.scss";
 import { useToastNotificationContext } from "#src/hooks/useToastNotificationContext/useToastNotificationContext.ts";
-import { Card } from "@radix-ui/themes";
 
 export const ToastNotification = (
   props: {
@@ -40,25 +39,23 @@ export const ToastNotification = (
       className={styles.ToastRoot}
       onOpenChange={onOpenChange}
     >
-      <Card>
-        {toast?.title && (
-          <ToastPrimitive.Title>{toast?.title}</ToastPrimitive.Title>
-        )}
-        {toast?.description && (
-          <ToastPrimitive.Description>
-            {toast.description}
-          </ToastPrimitive.Description>
-        )}
-        {toast?.action && (
-          <ToastPrimitive.Action altText="action">
-            {toast.action}
-          </ToastPrimitive.Action>
-        )}
-        {toast?.close && (
-          <ToastPrimitive.Close>{toast?.close}</ToastPrimitive.Close>
-        )}
-        {toast?.content}
-      </Card>
+      {toast?.title && (
+        <ToastPrimitive.Title>{toast?.title}</ToastPrimitive.Title>
+      )}
+      {toast?.description && (
+        <ToastPrimitive.Description>
+          {toast.description}
+        </ToastPrimitive.Description>
+      )}
+      {toast?.action && (
+        <ToastPrimitive.Action altText="action">
+          {toast.action}
+        </ToastPrimitive.Action>
+      )}
+      {toast?.close && (
+        <ToastPrimitive.Close>{toast?.close}</ToastPrimitive.Close>
+      )}
+      {toast?.content}
     </ToastPrimitive.Root>
   );
 };

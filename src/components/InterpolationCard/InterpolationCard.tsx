@@ -38,37 +38,47 @@ type InterpolationCardProps = {
 export const InterpolationCard = ({
   info,
   hideRuleToggle,
-}: { hideRuleToggle?: boolean } & InterpolationCardProps) => {
+  hideOptions,
+}: {
+  hideRuleToggle?: boolean;
+  hideOptions?: boolean;
+} & InterpolationCardProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [hit, setHit] = useState<boolean>(false);
-  const [_, setRecentlyHitColor] = useState<"green" | "gray">("green");
-  const { enabledByUser, error, type, details, name } = info;
+  const { error, type, details, name } = info;
   const { id } = details ?? {};
   const formattedError = error instanceof Error ? error.message : String(error);
+  const [enabledByUser, setIsEnabledByUser] = useState(info?.enabledByUser);
   const [editModeEnabled, setEditModeEnabled] = useState<boolean>();
   const form = useInterpolationForm();
 
   useEffect(() => {
-    chrome.runtime?.onMessage?.addListener?.((msg) => {
-      if (msg === `redirect-${details.id}-hit`) {
-        setRecentlyHitColor("green");
-        setHit(true);
-        setTimeout(() => {
-          setRecentlyHitColor("gray");
-        }, 5000);
-        setTimeout(() => {
-          setHit(false);
-        }, 30000);
+    chrome.runtime.onMessage.addListener((message) => {
+      const isPauseMessage = message === `interpolation-${id}-paused`;
+      const isResumeMesssage = message === `interpolation-${id}-resumed`;
+      const isIrrelevant = !isPauseMessage && !isResumeMesssage;
+
+      if (isIrrelevant) return;
+
+      if (isPauseMessage) {
+        setIsEnabledByUser(false);
+        return;
+      }
+
+      if (isResumeMesssage) {
+        setIsEnabledByUser(true);
+        return;
       }
     });
-  }, [enabledByUser]);
+  }, []);
 
   const handleResumeClick = async () => {
     await InterpolateStorage.setIsEnabled(details?.id, true);
+    setIsEnabledByUser(true);
   };
 
   const handlePauseClick = async () => {
     await InterpolateStorage.setIsEnabled(details?.id, false);
+    setIsEnabledByUser(false);
   };
 
   const handleOpenChange = (value: boolean) => {
@@ -173,7 +183,6 @@ export const InterpolationCard = ({
   return (
     <Card
       ref={ref}
-      data-ui-active={hit}
       data-ui-error={!!info.error}
       data-testid={`${type}-preview-${info?.details?.id}`}
       className={styles.InterpolationCard}
@@ -210,10 +219,12 @@ export const InterpolationCard = ({
                     {type}
                   </Badge>
                 </Box>
-                <InterpolationOptions
-                  onEditSelected={onEditSelected}
-                  config={info}
-                />
+                {hideOptions ? null : (
+                  <InterpolationOptions
+                    onEditSelected={onEditSelected}
+                    config={info}
+                  />
+                )}
               </Flex>
             </Flex>
             <Tooltip content="options">
