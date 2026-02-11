@@ -52,7 +52,24 @@ export const InterpolationCard = ({
   const form = useInterpolationForm();
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener((message) => {
+    chrome.storage?.sync?.onChanged?.addListener?.((changes) => {
+      const isUnrelatedToGlobalPause = !changes?.allPaused;
+      if (isUnrelatedToGlobalPause) return;
+      const isAllPaused = changes?.allPaused?.newValue === true;
+      const isRuleEnabledByUser = !isAllPaused;
+      setIsEnabledByUser(isRuleEnabledByUser);
+    });
+    chrome.storage?.sync?.onChanged?.addListener?.((changes) => {
+      const recordKey = InterpolateStorage.getInterpolationRecordKey(id);
+      const relatedChanges = changes?.[recordKey];
+      const isUnrelatedToEnablement = !changes?.[recordKey];
+
+      if (isUnrelatedToEnablement) return;
+      const isEnabled = relatedChanges?.newValue?.enabledByUser;
+
+      setIsEnabledByUser(isEnabled);
+    });
+    chrome.runtime?.onMessage?.addListener?.((message) => {
       const isPauseMessage = message === `interpolation-${id}-paused`;
       const isResumeMesssage = message === `interpolation-${id}-resumed`;
       const isIrrelevant = !isPauseMessage && !isResumeMesssage;

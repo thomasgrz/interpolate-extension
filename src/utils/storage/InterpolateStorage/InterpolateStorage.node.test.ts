@@ -133,7 +133,7 @@ describe("InterpolateStorage", () => {
 
     await InterpolateStorage.setIsEnabled(interpolation.details.id, false);
 
-    expect(callback).toHaveBeenNthCalledWith(2, {
+    expect(callback).toHaveBeenNthCalledWith(1, {
       created: [],
       removed: [],
       updated: [{ ...interpolation, enabledByUser: false }],
@@ -153,7 +153,7 @@ describe("InterpolateStorage", () => {
 
     await InterpolateStorage.setIsEnabled(interpolation.details.id, true);
 
-    expect(callback).toHaveBeenNthCalledWith(2, {
+    expect(callback).toHaveBeenNthCalledWith(1, {
       created: [],
       removed: [],
       updated: [{ ...interpolation, enabledByUser: true }],

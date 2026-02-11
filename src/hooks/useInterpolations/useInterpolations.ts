@@ -64,9 +64,9 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
   };
 
   const pauseAll = async () => {
-    setAllPaused(true);
     try {
       await InterpolateStorage.disableAll();
+      setAllPaused(true);
     } catch (e) {
       // reset "resume" status if theres a failures
       setAllPaused(false);
@@ -79,9 +79,9 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
   };
 
   const resumeAll = async () => {
-    setAllPaused(false);
     try {
       await InterpolateStorage.enableAll();
+      setAllPaused(false);
     } catch (e) {
       // reset "pause" status if theres a failure
       setAllPaused(true);
