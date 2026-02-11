@@ -1,39 +1,19 @@
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import { useEffect, useRef, useState } from "react";
-import { logger } from "@/utils/logger";
 
 const getIsEveryRulePaused = async () => {
   const rulesInStorage = await InterpolateStorage.getAllInterpolations();
   const isEveryRulePaused = rulesInStorage?.every(
     (rule) => rule?.enabledByUser === false,
   );
-
   return !!isEveryRulePaused;
 };
 
-export const useInterpolations = (
-  initialValue?: AnyInterpolation[],
-  options?:
-    | {
-        handleInterpolationNotifications?: (interp: AnyInterpolation[]) => void;
-      }
-    | undefined,
-) => {
-  const { handleInterpolationNotifications } = options ?? {};
+export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
   const [interpolations, setInterpolations] = useState<AnyInterpolation[] | []>(
     initialValue ?? [],
   );
-  const [notifications, setNotifications] = useState<
-    | (AnyInterpolation & {
-        requestId: string;
-        requestUrl: string;
-        urlOverride: string;
-        hidden: boolean;
-        onOpenChange: () => void;
-      })[]
-    | []
-  >([]);
   const [recentlyActive, setRecentlyActive] = useState<
     AnyInterpolation[] | []
   >();
@@ -84,9 +64,9 @@ export const useInterpolations = (
   };
 
   const pauseAll = async () => {
-    setAllPaused(true);
     try {
       await InterpolateStorage.disableAll();
+      setAllPaused(true);
     } catch (e) {
       // reset "resume" status if theres a failures
       setAllPaused(false);
@@ -99,9 +79,9 @@ export const useInterpolations = (
   };
 
   const resumeAll = async () => {
-    setAllPaused(false);
     try {
       await InterpolateStorage.enableAll();
+      setAllPaused(false);
     } catch (e) {
       // reset "pause" status if theres a failure
       setAllPaused(true);
@@ -180,50 +160,6 @@ export const useInterpolations = (
     if (!initialInterps) return;
 
     setInterpolations(initialInterps);
-
-    try {
-      chrome.runtime.onMessage.addListener((message) => {
-        // In background.ts we send a message
-        // to the content script whenever an interpolation is used
-        // (this happens on a tab by tab basis)
-        const isNonInterpolationEvent = !message?.interpolations;
-        if (isNonInterpolationEvent) return;
-        const interpolation = message;
-
-        const isAlreadyTracked = notifications.find(
-          (interp) => interp?.details?.id === interpolation?.details?.id,
-        );
-
-        if (isAlreadyTracked) return;
-
-        handleInterpolationNotifications?.(message?.interpolations);
-
-        setNotifications((topLevelPrev) => [
-          ...topLevelPrev,
-          {
-            ...interpolation,
-            hidden: false,
-            onOpenChange: () => {
-              setNotifications((innerPrev) =>
-                innerPrev.map((interp) => {
-                  const isMatchingInterpId =
-                    interp.details?.id === interpolation.details.id;
-                  const isMatchingRequestId =
-                    interp.requestId === interpolation?.requestId;
-                  const isMatched = isMatchingInterpId && isMatchingRequestId;
-                  if (isMatched) {
-                    return { ...interp, hidden: true };
-                  }
-                  return interp;
-                }),
-              );
-            },
-          },
-        ]);
-      });
-    } catch (e) {
-      logger(e);
-    }
   };
 
   useEffect(() => {
@@ -246,7 +182,6 @@ export const useInterpolations = (
     allPaused,
     remove,
     removeAll,
-    notifications,
     interpolations,
     pause,
     pauseAll,
