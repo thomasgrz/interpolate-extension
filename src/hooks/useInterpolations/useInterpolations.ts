@@ -28,7 +28,6 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
     // Update recentlyActive when an active tab invokes interpolation
     chrome?.storage?.sync?.onChanged?.addListener(async (changes) => {
       const currentTabActivityKey = await InterpolateStorage.getActiveTab();
-      debugger;
       const currentTabChanges =
         changes[InterpolateStorage.getTabActivityId(currentTabActivityKey)]
           ?.newValue;
