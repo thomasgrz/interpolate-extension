@@ -37,6 +37,18 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
 
       setRecentlyActive(currentTabChanges);
     });
+
+    const initRecentlyActive = async () => {
+      let queryOptions = { active: true, lastFocusedWindow: true };
+      // `tab` will either be a `tabs.Tab` instance or `undefined`.
+      let [tab] = await chrome.tabs.query(queryOptions);
+      const isMissingTabId = !tab.id;
+      if (isMissingTabId) return;
+      const tabActivity = await InterpolateStorage.getTabActivity(tab.id!);
+      setRecentlyActive(tabActivity);
+    };
+
+    initRecentlyActive().catch(console.error);
   }, []);
 
   const [allPaused, setAllPaused] = useState<boolean>();
