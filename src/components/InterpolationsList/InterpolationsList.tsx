@@ -2,6 +2,7 @@ import { Flex, Box, Tabs } from "@radix-ui/themes";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard.tsx";
 import styles from "./InterpolationsList.module.scss";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
+import { useEffect } from "react";
 
 export const InterpolationsList = () => {
   const { interpolations, recentlyActive } = useInterpolationsContext();

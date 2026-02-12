@@ -6,7 +6,6 @@ import { logger } from "../utils/logger";
 import { InterpolateStorage } from "../utils/storage/InterpolateStorage/InterpolateStorage";
 import { handleInstall } from "./handleInstall";
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
-
 const debuggerTabs = new Set<number>();
 
 /**
@@ -80,8 +79,9 @@ const continueRequest = async ({
       urlOverride,
   );
   if (interpolations) {
-    debouncedPushTabActivity({ tabId, interpolations });
     setTimeout(() => {
+      debouncedPushTabActivity({ tabId, interpolations });
+
       // TODO: find a more robust solution for updating activity
       // and sending messages..
       // the delay here is just a rough workaround to ensure that if the
@@ -301,6 +301,8 @@ try {
     if (isDebuggerAttached) return;
     // Attach to the tab's debugger session.
     chrome.debugger.attach({ tabId }, "1.3", () => {
+      if (debuggerTabs.has(tabId)) return;
+
       debuggerTabs.add(tabId);
       chrome.debugger.sendCommand({ tabId }, "Fetch.enable", {}, () => {
         if (chrome.runtime.lastError) {
@@ -308,6 +310,10 @@ try {
         }
       });
     });
+
+    if (chrome.runtime.lastError) {
+      console.log("AHHHHHHHHHHHHHH! " + chrome.runtime.lastError);
+    }
   });
 
   chrome.sidePanel
