@@ -192,6 +192,8 @@ try {
         });
 
       const matchingInterpolations = redirectRules.filter((rule) => {
+        const isDisabled = !rule?.enabledByUser;
+        if (isDisabled) return false;
         const regexMatcher = rule?.details?.condition?.regexFilter;
         const isMatchPatternMissing = !regexMatcher;
         if (isMatchPatternMissing) return false;
@@ -228,6 +230,10 @@ try {
               !curr?.details?.action?.requestHeaders?.[0]?.value;
 
             if (isHeaderInvalid) return acc;
+
+            const isDisabled = !curr?.enabledByUser;
+
+            if (isDisabled) return acc;
 
             return [
               ...acc,
