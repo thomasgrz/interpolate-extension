@@ -21,7 +21,7 @@ export const Dashboard = () => {
           justify={"start"}
           direction={"column"}
         >
-          <Flex justify="center">
+          <Flex className={styles.FormArea} justify="center">
             <ControlCenter />
           </Flex>
           <InterpolationsList />

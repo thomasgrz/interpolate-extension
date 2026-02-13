@@ -32,43 +32,38 @@ export const ScriptForm = withForm({
     }, []);
 
     return (
-      <Box p="2">
-        <Flex gap="1" direction={"column"}>
-          {showWarning && <ScriptsPermissionWarning />}
-          <form.AppField validators={validators} name="scriptForm.name">
-            {(field) => (
-              <field.TextField
-                label="Rule name:"
-                placeholder="My Cool Script"
-              />
-            )}
-          </form.AppField>
-          <form.AppField validators={validators} name="scriptForm.body">
-            {(field) => (
-              <field.TextArea
-                htmlFor="script-input"
-                label="Script:"
-                placeholder="console.log(something);"
-              />
-            )}
-          </form.AppField>
-          <form.AppField name="scriptForm.matches">
-            {(field) => (
-              <field.TextField label="RegEx matcher:" placeholder="*://*/*" />
-            )}
-          </form.AppField>
-          <form.AppField name="scriptForm.runAt">
-            {(field) => <field.SelectField options={options} label={"When:"} />}
-          </form.AppField>
-          <SubmitButton
-            onClick={() =>
-              form.handleSubmit({ submitAction: SubmitAction.CreateScript })
-            }
-          >
-            Create script
-          </SubmitButton>
-        </Flex>
-      </Box>
+      <Flex gap="1" direction={"column"}>
+        {showWarning && <ScriptsPermissionWarning />}
+        <form.AppField validators={validators} name="scriptForm.name">
+          {(field) => (
+            <field.TextField label="Rule name:" placeholder="My Cool Script" />
+          )}
+        </form.AppField>
+        <form.AppField validators={validators} name="scriptForm.body">
+          {(field) => (
+            <field.TextArea
+              htmlFor="script-input"
+              label="Script:"
+              placeholder="console.log(something);"
+            />
+          )}
+        </form.AppField>
+        <form.AppField name="scriptForm.matches">
+          {(field) => (
+            <field.TextField label="RegEx matcher:" placeholder="*://*/*" />
+          )}
+        </form.AppField>
+        <form.AppField name="scriptForm.runAt">
+          {(field) => <field.SelectField options={options} label={"When:"} />}
+        </form.AppField>
+        <SubmitButton
+          onClick={() =>
+            form.handleSubmit({ submitAction: SubmitAction.CreateScript })
+          }
+        >
+          Create script
+        </SubmitButton>
+      </Flex>
     );
   },
 });
