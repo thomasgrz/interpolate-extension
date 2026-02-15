@@ -1,68 +1,155 @@
-import { dashboardFormOptions } from "@/contexts/dashboard-context.ts";
-import { Box, Flex } from "@radix-ui/themes";
-import { withForm } from "../../hooks/useForm/useForm";
-import styles from "./RedirectRuleForm.module.scss";
-import { SubmitButton } from "../SubmitButton/SubmitButton";
+import { Button, Card, Flex, Strong, Text, TextField } from "@radix-ui/themes";
+import { useForm } from "@tanstack/react-form";
+import { TextInput } from "../TextInput/TextInput";
+import { FormErrors } from "#src/constants.ts";
+import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 
-export const RedirectForm = withForm({
-  ...dashboardFormOptions,
-  // @ts-expect-error TODO: fix types
-  render: ({ form, editModeEnabled, onSuccess }) => {
-    const validators = {
-      onChange: ({ value }: { value?: string }) =>
-        value?.trim()?.length ? undefined : "Please enter a valid input.",
-    };
-    return (
-      <Box className={styles.Card} p="2">
+const RedirectFormErrors = {
+  MISSING_NAME: FormErrors.MISSING_NAME,
+  MISSING_REGEX_MATCHER: "Please provide a valid regular expression matcher",
+  MISSING_DESTINATION: "Please provide a valid URL",
+};
+
+export interface RedirectFormValue {
+  name?: string;
+  matcher?: string;
+  destination?: string;
+}
+
+export enum RedirectFormLabel {
+  INTERPOLATION_NAME = "Name:",
+  REDIRECT_FROM = "RegEx matcher:",
+  REDIRECT_TO = "Destination:",
+}
+
+export enum RedirectFormPlaceholder {
+  INTERPOLATION_NAME = "From Google to https://example.com",
+  REDIRECT_FROM = ".*google\.com/(.*)",
+  REDIRECT_TO = "https://example.com/$1",
+}
+
+export const RedirectForm = ({
+  onSubmit,
+  defaultValues,
+}: {
+  defaultValues?: RedirectFormValue;
+  onSubmit?:
+    | (({ value }: { value: RedirectFormValue }) => void)
+    | (({ value }: { value: RedirectFormValue }) => Promise<void>);
+}) => {
+  const form = useForm({
+    defaultValues,
+    onSubmit: onSubmit,
+    validators: {
+      onSubmit: ({ value }) => {
+        return {
+          fields: {
+            name: validateStringLength({
+              value: value.name,
+              error: RedirectFormErrors.MISSING_NAME,
+            }),
+            matcher: validateStringLength({
+              value: value.matcher,
+              error: RedirectFormErrors.MISSING_REGEX_MATCHER,
+            }),
+            destination: validateStringLength({
+              value: value.destination,
+              error: RedirectFormErrors.MISSING_DESTINATION,
+            }),
+          },
+        };
+      },
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <Card style={{ backgroundColor: "#0090FF" }}>
         <Flex gap="1" direction={"column"}>
           <Flex gap="1" direction={"column"}>
-            <form.AppField
-              validators={validators}
-              name="redirectRuleForm.name"
+            <form.Field
+              validators={{
+                onChange: ({ value }) =>
+                  validateStringLength({
+                    value,
+                    error: RedirectFormErrors.MISSING_NAME,
+                  }),
+              }}
+              name="name"
               children={(field) => {
                 return (
-                  <div className={styles.Input}>
-                    <field.TextField
-                      placeholder="Cool Redirect"
-                      label="Rule name:"
-                    />
-                  </div>
+                  <TextInput
+                    label={RedirectFormLabel.INTERPOLATION_NAME}
+                    placeholder={RedirectFormPlaceholder.INTERPOLATION_NAME}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    errors={field.state.meta.errors}
+                  />
                 );
               }}
             />
-            <form.AppField
-              validators={validators}
-              name="redirectRuleForm.source"
+            <form.Field
+              validators={{
+                onChange: ({ value }) =>
+                  validateStringLength({
+                    value,
+                    error: RedirectFormErrors.MISSING_REGEX_MATCHER,
+                  }),
+              }}
+              name="matcher"
               children={(field) => (
-                <field.TextField
-                  placeholder="Example: https://example.com/(.*)"
-                  label="Source:"
+                <TextInput
+                  label={RedirectFormLabel.REDIRECT_FROM}
+                  placeholder={RedirectFormPlaceholder.REDIRECT_FROM}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  value={field.state.value}
+                  errors={field.state.meta.errors}
                 />
               )}
             />
-            <form.AppField
-              validators={validators}
-              name="redirectRuleForm.destination"
+            <form.Field
+              validators={{
+                onChange: ({ value }) =>
+                  validateStringLength({
+                    value,
+                    error: RedirectFormErrors.MISSING_DESTINATION,
+                  }),
+              }}
+              name="destination"
               children={(field) => (
-                <field.TextField
-                  placeholder="Example: https://google.com/$1"
-                  label="Destination:"
+                <TextInput
+                  label={RedirectFormLabel.REDIRECT_TO}
+                  placeholder={RedirectFormPlaceholder.REDIRECT_TO}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  value={field.state.value}
+                  errors={field.state.meta.errors}
                 />
               )}
             />
           </Flex>
-          <SubmitButton
-            onClick={() => {
-              form.handleSubmit({
-                submitAction: "add-redirect",
-              });
-              onSuccess?.();
-            }}
-          >
-            {editModeEnabled ? "Save redirect" : "Create redirect"}
-          </SubmitButton>
+          <form.Subscribe>
+            <Flex justify={"center"}>
+              <Button
+                size="3"
+                style={{ cursor: "pointer", backgroundColor: "black" }}
+              >
+                Create Interpolation
+                <PlusCircledIcon />
+              </Button>
+            </Flex>
+          </form.Subscribe>
         </Flex>
-      </Box>
-    );
-  },
-});
+      </Card>
+    </form>
+  );
+};

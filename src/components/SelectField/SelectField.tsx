@@ -1,36 +1,43 @@
-import { useFieldContext } from "@/contexts/form-context";
 import { Box, Flex, Select } from "@radix-ui/themes";
-import { useStore } from "@tanstack/react-form";
 import styles from "./SelectField.module.scss";
 import InputLabel from "../InputLabel/InputLabel";
 
 export default function SelectField({
   label,
   options,
+  errors,
+  onBlur,
+  onChange,
+  value,
 }: {
+  errors?: (string | null | undefined)[];
   label: string;
   options: { label: string; value: string }[];
+  onChange: (value: string) => void;
+  onBlur?: () => void;
+  value?: string;
 }) {
-  const field = useFieldContext<string>();
-
-  const errors = useStore(field.store, (state) => state.meta.errors);
-
   return (
     <Flex align={"start"} direction="column" minWidth={"100%"}>
       <Box p="1">
         <InputLabel>{label}</InputLabel>
       </Box>
       <Box className={styles.Button}>
-        <Select.Root size="2" defaultValue="document_start">
+        <Select.Root
+          onValueChange={onChange}
+          size="2"
+          defaultValue="document_start"
+          value={value}
+        >
           <Select.Trigger></Select.Trigger>
-          <Select.Content>
+          <Select.Content onBlur={onBlur}>
             {options.map(({ label, value }) => (
               <Select.Item value={value}>{label}</Select.Item>
             ))}
           </Select.Content>
           {errors && (
             <ul>
-              {errors.map((error) => (
+              {errors?.map?.((error) => (
                 <li>{error}</li>
               ))}
             </ul>

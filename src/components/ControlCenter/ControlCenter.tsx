@@ -1,34 +1,84 @@
-import { Flex, Card, Container, Box } from "@radix-ui/themes";
+import { Flex, Box } from "@radix-ui/themes";
 import { Import } from "../Import/Import.tsx";
 import { Exporter } from "../Exporter/Exporter.tsx";
 import { DashboardNav } from "../DashboardNav/DashboardNav.tsx";
-import { RedirectForm } from "../RedirectForm/RedirectForm.tsx";
-import { HeaderForm } from "../HeaderForm/HeaderForm.tsx";
-import { ScriptForm } from "../ScriptForm/ScriptForm.tsx";
+import {
+  RedirectForm,
+  RedirectFormValue,
+} from "../RedirectForm/RedirectForm.tsx";
+import { HeaderForm, HeaderFormValue } from "../HeaderForm/HeaderForm.tsx";
+import { ScriptForm, ScriptFormValue } from "../ScriptForm/ScriptForm.tsx";
 import { GlobalInterpolationOptions } from "../GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
 import { useInterpolations } from "../../hooks/useInterpolations/useInterpolations.ts";
 import { useInterpolateFormSelection } from "../../hooks/useInterpolateFormSelection/useInterpolateFormSelection.ts";
 import styles from "./ControlCenter.module.scss";
 import { FormType } from "@/constants";
-import { useInterpolationForm } from "../../hooks/useInterpolationForm/useInterpolationForm.ts";
-import { useMemo } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
+import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
+import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
+import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
+import { createScriptInterpolation } from "#src/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
 
 export const ControlCenter = () => {
   const { interpolations } = useInterpolations();
   const { selectedForm, setSelectedForm } = useInterpolateFormSelection();
-  const form = useInterpolationForm();
-  const formColor = useMemo(() => {
-    switch (selectedForm) {
-      case FormType.HEADER:
-        return "green";
-      case FormType.REDIRECT:
-        return "blue";
-      case FormType.SCRIPT:
-        return "purple";
-      default:
-        return "white";
-    }
-  }, [selectedForm]);
+  const handleCreateRedirectInterpolation = async ({
+    value,
+  }: {
+    value: RedirectFormValue;
+  }) => {
+    const { destination, name, matcher } = value;
+    const isValid =
+      typeof name === "string" &&
+      typeof destination === "string" &&
+      typeof matcher === "string";
+    const isInvalid = !isValid;
+    if (isInvalid) return;
+    await InterpolateStorage.create(
+      createRedirectInterpolation({
+        source: matcher,
+        name: name,
+        destination: destination,
+      }),
+    );
+  };
+  const handleCreateHeaderInterpolation = async ({
+    value,
+  }: {
+    value: HeaderFormValue;
+  }) => {
+    const { key, value: headerValue, name } = value;
+    const isValid =
+      typeof key === "string" &&
+      typeof headerValue === "string" &&
+      typeof name === "string";
+
+    const isInvalid = !isValid;
+    if (isInvalid) return;
+    await InterpolateStorage.create(
+      createHeaderInterpolation({ headerValue, headerKey: key, name }),
+    );
+  };
+  const handleCreateScriptInterpolation = async ({
+    value,
+  }: {
+    value: ScriptFormValue;
+  }) => {
+    const { script, runAt, matches, name } = value;
+    const isValid =
+      typeof script === "string" &&
+      typeof runAt === "string" &&
+      typeof matches === "string" &&
+      typeof name === "string";
+    const isInvalid = !isValid;
+
+    if (isInvalid) return;
+
+    await InterpolateStorage.create(
+      createScriptInterpolation({ body: script, runAt, matches, name }),
+    );
+  };
 
   return (
     <Flex gap="1" direction="column" className={styles.ControlCenterContainer}>
@@ -50,27 +100,22 @@ export const ControlCenter = () => {
         className={styles.FormContainer}
       >
         <Flex direction={"column"} width={"100%"}>
-          <Box p="2">
+          <Flex justify={"center"} p="2" width="stretch">
             <DashboardNav value={selectedForm} onChange={setSelectedForm} />
-          </Box>
-          <Card variant="surface" p="0" style={{ backgroundColor: formColor }}>
+          </Flex>
+          <ErrorBoundary fallbackRender={() => "oops"}>
             <Flex height={"100%"} direction="column" flexGrow={"1"}>
-              <form>
-                {selectedForm === FormType.REDIRECT && (
-                  // @ts-expect-error id default not defined
-                  <RedirectForm form={form} />
-                )}
-                {selectedForm === FormType.HEADER && (
-                  // @ts-expect-error id default not defined
-                  <HeaderForm form={form} />
-                )}
-                {selectedForm === FormType.SCRIPT && (
-                  // @ts-expect-error id default not defined
-                  <ScriptForm form={form} />
-                )}
-              </form>
+              {selectedForm === FormType.REDIRECT && (
+                <RedirectForm onSubmit={handleCreateRedirectInterpolation} />
+              )}
+              {selectedForm === FormType.HEADER && (
+                <HeaderForm onSubmit={handleCreateHeaderInterpolation} />
+              )}
+              {selectedForm === FormType.SCRIPT && (
+                <ScriptForm onSubmit={handleCreateScriptInterpolation} />
+              )}
             </Flex>
-          </Card>
+          </ErrorBoundary>
         </Flex>
         <GlobalInterpolationOptions />
       </Flex>

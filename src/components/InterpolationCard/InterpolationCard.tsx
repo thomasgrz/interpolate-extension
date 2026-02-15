@@ -26,10 +26,9 @@ import { RuleToggle } from "../RuleToggle/RuleToggle";
 import styles from "./InterpolationCard.module.scss";
 import { ScriptPreview } from "../ScriptPreview/ScriptPreview";
 import { InterpolationOptions } from "../InterpolationOptions/InterpolationOptions";
-import { EditRedirectForm } from "../EditRedirectForm/EditRedirectForm.tsx";
-import { EditHeaderForm } from "../EditHeaderForm/EditHeaderForm.tsx";
 import { ScriptForm } from "../ScriptForm/ScriptForm.tsx";
-import { useInterpolationForm } from "../../hooks/useInterpolationForm/useInterpolationForm.ts";
+import { RedirectForm } from "../RedirectForm/RedirectForm.tsx";
+import { HeaderForm } from "../HeaderForm/HeaderForm.tsx";
 
 type InterpolationCardProps = {
   info: RedirectInterpolation | HeaderInterpolation | ScriptInterpolation;
@@ -49,7 +48,6 @@ export const InterpolationCard = ({
   const formattedError = error instanceof Error ? error.message : String(error);
   const [enabledByUser, setIsEnabledByUser] = useState(info?.enabledByUser);
   const [editModeEnabled, setEditModeEnabled] = useState<boolean>();
-  const form = useInterpolationForm();
 
   useEffect(() => {
     chrome.storage?.sync?.onChanged?.addListener?.((changes) => {
@@ -158,7 +156,7 @@ export const InterpolationCard = ({
     switch (type) {
       case "redirect":
         return (
-          <EditRedirectForm
+          <RedirectForm
             onSuccess={() => setEditModeEnabled(false)}
             defaultValues={{
               id,
@@ -170,10 +168,9 @@ export const InterpolationCard = ({
         );
       case "headers":
         return (
-          <EditHeaderForm
+          <HeaderForm
             onSuccess={() => setEditModeEnabled(false)}
             defaultValues={{
-              // @ts-expect-error TODO: fix types
               id,
               name,
               key: details?.action?.requestHeaders?.[0]?.header ?? "",
@@ -182,8 +179,7 @@ export const InterpolationCard = ({
           />
         );
       case "script":
-        // @ts-expect-error TODO: fix types
-        return <ScriptForm editModeEnabled form={form} />;
+        return <ScriptForm />;
       default:
         return <div>something went wrong</div>;
     }
@@ -232,7 +228,7 @@ export const InterpolationCard = ({
               </Text>
               <Flex gap="2" p="2" align="center">
                 <Box p="1">
-                  <Badge variant="soft" color={badgeColor()} size="1">
+                  <Badge variant="soft" color={badgeColor()} size="3">
                     {type}
                   </Badge>
                 </Box>

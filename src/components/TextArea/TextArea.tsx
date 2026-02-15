@@ -1,35 +1,22 @@
-import { Box, Flex, Text, TextArea as _TextArea } from "@radix-ui/themes";
-import { useStore } from "@tanstack/react-form";
-import { useFieldContext } from "../../contexts/form-context";
+import { Box, Flex, Text, TextAreaProps, TextArea } from "@radix-ui/themes";
 import InputLabel from "../InputLabel/InputLabel";
 
-export default function TextArea({
-  placeholder,
-  htmlFor,
+export default function TextAreaInput({
   label,
+  errors,
+  ...props
 }: {
+  errors: (string | undefined | null)[];
   label: string;
-  htmlFor: string;
-  placeholder?: string;
-}) {
-  const field = useFieldContext<string>();
-
-  const errors = useStore(field.store, (state) => state.meta.errors);
+} & TextAreaProps) {
   return (
     <Box flexGrow={"1"}>
       <Flex gap={"1"} align="start" direction={"column"}>
         <InputLabel>{label}</InputLabel>
         <Box width={"100%"}>
-          <_TextArea
-            radius={"large"}
-            id={htmlFor}
-            placeholder={placeholder}
-            value={field.state.value}
-            onChange={(e) => field.handleChange(e.target.value)}
-            onBlur={field.handleBlur}
-          />
+          <TextArea radius={"large"} {...props} />
         </Box>
-        {errors.map((error: string) => (
+        {errors?.map?.((error?: string | null) => (
           <Text align={"left"} size="1" key={error} color="red">
             {error}
           </Text>
