@@ -1,5 +1,6 @@
 import { expect, test } from "./fixtures/expect";
 import { FormType } from "../src/constants";
+import { HeaderFormPlaceholder } from "../src/components/HeaderForm/HeaderForm";
 
 const createHeaderRule = async (arg: {
   page: any;
@@ -16,10 +17,21 @@ const createHeaderRule = async (arg: {
   await dashboard.waitFor({ state: "attached" });
   await dashboard.waitFor({ state: "visible" });
   await page.getByRole("radio", { name: FormType.HEADER }).click();
-  await page.getByPlaceholder(/Forwarded/).fill(headerName);
-  await page.getByPlaceholder(/Cool Header/).fill(ruleName);
-  await page.getByPlaceholder(/http/).fill(headerValue);
-  await page.getByText("Create header").click();
+  // fill interpolation name field
+  await page
+    .getByPlaceholder(HeaderFormPlaceholder.INTERPOLATION_NAME)
+    .fill(ruleName);
+  // fill interpolation header name
+  await page
+    .getByPlaceholder(HeaderFormPlaceholder.HEADER_KEY)
+    .fill(headerName);
+  // file interpolation header value
+  await page
+    .getByPlaceholder(HeaderFormPlaceholder.HEADER_VALUE)
+    .fill(headerValue);
+  await page.getByText("Create Interpolation").click();
+  await page.getByTestId(/headers-preview-.*/).waitFor();
+
   await page.goto("https://httpbin.org/headers");
   await page.goto(
     `chrome-extension://${arg.extensionId}/src/options/index.html`,
@@ -36,7 +48,6 @@ test("should apply header rule", async ({ page, extensionId, network }) => {
     ruleName: "rule #1",
   });
 
-  await page.getByTestId(/headers-preview-.*/).waitFor();
   // Navigate to a test page
   await page.goto("https://httpbin.org/headers");
 

@@ -6,7 +6,7 @@ export default function TextAreaInput({
   errors,
   ...props
 }: {
-  errors: string[];
+  errors: (string | undefined | null)[];
   label: string;
 } & TextAreaProps) {
   return (
@@ -16,7 +16,7 @@ export default function TextAreaInput({
         <Box width={"100%"}>
           <TextArea radius={"large"} {...props} />
         </Box>
-        {errors.map((error: string) => (
+        {errors?.map?.((error?: string | null) => (
           <Text align={"left"} size="1" key={error} color="red">
             {error}
           </Text>

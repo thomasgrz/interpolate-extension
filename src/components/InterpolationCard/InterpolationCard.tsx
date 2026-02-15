@@ -179,7 +179,7 @@ export const InterpolationCard = ({
           />
         );
       case "script":
-        return <ScriptForm editModeEnabled form={form} />;
+        return <ScriptForm />;
       default:
         return <div>something went wrong</div>;
     }
@@ -228,7 +228,7 @@ export const InterpolationCard = ({
               </Text>
               <Flex gap="2" p="2" align="center">
                 <Box p="1">
-                  <Badge variant="soft" color={badgeColor()} size="1">
+                  <Badge variant="soft" color={badgeColor()} size="3">
                     {type}
                   </Badge>
                 </Box>

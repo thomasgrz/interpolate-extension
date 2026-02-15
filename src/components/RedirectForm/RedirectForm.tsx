@@ -1,20 +1,9 @@
 import { Button, Card, Flex, Strong, Text, TextField } from "@radix-ui/themes";
-import styles from "./RedirectRuleForm.module.scss";
 import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
 import { FormErrors } from "#src/constants.ts";
-
-const validateStringLength = ({
-  value,
-  min = 1,
-  error,
-}: {
-  value?: string;
-  min?: number;
-  error: string;
-}) => {
-  return !value || value?.length < min ? error : null;
-};
+import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 const RedirectFormErrors = {
   MISSING_NAME: FormErrors.MISSING_NAME,
@@ -22,20 +11,36 @@ const RedirectFormErrors = {
   MISSING_DESTINATION: "Please provide a valid URL",
 };
 
+export interface RedirectFormValue {
+  name?: string;
+  matcher?: string;
+  destination?: string;
+}
+
+export enum RedirectFormLabel {
+  INTERPOLATION_NAME = "Name:",
+  REDIRECT_FROM = "RegEx matcher:",
+  REDIRECT_TO = "Destination:",
+}
+
+export enum RedirectFormPlaceholder {
+  INTERPOLATION_NAME = "From Google to https://example.com",
+  REDIRECT_FROM = ".*google\.com/(.*)",
+  REDIRECT_TO = "https://example.com/$1",
+}
+
 export const RedirectForm = ({
-  onSuccess,
+  onSubmit,
   defaultValues,
 }: {
-  defaultValues?: {
-    name: string;
-    matcher: string;
-    destination: string;
-  };
-  onSuccess?: () => void;
+  defaultValues?: RedirectFormValue;
+  onSubmit?:
+    | (({ value }: { value: RedirectFormValue }) => void)
+    | (({ value }: { value: RedirectFormValue }) => Promise<void>);
 }) => {
   const form = useForm({
     defaultValues,
-    onSubmit: onSuccess,
+    onSubmit: onSubmit,
     validators: {
       onSubmit: ({ value }) => {
         return {
@@ -66,7 +71,7 @@ export const RedirectForm = ({
         form.handleSubmit();
       }}
     >
-      <Card style={{ backgroundColor: "#0090FF" }} className={styles.Card}>
+      <Card style={{ backgroundColor: "#0090FF" }}>
         <Flex gap="1" direction={"column"}>
           <Flex gap="1" direction={"column"}>
             <form.Field
@@ -81,8 +86,8 @@ export const RedirectForm = ({
               children={(field) => {
                 return (
                   <TextInput
-                    label="Name:"
-                    placeholder="Foo Bar"
+                    label={RedirectFormLabel.INTERPOLATION_NAME}
+                    placeholder={RedirectFormPlaceholder.INTERPOLATION_NAME}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
@@ -102,8 +107,8 @@ export const RedirectForm = ({
               name="matcher"
               children={(field) => (
                 <TextInput
-                  label="RegEx matcher:"
-                  placeholder=".*google.com\/(.*)"
+                  label={RedirectFormLabel.REDIRECT_FROM}
+                  placeholder={RedirectFormPlaceholder.REDIRECT_FROM}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   value={field.state.value}
@@ -122,8 +127,8 @@ export const RedirectForm = ({
               name="destination"
               children={(field) => (
                 <TextInput
-                  label="Destination:"
-                  placeholder="https://example.com/$1"
+                  label={RedirectFormLabel.REDIRECT_TO}
+                  placeholder={RedirectFormPlaceholder.REDIRECT_TO}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   value={field.state.value}
@@ -132,15 +137,17 @@ export const RedirectForm = ({
               )}
             />
           </Flex>
-          <form.Subscribe
-            children={() => {
-              return (
-                <Button style={{ backgroundColor: "black" }}>
-                  Create Redirect Interpolation
-                </Button>
-              );
-            }}
-          />
+          <form.Subscribe>
+            <Flex justify={"center"}>
+              <Button
+                size="3"
+                style={{ cursor: "pointer", backgroundColor: "black" }}
+              >
+                Create Interpolation
+                <PlusCircledIcon />
+              </Button>
+            </Flex>
+          </form.Subscribe>
         </Flex>
       </Card>
     </form>

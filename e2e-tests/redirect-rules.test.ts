@@ -1,8 +1,8 @@
-import { Page } from "@playwright/test";
 import { expect, test } from "./fixtures/expect";
+import { RedirectFormPlaceholder } from "../src/components/RedirectForm/RedirectForm";
 
 const createRedirectRule = async (arg: {
-  page: Page;
+  page: any;
   ruleName: string;
   source: string;
   destination: string;
@@ -15,10 +15,16 @@ const createRedirectRule = async (arg: {
   const dashboard = page.getByTestId("dashboard");
   await dashboard.waitFor({ state: "attached" });
   await dashboard.waitFor({ state: "visible" });
-  await page.getByPlaceholder(/example/).fill(source);
-  await page.getByPlaceholder(/Cool Redirect/).fill(ruleName);
-  await page.getByPlaceholder(/google/).fill(destination);
-  await page.getByText("Create redirect").click();
+  await page
+    .getByPlaceholder(RedirectFormPlaceholder.INTERPOLATION_NAME)
+    .fill(ruleName);
+  await page
+    .getByPlaceholder(RedirectFormPlaceholder.REDIRECT_FROM)
+    .fill(source);
+  await page
+    .getByPlaceholder(RedirectFormPlaceholder.REDIRECT_TO)
+    .fill(destination);
+  await page.getByText("Create Interpolation").click();
   const preview = page.getByText(ruleName);
   await preview.waitFor({ state: "visible" });
 };

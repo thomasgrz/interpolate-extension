@@ -1,22 +1,32 @@
-import { FormType, SubmitAction } from "@/constants";
-import { dashboardFormOptions } from "@/contexts/dashboard-context";
-import { Flex } from "@radix-ui/themes";
+import { Card, Flex, Button } from "@radix-ui/themes";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { ScriptsPermissionWarning } from "../ScriptsPermissionWarning/ScriptsPermissionWarning";
 import { useForm } from "@tanstack/react-form";
+import { TextInput } from "../TextInput/TextInput";
+import TextAreaInput from "../TextArea/TextArea";
+import SelectField from "../SelectField/SelectField";
+
+export interface ScriptFormValue {
+  name?: string;
+  matches?: string;
+  runAt?: string;
+  script?: string;
+}
 
 export const ScriptForm = ({
   defaultValues,
-  onSuccess,
+  onSubmit,
 }: {
-  defaultValues?: {
-    name: string;
-    matches: string;
-    runAt: string;
-    script: string;
-  };
+  onSubmit?:
+    | (({ value }: { value: ScriptFormValue }) => void)
+    | (({ value }: { value: ScriptFormValue }) => Promise<void>);
+  defaultValues?: ScriptFormValue;
 }) => {
-  const form = useForm();
+  const form = useForm({
+    defaultValues,
+    onSubmit,
+  });
   const validators = {
     onChange: ({ value }: { value?: unknown }) =>
       typeof value !== "string" || value?.trim()?.length
@@ -42,41 +52,80 @@ export const ScriptForm = ({
   }, []);
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
-      <Flex gap="1" direction={"column"}>
-        {showWarning && <ScriptsPermissionWarning />}
-        <form.Field validators={validators} name="scriptForm.name">
-          {(field) => (
-            <field.TextField label="Rule name:" placeholder="My Cool Script" />
-          )}
-        </form.Field>
-        <form.Field validators={validators} name="scriptForm.body">
-          {(field) => (
-            <field.TextArea
-              htmlFor="script-input"
-              label="Script:"
-              placeholder="console.log(something);"
-            />
-          )}
-        </form.Field>
-        <form.Field name="scriptForm.matches">
-          {(field) => (
-            <field.TextField label="RegEx matcher:" placeholder="*://*/*" />
-          )}
-        </form.Field>
-        <form.Field name="scriptForm.runAt">
-          {(field) => <field.SelectField options={options} label={"When:"} />}
-        </form.Field>
-        <form.AppForm>
-          <form.CreateInterpolationButton label={"Create"} />
-        </form.AppForm>
-      </Flex>
-    </form>
+    <Card style={{ backgroundColor: "#E1D9FF" }}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          form.handleSubmit();
+        }}
+      >
+        <Flex gap="1" direction={"column"}>
+          {showWarning && <ScriptsPermissionWarning />}
+          <form.Field
+            validators={validators}
+            name="name"
+            children={(field) => (
+              <TextInput
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+                label="Name:"
+                placeholder="My Cool Script"
+                errors={field.state.meta.errors}
+              />
+            )}
+          />
+          <form.Field
+            validators={validators}
+            name="script"
+            children={(field) => (
+              <TextAreaInput
+                label="Script:"
+                placeholder="console.log(something);"
+                errors={field.state.meta.errors}
+              />
+            )}
+          />
+
+          <form.Field
+            name="matches"
+            children={(field) => (
+              <TextInput
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+                label="RegEx matcher:"
+                placeholder="*://*/*"
+                errors={field.state.meta.errors}
+              />
+            )}
+          />
+          <form.Field
+            name="runAt"
+            children={(field) => (
+              <SelectField
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+                onBlur={field.handleBlur}
+                errors={field.state.meta.errors}
+                options={options}
+                label={"When:"}
+              />
+            )}
+          />
+        </Flex>
+        <form.Subscribe>
+          <Flex justify={"center"}>
+            <Button
+              size="3"
+              style={{ cursor: "pointer", backgroundColor: "black" }}
+            >
+              Create interpolation <PlusCircledIcon />
+            </Button>
+          </Flex>
+        </form.Subscribe>
+      </form>
+    </Card>
   );
 };
