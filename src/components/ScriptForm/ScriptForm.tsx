@@ -1,45 +1,62 @@
-import { SubmitAction } from "@/constants";
+import { FormType, SubmitAction } from "@/constants";
 import { dashboardFormOptions } from "@/contexts/dashboard-context";
-import { withForm } from "@/hooks/useForm/useForm";
-import { Box, Flex } from "@radix-ui/themes";
-import { SubmitButton } from "../SubmitButton/SubmitButton";
+import { Flex } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { ScriptsPermissionWarning } from "../ScriptsPermissionWarning/ScriptsPermissionWarning";
+import { useForm } from "@tanstack/react-form";
 
-export const ScriptForm = withForm({
-  ...dashboardFormOptions,
-  render: ({ form }) => {
-    const validators = {
-      onChange: ({ value }: { value?: string }) =>
-        value?.trim()?.length ? undefined : "Please enter a valid input.",
-    };
+export const ScriptForm = ({
+  defaultValues,
+  onSuccess,
+}: {
+  defaultValues?: {
+    name: string;
+    matches: string;
+    runAt: string;
+    script: string;
+  };
+}) => {
+  const form = useForm();
+  const validators = {
+    onChange: ({ value }: { value?: unknown }) =>
+      typeof value !== "string" || value?.trim()?.length
+        ? undefined
+        : "Please enter a valid input.",
+  };
 
-    const [showWarning, setShowWarning] = useState<boolean>(false);
+  const [showWarning, setShowWarning] = useState<boolean>(false);
 
-    const options = ["document_idle", "document_end", "document_start"].map(
-      (item) => ({
-        label: item,
-        value: item,
-      }),
-    );
+  const options = ["document_idle", "document_end", "document_start"].map(
+    (item) => ({
+      label: item,
+      value: item,
+    }),
+  );
 
-    useEffect(() => {
-      try {
-        chrome.userScripts.getScripts();
-      } catch (e) {
-        setShowWarning(true);
-      }
-    }, []);
+  useEffect(() => {
+    try {
+      chrome.userScripts.getScripts();
+    } catch (e) {
+      setShowWarning(true);
+    }
+  }, []);
 
-    return (
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
       <Flex gap="1" direction={"column"}>
         {showWarning && <ScriptsPermissionWarning />}
-        <form.AppField validators={validators} name="scriptForm.name">
+        <form.Field validators={validators} name="scriptForm.name">
           {(field) => (
             <field.TextField label="Rule name:" placeholder="My Cool Script" />
           )}
-        </form.AppField>
-        <form.AppField validators={validators} name="scriptForm.body">
+        </form.Field>
+        <form.Field validators={validators} name="scriptForm.body">
           {(field) => (
             <field.TextArea
               htmlFor="script-input"
@@ -47,23 +64,19 @@ export const ScriptForm = withForm({
               placeholder="console.log(something);"
             />
           )}
-        </form.AppField>
-        <form.AppField name="scriptForm.matches">
+        </form.Field>
+        <form.Field name="scriptForm.matches">
           {(field) => (
             <field.TextField label="RegEx matcher:" placeholder="*://*/*" />
           )}
-        </form.AppField>
-        <form.AppField name="scriptForm.runAt">
+        </form.Field>
+        <form.Field name="scriptForm.runAt">
           {(field) => <field.SelectField options={options} label={"When:"} />}
-        </form.AppField>
-        <SubmitButton
-          onClick={() =>
-            form.handleSubmit({ submitAction: SubmitAction.CreateScript })
-          }
-        >
-          Create script
-        </SubmitButton>
+        </form.Field>
+        <form.AppForm>
+          <form.CreateInterpolationButton label={"Create"} />
+        </form.AppForm>
       </Flex>
-    );
-  },
-});
+    </form>
+  );
+};

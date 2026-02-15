@@ -1,62 +1,83 @@
-import { dashboardFormOptions } from "@/contexts/dashboard-context";
-import { withForm } from "@/hooks/useForm/useForm";
-import { Box, Flex } from "@radix-ui/themes";
-import styles from "./HeaderForm.module.scss";
-import { SubmitButton } from "../SubmitButton/SubmitButton";
+import { Box, Button, Flex, Strong, Text, TextField } from "@radix-ui/themes";
+import { useForm } from "@tanstack/react-form";
+import { TextInput } from "../TextInput/TextInput";
 
-export const HeaderForm = withForm({
-  ...dashboardFormOptions,
-  // @ts-expect-error TODO: fix types
-  render: ({ form, onSuccess }) => {
-    const validators = {
-      onChange: ({ value }: { value?: string }) =>
-        value?.trim()?.length ? undefined : "Please enter a valid input.",
-    };
+export const HeaderForm = ({
+  defaultValues,
+  onSuccess,
+}: {
+  defaultValues?: {
+    name: string;
+    key: string;
+    value: string;
+  };
+  onSuccess?: () => void;
+}) => {
+  const form = useForm({
+    defaultValues,
+    onSubmit: onSuccess,
+  });
+  const validators = {
+    onChange: ({ value }: { value?: unknown }) =>
+      typeof value !== "string" || value?.trim()?.length
+        ? undefined
+        : "Please enter a valid input.",
+  };
 
-    return (
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
       <Box p="2">
         <Flex gap="1" direction={"column"}>
-          <form.AppField
+          <form.Field
             validators={validators}
-            name="headerRuleForm.name"
+            name="name"
             children={(field) => (
-              <div className={styles.Input}>
-                <field.TextField placeholder="Cool Header" label="Rule name:" />
-              </div>
-            )}
-          />
-          <form.AppField
-            validators={validators}
-            name="headerRuleForm.key"
-            children={(field) => (
-              <div className={styles.Input}>
-                <field.TextField
-                  placeholder="x-Forwarded-For"
-                  label="Header key:"
-                />
-              </div>
-            )}
-          />
-          <form.AppField
-            validators={validators}
-            name="headerRuleForm.value"
-            children={(field) => (
-              <field.TextField
-                placeholder="http://test.domain.com"
-                label="Header value:"
+              <TextInput
+                label="Name:"
+                name={field.name}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+                errors={field.state.meta.errors}
               />
             )}
           />
-          <SubmitButton
-            onClick={() => {
-              form.handleSubmit({ submitAction: "add-header" });
-              onSuccess?.();
-            }}
-          >
-            Create header
-          </SubmitButton>
+          <form.Field
+            validators={validators}
+            name="key"
+            children={(field) => (
+              <TextInput
+                label="Key:"
+                name={field.name}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+                errors={field.state.meta.errors}
+              />
+            )}
+          />
+          <form.Field
+            validators={validators}
+            name="value"
+            children={(field) => (
+              <TextInput
+                label="Value:"
+                name={field.name}
+                onChange={(e) => field.handleCh(e.target.value)}
+                onBlur={field.handleBlur}
+                errors={field.state.meta.errors}
+              />
+            )}
+          />
+          <form.Subscribe>
+            <Button>Create Header Interpolation</Button>
+          </form.Subscribe>
         </Flex>
       </Box>
-    );
-  },
-});
+    </form>
+  );
+};

@@ -1,4 +1,3 @@
-import { useFieldContext } from "@/contexts/form-context";
 import { Box, Flex, Select } from "@radix-ui/themes";
 import { useStore } from "@tanstack/react-form";
 import styles from "./SelectField.module.scss";
@@ -11,10 +10,6 @@ export default function SelectField({
   label: string;
   options: { label: string; value: string }[];
 }) {
-  const field = useFieldContext<string>();
-
-  const errors = useStore(field.store, (state) => state.meta.errors);
-
   return (
     <Flex align={"start"} direction="column" minWidth={"100%"}>
       <Box p="1">

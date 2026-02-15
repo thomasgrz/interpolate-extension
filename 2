@@ -1,0 +1,60 @@
+import { Box, Button, Flex } from "@radix-ui/themes";
+import styles from "./HeaderForm.module.scss";
+import TextInput from "../TextField/TextField";
+import { useForm } from "@tanstack/react-form";
+
+export const HeaderForm = () => {
+  const form = useForm();
+  const validators = {
+    onChange: ({ value }: { value?: unknown }) =>
+      typeof value !== "string" || value?.trim()?.length
+        ? undefined
+        : "Please enter a valid input.",
+  };
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <Box p="2">
+        <Flex gap="1" direction={"column"}>
+          <form.Field
+            validators={validators}
+            name="name"
+            children={(field) => (
+              <div className={styles.Input}>
+                <TextInput placeholder="Cool Header" label="Rule name:" />
+              </div>
+            )}
+          />
+          <form.Field
+            validators={validators}
+            name="key"
+            children={(field) => (
+              <div className={styles.Input}>
+                <TextInput placeholder="x-Forwarded-For" label="Header key:" />
+              </div>
+            )}
+          />
+          <form.Field
+            validators={validators}
+            name="value"
+            children={(field) => (
+              <TextInput
+                placeholder="http://test.domain.com"
+                label="Header value:"
+              />
+            )}
+          />
+          <form.Subscribe>
+            <Button>Create</Button>/>
+          </form.Subscribe>
+        </Flex>
+      </Box>
+    </form>
+  );
+};

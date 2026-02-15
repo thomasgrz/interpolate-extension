@@ -2,6 +2,10 @@
   position: relative;
 }
 
+[data-ui="submit-button"] {
+  background-color: black;
+}
+
 .FormArea {
   max-width: 1000px;
 }

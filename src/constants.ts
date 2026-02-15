@@ -10,3 +10,7 @@ export enum FormType {
   REDIRECT = "redirect",
   IMPORT_RULES = "import_rules",
 }
+
+export const FormErrors = {
+  MISSING_NAME: "Please provide a name for this interpolation",
+};

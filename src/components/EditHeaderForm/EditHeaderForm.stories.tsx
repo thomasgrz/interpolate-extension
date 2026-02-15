@@ -1,8 +1,8 @@
 import preview from "#.storybook/preview";
-import { EditHeaderForm } from "./EditHeaderForm.tsx";
 
 const meta = preview.meta({
-  component: EditHeaderForm,
+  component: 
+  ,
 });
 
 export default meta;
