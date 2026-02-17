@@ -1,6 +1,6 @@
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const getIsEveryRulePaused = async () => {
   const rulesInStorage = await InterpolateStorage.getAllInterpolations();
@@ -17,6 +17,16 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
   const [recentlyActive, setRecentlyActive] = useState<
     AnyInterpolation[] | []
   >();
+
+  const sortedInterpolations = useMemo(() => {
+    return interpolations
+      .sort(
+        (interp) =>
+          new Date(interp?.createdAt).getTime() -
+          new Date(interp?.createdAt).getTime(),
+      )
+      .toReversed();
+  }, [interpolations]);
 
   useEffect(() => {
     // Update recentlyActive when a user switches tabs
@@ -189,12 +199,13 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
     getInitAllPaused();
   }, []);
 
+  console.log({ sortedInterpolations });
   return {
     add,
     allPaused,
     remove,
     removeAll,
-    interpolations,
+    interpolations: sortedInterpolations,
     pause,
     pauseAll,
     recentlyActive,

@@ -19,7 +19,7 @@ export const Notifier = () => {
 
     isInitialized.current = true;
 
-    chrome.runtime.onMessage.addListener((message) => {
+    chrome.runtime?.onMessage?.addListener?.((message) => {
       const isIrrelevantMessage = !message.interpolations;
 
       if (isIrrelevantMessage) return;

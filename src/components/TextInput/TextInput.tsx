@@ -11,6 +11,7 @@ export const TextInput = ({
   errors?: (string | undefined | null)[];
   label: string;
 }) => {
+  console.log({ props });
   return (
     <Flex p="1" direction={"column"}>
       <Label.Root>
@@ -18,7 +19,7 @@ export const TextInput = ({
           <Text size="2">{label}</Text>
         </Strong>
       </Label.Root>
-      <TextField.Root {...props} />
+      <TextField.Root {...props} value={props.value} />
       {errors?.map?.((error?: string | null) => (
         <Text align={"left"} size="1" key={error} color="red">
           {error}

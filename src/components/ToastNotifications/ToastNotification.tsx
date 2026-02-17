@@ -7,6 +7,7 @@ export const ToastNotification = (
   props: {
     onOpenChange: (value: boolean) => void;
     toast: {
+      dataTest?: string;
       action?: string | React.ReactNode;
       description?: string | React.ReactNode;
       content?: string | React.ReactNode;

@@ -14,7 +14,7 @@ export const Dashboard = () => {
         </Callout.Root>
       }
     >
-      <Container className={styles.Container} minHeight={"100dvh"}>
+      <Container pb="50px" className={styles.Container} minHeight={"100dvh"}>
         <Flex
           minHeight={"100dvh"}
           flexGrow={"1"}

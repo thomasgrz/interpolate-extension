@@ -40,7 +40,14 @@ export const HeaderForm = ({
 }) => {
   const form = useForm({
     defaultValues,
-    onSubmit,
+    onSubmit: async ({ value, formApi }) => {
+      void formApi.reset({
+        name: "",
+        key: "",
+        value: "",
+      });
+      await onSubmit?.({ value });
+    },
     validators: {
       onSubmit: ({ value }) => {
         const nameError = validateStringLength({
@@ -68,9 +75,10 @@ export const HeaderForm = ({
   });
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         e.stopPropagation();
+        form.handleSubmit();
       }}
     >
       <Card style={{ backgroundColor: "#94CE9A" }}>
@@ -92,6 +100,7 @@ export const HeaderForm = ({
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
                 errors={field.state.meta.errors}
+                value={field.state.value}
               />
             )}
           />
@@ -112,6 +121,7 @@ export const HeaderForm = ({
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
                 errors={field.state.meta.errors}
+                value={field.state.value}
               />
             )}
           />
@@ -132,17 +142,17 @@ export const HeaderForm = ({
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
                 errors={field.state.meta.errors}
+                value={field.state.value}
               />
             )}
           />
           <Flex justify={"center"}>
             <Button
               type="submit"
-              size="3"
+              size="2"
               style={{ cursor: "pointer", backgroundColor: "black" }}
-              onClick={() => form.handleSubmit()}
             >
-              Create Interpolation
+              Create interpolation
               <PlusCircledIcon />
             </Button>
           </Flex>

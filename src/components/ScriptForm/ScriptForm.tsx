@@ -6,16 +6,24 @@ import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
 import TextAreaInput from "../TextArea/TextArea";
 import SelectField from "../SelectField/SelectField";
+import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
 
 export interface ScriptFormValue {
   name?: string;
-  matches?: string;
   runAt?: string;
   script?: string;
 }
 
+export enum ScriptFormValidationError {
+  INTERPOLATION_NAME = "Please give this interpolation name",
+  SCRIPT_BODY = "Please define a script",
+  MATCHER = "Please provide a valid RegEx",
+}
+
 export const ScriptForm = ({
-  defaultValues,
+  defaultValues = {
+    runAt: "document_start",
+  },
   onSubmit,
 }: {
   onSubmit?:
@@ -25,14 +33,50 @@ export const ScriptForm = ({
 }) => {
   const form = useForm({
     defaultValues,
-    onSubmit,
+    validators: {
+      onSubmit({ value }) {
+        const errors = new Map();
+        const nameError = validateStringLength({
+          value: value.name,
+          error: ScriptFormValidationError.INTERPOLATION_NAME,
+        });
+
+        if (nameError) {
+          errors.set("name", nameError);
+        }
+
+        const scriptBodyError = validateStringLength({
+          value: value.script,
+          error: ScriptFormValidationError.SCRIPT_BODY,
+        });
+
+        if (scriptBodyError) {
+          errors.set("script", scriptBodyError);
+        }
+
+        const isValid = !errors.size;
+
+        const isInvalid = !isValid;
+
+        if (isInvalid) {
+          return {
+            name: errors.get("name"),
+            script: errors.get("script"),
+          };
+        }
+
+        return;
+      },
+    },
+    onSubmit: async ({ value, formApi }) => {
+      await onSubmit?.({ value });
+      void formApi.reset({
+        name: "",
+        runAt: "",
+        script: "",
+      });
+    },
   });
-  const validators = {
-    onChange: ({ value }: { value?: unknown }) =>
-      typeof value !== "string" || value?.trim()?.length
-        ? undefined
-        : "Please enter a valid input.",
-  };
 
   const [showWarning, setShowWarning] = useState<boolean>(false);
 
@@ -63,7 +107,14 @@ export const ScriptForm = ({
         <Flex gap="1" direction={"column"}>
           {showWarning && <ScriptsPermissionWarning />}
           <form.Field
-            validators={validators}
+            validators={{
+              onChange({ value }) {
+                return validateStringLength({
+                  value,
+                  error: ScriptFormValidationError.INTERPOLATION_NAME,
+                });
+              },
+            }}
             name="name"
             children={(field) => (
               <TextInput
@@ -77,30 +128,46 @@ export const ScriptForm = ({
             )}
           />
           <form.Field
-            validators={validators}
+            validators={{
+              onChange({ value }) {
+                return validateStringLength({
+                  value,
+                  error: ScriptFormValidationError.SCRIPT_BODY,
+                });
+              },
+            }}
             name="script"
             children={(field) => (
               <TextAreaInput
                 label="Script:"
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
                 placeholder="console.log(something);"
                 errors={field.state.meta.errors}
               />
             )}
           />
 
-          <form.Field
-            name="matches"
-            children={(field) => (
-              <TextInput
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                onBlur={field.handleBlur}
-                label="RegEx matcher:"
-                placeholder="*://*/*"
-                errors={field.state.meta.errors}
-              />
-            )}
-          />
+          {/* <form.Field */}
+          {/*   name="matches" */}
+          {/*   validators={{ */}
+          {/*     onChange({ value }) { */}
+          {/*       return validateStringLength({ */}
+          {/*         value, */}
+          {/*         error: ScriptFormValidationError.MATCHER, */}
+          {/*       }); */}
+          {/*     }, */}
+          {/*   }} */}
+          {/*   children={(field) => ( */}
+          {/*     <TextInput */}
+          {/*       value={field.state.value} */}
+          {/*       onChange={(e) => field.handleChange(e.target.value)} */}
+          {/*       onBlur={field.handleBlur} */}
+          {/*       label="RegEx matcher:" */}
+          {/*       errors={field.state.meta.errors} */}
+          {/*     /> */}
+          {/*   )} */}
+          {/* /> */}
           <form.Field
             name="runAt"
             children={(field) => (
@@ -115,16 +182,20 @@ export const ScriptForm = ({
             )}
           />
         </Flex>
-        <form.Subscribe>
-          <Flex justify={"center"}>
-            <Button
-              size="3"
-              style={{ cursor: "pointer", backgroundColor: "black" }}
-            >
-              Create interpolation <PlusCircledIcon />
-            </Button>
-          </Flex>
-        </form.Subscribe>
+        <Flex pt="2" justify={"center"}>
+          <Button
+            type="submit"
+            disabled={showWarning}
+            size="2"
+            style={{
+              ...(!showWarning
+                ? { cursor: "pointer", backgroundColor: "black" }
+                : {}),
+            }}
+          >
+            Create interpolation <PlusCircledIcon />
+          </Button>
+        </Flex>
       </form>
     </Card>
   );

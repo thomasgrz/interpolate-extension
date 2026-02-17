@@ -1,5 +1,12 @@
-import { Box, Flex, Text, TextAreaProps, TextArea } from "@radix-ui/themes";
-import InputLabel from "../InputLabel/InputLabel";
+import {
+  Box,
+  Flex,
+  Text,
+  TextAreaProps,
+  TextArea,
+  Strong,
+} from "@radix-ui/themes";
+import { Label } from "radix-ui";
 
 export default function TextAreaInput({
   label,
@@ -12,7 +19,11 @@ export default function TextAreaInput({
   return (
     <Box flexGrow={"1"}>
       <Flex gap={"1"} align="start" direction={"column"}>
-        <InputLabel>{label}</InputLabel>
+        <Label.Root>
+          <Text size="2">
+            <Strong>{label}</Strong>
+          </Text>
+        </Label.Root>
         <Box width={"100%"}>
           <TextArea radius={"large"} {...props} />
         </Box>

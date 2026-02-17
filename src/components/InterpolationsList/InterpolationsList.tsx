@@ -18,18 +18,21 @@ export const InterpolationsList = () => {
 
         <Box pt="3">
           <Tabs.Content value="all">
-            {interpolations?.map?.((interpolation) => (
-              <Box
-                key={interpolation.details?.id}
-                p="1"
-                className={styles.InterpolationsCardContainer}
-              >
-                <Flex gap="3">
-                  <InterpolationCard info={interpolation} />
-                </Flex>
-              </Box>
-            ))}
+            <Flex direction="column">
+              {interpolations?.map?.((interpolation) => (
+                <Box
+                  key={interpolation.details?.id}
+                  p="1"
+                  className={styles.InterpolationsCardContainer}
+                >
+                  <Flex gap="3">
+                    <InterpolationCard info={interpolation} />
+                  </Flex>
+                </Box>
+              ))}
+            </Flex>
           </Tabs.Content>
+
           <Tabs.Content value="active">
             {recentlyActive?.map?.((interpolation) => (
               <Box
@@ -41,7 +44,7 @@ export const InterpolationsList = () => {
                   <InterpolationCard info={interpolation} />
                 </Flex>
               </Box>
-            ))}{" "}
+            ))}
           </Tabs.Content>
         </Box>
       </Tabs.Root>

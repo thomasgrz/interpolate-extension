@@ -28,7 +28,7 @@ export const Import = () => {
   return (
     <Dialog.Root>
       <Dialog.Trigger>
-        <Button color="blue">
+        <Button size="1" color="blue">
           Import <DownloadIcon />
         </Button>
       </Dialog.Trigger>

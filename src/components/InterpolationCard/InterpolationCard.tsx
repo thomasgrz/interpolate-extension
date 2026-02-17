@@ -6,7 +6,11 @@ import {
   ScriptInterpolation,
 } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import { DoubleArrowDownIcon, DoubleArrowUpIcon } from "@radix-ui/react-icons";
+import {
+  Cross1Icon,
+  DoubleArrowDownIcon,
+  DoubleArrowUpIcon,
+} from "@radix-ui/react-icons";
 import {
   Badge,
   Box,
@@ -18,6 +22,7 @@ import {
   IconButton,
   Text,
   Tooltip,
+  Strong,
 } from "@radix-ui/themes";
 import { Collapsible } from "radix-ui";
 import { HeaderRulePreview } from "../HeaderPreview/HeaderPreview";
@@ -48,6 +53,7 @@ export const InterpolationCard = ({
   const formattedError = error instanceof Error ? error.message : String(error);
   const [enabledByUser, setIsEnabledByUser] = useState(info?.enabledByUser);
   const [editModeEnabled, setEditModeEnabled] = useState<boolean>();
+  const [deleteSelected, setDeleteSelected] = useState<boolean>();
 
   useEffect(() => {
     chrome.storage?.sync?.onChanged?.addListener?.((changes) => {
@@ -193,6 +199,17 @@ export const InterpolationCard = ({
     setEditModeEnabled(false);
   };
 
+  const onDeleteSelected = () => {
+    setDeleteSelected(true);
+  };
+
+  const onDeleteModalCloseClick = () => {
+    setDeleteSelected(false);
+  };
+
+  const handleDelete = async () => {
+    await InterpolateStorage.delete(info.details?.id);
+  };
   return (
     <Card
       ref={ref}
@@ -228,13 +245,19 @@ export const InterpolationCard = ({
               </Text>
               <Flex gap="2" p="2" align="center">
                 <Box p="1">
-                  <Badge variant="soft" color={badgeColor()} size="3">
+                  <Badge
+                    radius="full"
+                    variant="solid"
+                    color={badgeColor()}
+                    size="1"
+                  >
                     {type}
                   </Badge>
                 </Box>
                 {hideOptions ? null : (
                   <InterpolationOptions
                     onEditSelected={onEditSelected}
+                    onDeleteSelected={onDeleteSelected}
                     config={info}
                   />
                 )}
@@ -259,12 +282,37 @@ export const InterpolationCard = ({
         </Collapsible.Content>
       </Collapsible.Root>
       <Dialog.Root open={editModeEnabled}>
-        <Dialog.Content>
-          {getEditForm()}
-          <Flex gap="3" justify="end">
+        <Dialog.Content asChild>
+          <Flex direction={"column"} p="0">
+            {getEditForm()}
+            <Dialog.Close style={{ position: "absolute", right: 5, top: 5 }}>
+              <IconButton
+                radius="full"
+                onClick={onEditModalCloseClick}
+                color="red"
+              >
+                <Cross1Icon />
+              </IconButton>
+            </Dialog.Close>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
+      <Dialog.Root open={deleteSelected}>
+        <Dialog.Content maxWidth={"500px"}>
+          <Dialog.Description>
+            <Text size="2">
+              Are you sure you want to delete "<Strong>{info.name}</Strong>" ?
+            </Text>
+          </Dialog.Description>
+          <Flex align="end" justify="between">
             <Dialog.Close>
-              <Button onClick={onEditModalCloseClick} color="red">
+              <Button onClick={onDeleteModalCloseClick} variant="ghost">
                 Cancel
+              </Button>
+            </Dialog.Close>
+            <Dialog.Close>
+              <Button onClick={handleDelete} color="red">
+                Delete
               </Button>
             </Dialog.Close>
           </Flex>
