@@ -28,7 +28,7 @@ export const DashboardNav = ({ value, onChange }) => {
         style={{ cursor: "pointer" }}
         value={FormType.SCRIPT}
       >
-        <Strong>Script</Strong>
+        <Strong data-testid="script-form-option">Script</Strong>
       </SegmentedControl.Item>
     </SegmentedControl.Root>
   );

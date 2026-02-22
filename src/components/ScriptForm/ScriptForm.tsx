@@ -7,18 +7,11 @@ import { TextInput } from "../TextInput/TextInput";
 import TextAreaInput from "../TextArea/TextArea";
 import SelectField from "../SelectField/SelectField";
 import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
-
-export interface ScriptFormValue {
-  name?: string;
-  runAt?: string;
-  script?: string;
-}
-
-export enum ScriptFormValidationError {
-  INTERPOLATION_NAME = "Please give this interpolation name",
-  SCRIPT_BODY = "Please define a script",
-  MATCHER = "Please provide a valid RegEx",
-}
+import {
+  ScriptFormPlaceholder,
+  ScriptFormValidationError,
+  ScriptFormValue,
+} from "./ScriptForm.types";
 
 export const ScriptForm = ({
   defaultValues = {
@@ -142,7 +135,7 @@ export const ScriptForm = ({
                 label="Script:"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
-                placeholder="console.log(something);"
+                placeholder={ScriptFormPlaceholder.SCRIPT_BODY}
                 errors={field.state.meta.errors}
               />
             )}

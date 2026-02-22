@@ -29,7 +29,11 @@ const createRedirectRule = async (arg: {
   await preview.waitFor({ state: "visible" });
 };
 
-test("should apply redirect rule", async ({ page, network, extensionId }) => {
+test("should apply redirect interpolation", async ({
+  page,
+  network,
+  extensionId,
+}) => {
   await createRedirectRule({
     page,
     source: ".*something.*",
@@ -42,7 +46,10 @@ test("should apply redirect rule", async ({ page, network, extensionId }) => {
   await expect(page.getByText(/Example Domain/)).toBeVisible();
 });
 
-test("should not apply paused redirect rule", async ({ page, extensionId }) => {
+test("should not apply paused redirect interpolation", async ({
+  page,
+  extensionId,
+}) => {
   await createRedirectRule({
     page,
     source: ".*something.*",
@@ -58,7 +65,7 @@ test("should not apply paused redirect rule", async ({ page, extensionId }) => {
   await expect(page).toHaveURL("https://something.com/");
 });
 
-test("should selectively apply redirect rule if enabled", async ({
+test("should selectively apply redirect interpolation if enabled", async ({
   page,
   extensionId,
 }) => {
@@ -87,7 +94,7 @@ test("should selectively apply redirect rule if enabled", async ({
   // await expect(page).toHaveURL(/https:\/\/www.google.com/);
 });
 
-test("should disable all rules when global pause is activated", async ({
+test("should disable all interpolations when global pause is activated", async ({
   extensionId,
   page,
 }) => {
@@ -119,7 +126,7 @@ test("should disable all rules when global pause is activated", async ({
   expect(page.url()).toContain("https://www.google.com/");
 });
 
-test("should re-enable rules when global pause is deactivated", async ({
+test("should re-enable intperolations when global pause is deactivated", async ({
   extensionId,
   page,
 }) => {

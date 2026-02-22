@@ -27,6 +27,9 @@ export default defineConfig((configEnv) => {
             // Browser tests using Playwright in browser mode
             extends: true,
             test: {
+              css: {
+                include: /.+/,
+              },
               fileParallelism: false,
               setupFiles: ["./vitest.browser.setup.mts"],
               name: "browser",
