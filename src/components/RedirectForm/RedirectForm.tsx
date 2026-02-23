@@ -1,4 +1,4 @@
-import { Button, Card, Flex, Strong, Text, TextField } from "@radix-ui/themes";
+import { Button, Card, Flex } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
 import { FormErrors } from "#src/constants.ts";
@@ -12,6 +12,7 @@ const RedirectFormErrors = {
 };
 
 export interface RedirectFormValue {
+  id?: string | number;
   name?: string;
   matcher?: string;
   destination?: string;

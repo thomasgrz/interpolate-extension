@@ -7,7 +7,6 @@ import {
 } from "@radix-ui/react-icons";
 import styles from "./InterpolationOptions.module.scss";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
-import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 
 export const InterpolationOptions = ({
   config,

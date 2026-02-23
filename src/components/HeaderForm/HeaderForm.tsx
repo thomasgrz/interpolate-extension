@@ -24,6 +24,7 @@ export enum HeaderFormLabel {
 }
 
 export interface HeaderFormValue {
+  id?: string | number;
   name?: string;
   key?: string;
   value?: string;

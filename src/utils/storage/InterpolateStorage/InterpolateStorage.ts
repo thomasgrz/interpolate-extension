@@ -8,10 +8,6 @@ import {
 } from "@/utils/factories/Interpolation";
 import { logger } from "@/utils/logger";
 import { INTERPOLATE_RECORD_PREFIX } from "../storage.constants";
-import {
-  DEBUGGING_TABS_KEY,
-  getDebuggerTabs,
-} from "#src/background/getDebuggerTabs.ts";
 
 export const InterpolateStorage = {
   DEBUGGING_TABS_KEY: "debuggingTabs",
@@ -413,7 +409,7 @@ export const InterpolateStorage = {
     }
   },
   async syncAll() {
-    return Promise.allSettled([this.localWithUserScripts()]);
+    return Promise.allSettled([this.syncWithUserScripts()]);
   },
   async getDebuggerTabs() {
     const storageResult = await chrome.storage.local.get(
