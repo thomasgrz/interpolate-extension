@@ -8,8 +8,13 @@ import {
 } from "@/utils/factories/Interpolation";
 import { logger } from "@/utils/logger";
 import { INTERPOLATE_RECORD_PREFIX } from "../storage.constants";
+import {
+  DEBUGGING_TABS_KEY,
+  getDebuggerTabs,
+} from "#src/background/getDebuggerTabs.ts";
 
 export const InterpolateStorage = {
+  DEBUGGING_TABS_KEY: "debuggingTabs",
   logInvocation(caller: string) {
     logger(`(invocation): ${caller}`);
   },
@@ -20,13 +25,13 @@ export const InterpolateStorage = {
     return `${tabId}-active`;
   },
   async getActiveTab() {
-    const { activeTab } = await chrome.storage.sync.get("activeTab");
+    const { activeTab } = await chrome.storage.local.get("activeTab");
     return activeTab;
   },
   async getTabActivity(tabId: number) {
     try {
       const key = this.getTabActivityId(tabId);
-      const activity = await chrome.storage.sync.get([key]);
+      const activity = await chrome.storage.local.get([key]);
       const tabActivity = activity[key].newValue ?? activity[key];
       const isInvalidValueType = !Array.isArray(tabActivity);
       if (isInvalidValueType) return [];
@@ -36,7 +41,7 @@ export const InterpolateStorage = {
     }
   },
   async setActiveTab(tabId: number) {
-    await chrome.storage.sync.set({ activeTab: tabId });
+    await chrome.storage.local.set({ activeTab: tabId });
   },
   async pushTabActivity({
     tabId,
@@ -70,7 +75,7 @@ export const InterpolateStorage = {
     const key = this.getTabActivityId(tabId);
 
     try {
-      await chrome.storage.sync.set({
+      await chrome.storage.local.set({
         [key]: interpolations,
       });
     } catch (e) {
@@ -94,7 +99,7 @@ export const InterpolateStorage = {
     try {
       const allCurrent = await this.getAllInterpolations();
       if (!allCurrent) return;
-      await chrome.storage.sync.set({ allPaused: true });
+      await chrome.storage.local.set({ allPaused: true });
       const updatedInterpolations = allCurrent?.map((interpolation) => {
         return {
           ...interpolation,
@@ -109,7 +114,7 @@ export const InterpolateStorage = {
   async deleteAll() {
     const caller = "deleteAll";
     try {
-      return chrome.storage?.sync?.clear();
+      return chrome.storage?.local?.clear();
     } catch (e) {
       this.logError(caller, e as string);
     }
@@ -123,7 +128,7 @@ export const InterpolateStorage = {
       } else {
         resolvedIds = [this.getInterpolationRecordKey(ids)];
       }
-      await chrome.storage?.sync?.remove(resolvedIds);
+      await chrome.storage?.local?.remove(resolvedIds);
     } catch (e) {
       this.logError(caller, e as string);
     }
@@ -133,7 +138,7 @@ export const InterpolateStorage = {
     try {
       const allCurrent = await this.getAllInterpolations();
       if (!allCurrent) return;
-      await chrome.storage.sync.set({ allPaused: false });
+      await chrome.storage.local.set({ allPaused: false });
 
       const updatedInterpolations = allCurrent?.map((interpolation) => {
         return {
@@ -168,7 +173,7 @@ export const InterpolateStorage = {
   },
   async getInterpolationById(id: number | string) {
     const key = this.getInterpolationRecordKey(id);
-    const interp = await chrome.storage?.sync?.get(key);
+    const interp = await chrome.storage?.local?.get(key);
     const value = interp[key];
     return value;
   },
@@ -187,11 +192,11 @@ export const InterpolateStorage = {
   async getAllInterpolations() {
     const caller = "getAllInterpolations";
     try {
-      const result = await chrome.storage?.sync?.getKeys();
+      const result = await chrome.storage?.local?.getKeys();
       const interpolations = result.filter((key) =>
         key.startsWith(INTERPOLATE_RECORD_PREFIX),
       );
-      const storageRecords = await chrome.storage?.sync?.get(interpolations);
+      const storageRecords = await chrome.storage?.local?.get(interpolations);
       const interpolationConfigs = Object.values(storageRecords).reduce<
         AnyInterpolation[]
       >((acc, curr) => {
@@ -238,7 +243,7 @@ export const InterpolateStorage = {
       };
     }, {});
     try {
-      await chrome.storage?.sync?.set({
+      await chrome.storage?.local?.set({
         ...interpolationRecords,
       });
     } catch (e) {
@@ -281,7 +286,7 @@ export const InterpolateStorage = {
     const caller = "subscribeToRecentlyInvoked";
 
     try {
-      chrome.storage?.sync?.onChanged.addListener(async (changes) => {
+      chrome.storage?.local?.onChanged.addListener(async (changes) => {
         if (!Object.hasOwn(changes, "recentlyInvoked")) return;
         const recentlyInvoked = changes.recentlyInvoked;
         const { newValue } = recentlyInvoked;
@@ -301,7 +306,7 @@ export const InterpolateStorage = {
     const caller = "subscribeToChanges";
 
     try {
-      chrome.storage?.sync?.onChanged.addListener(async (changes) => {
+      chrome.storage?.local?.onChanged.addListener(async (changes) => {
         const interpolationConfigs = Object.entries(changes)?.reduce<{
           created: AnyInterpolation[];
           updated: AnyInterpolation[];
@@ -408,6 +413,36 @@ export const InterpolateStorage = {
     }
   },
   async syncAll() {
-    return Promise.allSettled([this.syncWithUserScripts()]);
+    return Promise.allSettled([this.localWithUserScripts()]);
+  },
+  async getDebuggerTabs() {
+    const storageResult = await chrome.storage.local.get(
+      this.DEBUGGING_TABS_KEY,
+    );
+    const currentDebuggingTabs = storageResult?.[this.DEBUGGING_TABS_KEY];
+    if (currentDebuggingTabs) return new Set<number>(currentDebuggingTabs);
+
+    await chrome.storage.local.set({ [this.DEBUGGING_TABS_KEY]: [] });
+    return new Set<number>();
+  },
+  async addTabDebugger(tabId: number) {
+    const debuggingTabs = await this.getDebuggerTabs();
+    debuggingTabs.add(tabId);
+    const debuggingTabsAsArray = debuggingTabs.values().toArray();
+    await chrome.storage.local.set({
+      [this.DEBUGGING_TABS_KEY]: debuggingTabsAsArray,
+    });
+    return debuggingTabs;
+  },
+  async deleteDebuggerTab(tabId: number) {
+    const debuggingTabs = await this.getDebuggerTabs();
+
+    debuggingTabs.delete(tabId);
+    const debuggingTabsAsArray = debuggingTabs.values().toArray();
+
+    await chrome.storage.local.set({
+      [this.DEBUGGING_TABS_KEY]: debuggingTabsAsArray,
+    });
+    return debuggingTabs;
   },
 };

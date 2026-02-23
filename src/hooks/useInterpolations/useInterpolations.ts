@@ -36,7 +36,7 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
     });
 
     // Update recentlyActive when an active tab invokes interpolation
-    chrome?.storage?.sync?.onChanged?.addListener(async (changes) => {
+    chrome?.storage?.local?.onChanged?.addListener(async (changes) => {
       const currentTabActivityKey = await InterpolateStorage.getActiveTab();
       const currentTabChanges =
         changes[InterpolateStorage.getTabActivityId(currentTabActivityKey)]
@@ -51,7 +51,7 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
     const initRecentlyActive = async () => {
       let queryOptions = { active: true, lastFocusedWindow: true };
       // `tab` will either be a `tabs.Tab` instance or `undefined`.
-      let [tab] = await chrome.tabs.query(queryOptions);
+      let [tab] = (await chrome.tabs?.query?.(queryOptions)) ?? [{ id: null }];
       const isMissingTabId = !tab.id;
       if (isMissingTabId) return;
       const tabActivity = await InterpolateStorage.getTabActivity(tab.id!);
@@ -199,7 +199,6 @@ export const useInterpolations = (initialValue?: AnyInterpolation[]) => {
     getInitAllPaused();
   }, []);
 
-  console.log({ sortedInterpolations });
   return {
     add,
     allPaused,

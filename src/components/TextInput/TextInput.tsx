@@ -11,7 +11,6 @@ export const TextInput = ({
   errors?: (string | undefined | null)[];
   label: string;
 }) => {
-  console.log({ props });
   return (
     <Flex p="1" direction={"column"}>
       <Label.Root>

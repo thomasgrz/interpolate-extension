@@ -11,7 +11,7 @@ describe("Dashboard", () => {
       headerValue: "test header value",
       name: "test rule",
     });
-    chrome.storage?.sync?.set({
+    chrome.storage?.local?.set({
       [`interpolation-config-${interpolation.details.id}`]: interpolation,
     });
 

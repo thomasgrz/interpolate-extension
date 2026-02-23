@@ -56,14 +56,14 @@ export const InterpolationCard = ({
   const [deleteSelected, setDeleteSelected] = useState<boolean>();
 
   useEffect(() => {
-    chrome.storage?.sync?.onChanged?.addListener?.((changes) => {
+    chrome.storage?.local?.onChanged?.addListener?.((changes) => {
       const isUnrelatedToGlobalPause = !changes?.allPaused;
       if (isUnrelatedToGlobalPause) return;
       const isAllPaused = changes?.allPaused?.newValue === true;
       const isRuleEnabledByUser = !isAllPaused;
       setIsEnabledByUser(isRuleEnabledByUser);
     });
-    chrome.storage?.sync?.onChanged?.addListener?.((changes) => {
+    chrome.storage?.local?.onChanged?.addListener?.((changes) => {
       const recordKey = InterpolateStorage.getInterpolationRecordKey(id);
       const relatedChanges = changes?.[recordKey];
       const isUnrelatedToEnablement = !changes?.[recordKey];
@@ -214,7 +214,7 @@ export const InterpolationCard = ({
     <Card
       ref={ref}
       data-ui-error={!!info.error}
-      data-testid={`${type}-preview-${info?.details?.id}`}
+      data-testid={`${type}-preview-${info?.name}`}
       className={styles.InterpolationCard}
       variant="surface"
     >

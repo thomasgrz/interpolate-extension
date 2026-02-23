@@ -1,45 +1,17 @@
 import { expect, test } from "./fixtures/expect";
-import { RedirectFormPlaceholder } from "../src/components/RedirectForm/RedirectForm";
-
-const createRedirectRule = async (arg: {
-  page: any;
-  ruleName: string;
-  source: string;
-  destination: string;
-  extensionId: string;
-}) => {
-  const { source, destination, page, extensionId, ruleName } = arg;
-  await page.goto("https://google.com");
-
-  await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
-  const dashboard = page.getByTestId("dashboard");
-  await dashboard.waitFor({ state: "attached" });
-  await dashboard.waitFor({ state: "visible" });
-  await page
-    .getByPlaceholder(RedirectFormPlaceholder.INTERPOLATION_NAME)
-    .fill(ruleName);
-  await page
-    .getByPlaceholder(RedirectFormPlaceholder.REDIRECT_FROM)
-    .fill(source);
-  await page
-    .getByPlaceholder(RedirectFormPlaceholder.REDIRECT_TO)
-    .fill(destination);
-  await page.getByText("Create Interpolation").click();
-  const preview = page.getByText(ruleName);
-  await preview.waitFor({ state: "visible" });
-};
+import { createTestRedirectInterpolation } from "./fixtures/createTestRedirectInterpolation";
 
 test("should apply redirect interpolation", async ({
   page,
   network,
   extensionId,
 }) => {
-  await createRedirectRule({
+  await createTestRedirectInterpolation({
     page,
     source: ".*something.*",
     destination: "https://example.com/*",
     extensionId,
-    ruleName: "rule #1",
+    name: "rule #1",
   });
 
   await page.goto("https://something.com");
@@ -50,12 +22,12 @@ test("should not apply paused redirect interpolation", async ({
   page,
   extensionId,
 }) => {
-  await createRedirectRule({
+  await createTestRedirectInterpolation({
     page,
     source: ".*something.*",
     destination: "https://example.com/*",
     extensionId,
-    ruleName: "rule #2",
+    name: "rule #2",
   });
 
   // Pause the extension
@@ -69,20 +41,20 @@ test("should selectively apply redirect interpolation if enabled", async ({
   page,
   extensionId,
 }) => {
-  await createRedirectRule({
+  await createTestRedirectInterpolation({
     page,
     source: ".*something.*",
     destination: "https://example.com/test",
     extensionId,
-    ruleName: "rule #3",
+    name: "rule #3",
   });
 
-  await createRedirectRule({
+  await createTestRedirectInterpolation({
     page,
     source: ".*google.*",
     destination: "https://example.com/test2",
     extensionId,
-    ruleName: "rule #4",
+    name: "rule #4",
   });
 
   // Pause the extension
@@ -98,20 +70,20 @@ test("should disable all interpolations when global pause is activated", async (
   extensionId,
   page,
 }) => {
-  await createRedirectRule({
+  await createTestRedirectInterpolation({
     page,
     source: ".*something.*",
     destination: "https://example.com/test",
     extensionId,
-    ruleName: "rule #5",
+    name: "rule #5",
   });
 
-  await createRedirectRule({
+  await createTestRedirectInterpolation({
     page,
     source: ".*google.*",
     destination: "https://example.com/test2",
     extensionId,
-    ruleName: "rule #6",
+    name: "rule #6",
   });
 
   // Activate global pause
@@ -130,20 +102,20 @@ test("should re-enable intperolations when global pause is deactivated", async (
   extensionId,
   page,
 }) => {
-  await createRedirectRule({
+  await createTestRedirectInterpolation({
     page,
     source: ".*something.*",
     destination: "https://example.com/test",
     extensionId,
-    ruleName: "rule #7",
+    name: "rule #7",
   });
 
-  await createRedirectRule({
+  await createTestRedirectInterpolation({
     page,
     source: ".*google.*",
     destination: "https://example.com/test2",
     extensionId,
-    ruleName: "rule #8",
+    name: "rule #8",
   });
 
   // Activate global pause
