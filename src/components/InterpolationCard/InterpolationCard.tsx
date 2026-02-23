@@ -163,10 +163,10 @@ export const InterpolationCard = ({
       case "redirect":
         return (
           <RedirectForm
-            onSuccess={() => setEditModeEnabled(false)}
+            onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               id,
-              source: details?.condition?.regexFilter,
+              matcher: details?.condition?.regexFilter,
               name,
               destination: details?.action?.redirect?.url,
             }}
@@ -175,7 +175,7 @@ export const InterpolationCard = ({
       case "headers":
         return (
           <HeaderForm
-            onSuccess={() => setEditModeEnabled(false)}
+            onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               id,
               name,

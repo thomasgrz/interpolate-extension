@@ -1,4 +1,4 @@
-import { Flex, Box } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { Import } from "../Import/Import.tsx";
 import { Exporter } from "../Exporter/Exporter.tsx";
 import { DashboardNav } from "../DashboardNav/DashboardNav.tsx";
@@ -7,7 +7,7 @@ import {
   RedirectFormValue,
 } from "../RedirectForm/RedirectForm.tsx";
 import { HeaderForm, HeaderFormValue } from "../HeaderForm/HeaderForm.tsx";
-import { ScriptForm, ScriptFormValue } from "../ScriptForm/ScriptForm.tsx";
+import { ScriptForm } from "../ScriptForm/ScriptForm.tsx";
 import { GlobalInterpolationOptions } from "../GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
 import { useInterpolations } from "../../hooks/useInterpolations/useInterpolations.ts";
 import { useInterpolateFormSelection } from "../../hooks/useInterpolateFormSelection/useInterpolateFormSelection.ts";
@@ -16,9 +16,9 @@ import { FormType } from "@/constants";
 import { ErrorBoundary } from "react-error-boundary";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
-import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
 import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
 import { createScriptInterpolation } from "#src/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
+import { ScriptFormValue } from "../ScriptForm/ScriptForm.types.ts";
 
 export const ControlCenter = () => {
   const { interpolations } = useInterpolations();
