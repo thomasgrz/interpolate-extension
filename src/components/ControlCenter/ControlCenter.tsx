@@ -65,24 +65,30 @@ export const ControlCenter = () => {
   }: {
     value: ScriptFormValue;
   }) => {
-    const { script, runAt, matches, name } = value;
+    const { script, runAt, name } = value;
     const isValid =
       typeof script === "string" &&
       typeof runAt === "string" &&
-      typeof matches === "string" &&
       typeof name === "string";
     const isInvalid = !isValid;
 
-    if (isInvalid) return;
+    if (isInvalid) throw Error("form invalid");
 
     await InterpolateStorage.create(
-      createScriptInterpolation({ body: script, runAt, matches, name }),
+      createScriptInterpolation({ body: script, runAt, name }),
     );
   };
 
   return (
     <Flex gap="1" direction="column" className={styles.ControlCenterContainer}>
-      <Flex pb="0" p="2" className={styles.ImportExportCTAs} justify="between">
+      <Flex
+        gap="1"
+        p="3"
+        flexGrow="1"
+        className={styles.ImportExportCTAs}
+        justify="between"
+        align="center"
+      >
         <Import />
         <Exporter
           interpolations={interpolations}

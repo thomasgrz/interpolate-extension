@@ -4,8 +4,24 @@
 }
 
 .ImportExportCTAs {
+  @media (min-width: 500px) {
+    right: 10px;
+    bottom: 10px;
+  }
+  width: stretch;
+  max-width: 500px;
+  height: 50px;
+  position: fixed;
+  bottom: 0;
+  background-color: var(--background);
+  z-index: 10000000;
+  border-radius: var(--radius-5);
   button {
+    &:enabled {
+      cursor: pointer;
+    }
     width: 48%;
+    height: stretch;
   }
 }
 

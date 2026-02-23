@@ -9,6 +9,9 @@ import { logger } from "@/utils/logger";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 
 export const handleInstall = async () => {
+  if (chrome.runtime.lastError) {
+    logger("*ahem* RAHHHHHHHHHHHHHH!" + chrome.runtime.lastError);
+  }
   const reducer = (
     acc: {
       dynamicRules: (RedirectInterpolation | HeaderInterpolation)[];

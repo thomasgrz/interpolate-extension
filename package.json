@@ -15,7 +15,7 @@
     "dev": "vite",
     "test:component": "vitest run",
     "test:component:ui": "vitest --ui",
-    "test:e2e": "pnpm run dev & sleep 5 && playwright test -c playwright.config.ts -x",
+    "test:e2e": "pnpm run dev & sleep 5 && playwright test -c playwright.config.ts -x --headed",
     "test:e2e:ui": "pnpm run dev & sleep 5 & playwright test --ui -c playwright.config.ts",
     "build:debug": "CI=true tsc -b --stopBuildOnErrors && vite build",
     "build": "tsc -b && vite build",

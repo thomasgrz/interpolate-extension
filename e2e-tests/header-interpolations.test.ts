@@ -1,51 +1,14 @@
 import { expect, test } from "./fixtures/expect";
-import { FormType } from "../src/constants";
-import { HeaderFormPlaceholder } from "../src/components/HeaderForm/HeaderForm";
-
-const createHeaderRule = async (arg: {
-  page: any;
-  ruleName: string;
-  headerName: string;
-  headerValue: string;
-  extensionId: string;
-}) => {
-  const { ruleName, headerName, headerValue, page } = arg;
-  await page.goto(
-    `chrome-extension://${arg.extensionId}/src/options/index.html`,
-  );
-  const dashboard = await page.getByTestId("dashboard");
-  await dashboard.waitFor({ state: "attached" });
-  await dashboard.waitFor({ state: "visible" });
-  await page.getByRole("radio", { name: FormType.HEADER }).click();
-  // fill interpolation name field
-  await page
-    .getByPlaceholder(HeaderFormPlaceholder.INTERPOLATION_NAME)
-    .fill(ruleName);
-  // fill interpolation header name
-  await page
-    .getByPlaceholder(HeaderFormPlaceholder.HEADER_KEY)
-    .fill(headerName);
-  // file interpolation header value
-  await page
-    .getByPlaceholder(HeaderFormPlaceholder.HEADER_VALUE)
-    .fill(headerValue);
-  await page.getByText("Create Interpolation").click();
-  await page.getByTestId(/headers-preview-.*/).waitFor();
-
-  await page.goto("https://httpbin.org/headers");
-  await page.goto(
-    `chrome-extension://${arg.extensionId}/src/options/index.html`,
-  );
-};
+import { createTestHeaderInterpolation } from "./fixtures/createTestHeaderInterpolation";
 
 test("should apply header rule", async ({ page, extensionId, network }) => {
   // Create a header modification rule
-  await createHeaderRule({
+  await createTestHeaderInterpolation({
     page,
     headerName: "X-Test-Header",
     headerValue: "ModRequest",
     extensionId,
-    ruleName: "rule #1",
+    name: "rule #1",
   });
 
   // Navigate to a test page
@@ -62,12 +25,12 @@ test("should not apply header rule when paused", async ({
   extensionId,
 }) => {
   // Create a header modification rule
-  await createHeaderRule({
+  await createTestHeaderInterpolation({
     page,
     headerName: "X-Test-Header",
     headerValue: "ModRequest",
     extensionId,
-    ruleName: "rule #2",
+    name: "rule #2",
   });
 
   // Pause the header rule
@@ -86,20 +49,20 @@ test("should selectively apply header rule if enabled", async ({
   extensionId,
 }) => {
   // Create a header modification rule
-  await createHeaderRule({
+  await createTestHeaderInterpolation({
     page,
     headerName: "X-Test-Header",
     headerValue: "ModRequest",
     extensionId,
-    ruleName: "rule #3",
+    name: "rule #3",
   });
 
-  await createHeaderRule({
+  await createTestHeaderInterpolation({
     page,
     headerName: "X-Another-Header",
     headerValue: "ShouldNotApply",
     extensionId,
-    ruleName: "rule #4",
+    name: "rule #4",
   });
 
   // Pause the second header rule
@@ -125,20 +88,20 @@ test("should disable all header rules when global pause is activated", async ({
   extensionId,
 }) => {
   // Create a header modification rule
-  await createHeaderRule({
+  await createTestHeaderInterpolation({
     page,
     headerName: "X-Test-Header",
     headerValue: "ModRequest",
     extensionId,
-    ruleName: "rule #5",
+    name: "rule #5",
   });
 
-  await createHeaderRule({
+  await createTestHeaderInterpolation({
     page,
     headerName: "X-Another-Header",
     headerValue: "ShouldNotApply",
     extensionId,
-    ruleName: "rule #6",
+    name: "rule #6",
   });
 
   // Activate global pause
@@ -157,20 +120,20 @@ test("should re-enable header rules when global pause is deactivated", async ({
   extensionId,
 }) => {
   // Create a header modification rule
-  await createHeaderRule({
+  await createTestHeaderInterpolation({
     page,
     headerName: "X-Test-Header",
     headerValue: "ModRequest",
     extensionId,
-    ruleName: "rule #7",
+    name: "rule #7",
   });
 
-  await createHeaderRule({
+  await createTestHeaderInterpolation({
     page,
     headerName: "X-Another-Header",
     headerValue: "ShouldNotApply",
     extensionId,
-    ruleName: "rule #8",
+    name: "rule #8",
   });
 
   // Activate global pause

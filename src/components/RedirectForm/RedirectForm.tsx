@@ -40,23 +40,54 @@ export const RedirectForm = ({
 }) => {
   const form = useForm({
     defaultValues,
-    onSubmit: onSubmit,
+    onSubmit: async ({ value, formApi }) => {
+      await onSubmit?.({ value });
+      void formApi.reset({
+        name: "",
+        matcher: "",
+        destination: "",
+      });
+    },
     validators: {
-      onSubmit: ({ value }) => {
+      onSubmit({ value }) {
+        const errors = new Map();
+        const nameError = validateStringLength({
+          value: value.name,
+          error: RedirectFormErrors.MISSING_NAME,
+        });
+        if (nameError) {
+          errors.set("name", nameError);
+        }
+
+        const matcherError = validateStringLength({
+          value: value.matcher,
+          error: RedirectFormErrors.MISSING_REGEX_MATCHER,
+        });
+
+        if (matcherError) {
+          errors.set("matcher", matcherError);
+        }
+
+        const destinationError = validateStringLength({
+          value: value.destination,
+          error: RedirectFormErrors.MISSING_DESTINATION,
+        });
+
+        if (destinationError) {
+          errors.set("destination", destinationError);
+        }
+
+        const isValid = !errors?.size;
+
+        if (isValid) {
+          return;
+        }
+
         return {
           fields: {
-            name: validateStringLength({
-              value: value.name,
-              error: RedirectFormErrors.MISSING_NAME,
-            }),
-            matcher: validateStringLength({
-              value: value.matcher,
-              error: RedirectFormErrors.MISSING_REGEX_MATCHER,
-            }),
-            destination: validateStringLength({
-              value: value.destination,
-              error: RedirectFormErrors.MISSING_DESTINATION,
-            }),
+            name: errors.get("name") ?? null,
+            matcher: errors.get("matcher") ?? null,
+            destination: errors.get("destination") ?? null,
           },
         };
       },
@@ -65,10 +96,10 @@ export const RedirectForm = ({
 
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        form.handleSubmit();
+        await form.handleSubmit();
       }}
     >
       <Card style={{ backgroundColor: "#0090FF" }}>
@@ -137,17 +168,16 @@ export const RedirectForm = ({
               )}
             />
           </Flex>
-          <form.Subscribe>
-            <Flex justify={"center"}>
-              <Button
-                size="3"
-                style={{ cursor: "pointer", backgroundColor: "black" }}
-              >
-                Create Interpolation
-                <PlusCircledIcon />
-              </Button>
-            </Flex>
-          </form.Subscribe>
+          <Flex justify={"center"}>
+            <Button
+              type="submit"
+              size="2"
+              style={{ cursor: "pointer", backgroundColor: "black" }}
+            >
+              Create interpolation
+              <PlusCircledIcon />
+            </Button>
+          </Flex>
         </Flex>
       </Card>
     </form>

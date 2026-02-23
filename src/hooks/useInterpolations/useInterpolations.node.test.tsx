@@ -7,7 +7,7 @@ import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpo
 describe("useInterpolations", () => {
   beforeEach(() => {
     chrome.storage?.local?.clear();
-    chrome.storage?.sync?.clear();
+    chrome.storage?.local?.clear();
   });
   it.skip("should return current interpolations", async () => {
     const interpolation = createHeaderInterpolation({
@@ -18,7 +18,7 @@ describe("useInterpolations", () => {
     await InterpolateStorage.create([interpolation]);
     const { result } = renderHook(() => useInterpolations());
 
-    await waitFor(() => expect(chrome.storage?.sync?.get).toBeCalledTimes(3));
+    await waitFor(() => expect(chrome.storage?.local?.get).toBeCalledTimes(3));
     await waitFor(() =>
       expect(result.current.interpolations[0]).toEqual(interpolation),
     );
@@ -107,10 +107,10 @@ describe("useInterpolations", () => {
       return expect(result.current.interpolations.length).toEqual(2);
     });
 
-    await result.current.pause(interpolations[0].details.id);
-    await waitFor(() =>
-      expect(result.current.interpolations[0].enabledByUser).toBeFalsy(),
-    );
+    await result.current.pause(result.current.interpolations[0].details.id);
+    await waitFor(() => {
+      expect(result.current.interpolations[0].enabledByUser).toBeFalsy();
+    });
   });
   it("should indicate when all interpolations are paused", async () => {
     const interpolations = [

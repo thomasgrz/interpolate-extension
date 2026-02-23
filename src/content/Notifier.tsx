@@ -19,7 +19,7 @@ export const Notifier = () => {
 
     isInitialized.current = true;
 
-    chrome.runtime.onMessage.addListener((message) => {
+    chrome.runtime?.onMessage?.addListener?.((message) => {
       const isIrrelevantMessage = !message.interpolations;
 
       if (isIrrelevantMessage) return;
@@ -40,6 +40,7 @@ export const Notifier = () => {
         window.__INTERPOLATE_NOTIFICATION_CACHE__.add(interp?.details?.id);
         return createToast({
           content: <InterpolationCard hideOptions info={interp} />,
+          duration: 10000,
           onOpenChange: (value: boolean) => {
             const open = !!value;
             if (open) return;

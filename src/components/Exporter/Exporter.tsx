@@ -48,7 +48,7 @@ export const Exporter = ({
   return (
     <Dialog.Root>
       <Dialog.Trigger>
-        <Button disabled={disabled}>
+        <Button size="1" disabled={disabled}>
           Export <UploadIcon />
         </Button>
       </Dialog.Trigger>

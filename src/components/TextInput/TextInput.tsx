@@ -18,7 +18,7 @@ export const TextInput = ({
           <Text size="2">{label}</Text>
         </Strong>
       </Label.Root>
-      <TextField.Root {...props} />
+      <TextField.Root {...props} value={props.value} />
       {errors?.map?.((error?: string | null) => (
         <Text align={"left"} size="1" key={error} color="red">
           {error}

@@ -1,6 +1,6 @@
-import { Box, Flex, Select } from "@radix-ui/themes";
+import { Box, Flex, Select, Strong, Text } from "@radix-ui/themes";
 import styles from "./SelectField.module.scss";
-import InputLabel from "../InputLabel/InputLabel";
+import { Label } from "radix-ui";
 
 export default function SelectField({
   label,
@@ -20,7 +20,11 @@ export default function SelectField({
   return (
     <Flex align={"start"} direction="column" minWidth={"100%"}>
       <Box p="1">
-        <InputLabel>{label}</InputLabel>
+        <Label.Root>
+          <Text size="2">
+            <Strong>{label}</Strong>
+          </Text>
+        </Label.Root>
       </Box>
       <Box className={styles.Button}>
         <Select.Root

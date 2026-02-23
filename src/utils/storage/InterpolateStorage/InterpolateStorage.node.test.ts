@@ -4,7 +4,7 @@ import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpo
 
 describe("InterpolateStorage", () => {
   beforeEach(() => {
-    chrome.storage?.sync?.clear();
+    chrome.storage?.local?.clear();
     vi.clearAllMocks();
   });
   it("should create a new interpolation", async () => {
@@ -15,7 +15,7 @@ describe("InterpolateStorage", () => {
     });
     // Test implementation goes here
     await InterpolateStorage.create(interpolation);
-    expect(chrome.storage?.sync?.set).toHaveBeenCalledExactlyOnceWith({
+    expect(chrome.storage?.local?.set).toHaveBeenCalledExactlyOnceWith({
       [InterpolateStorage.getInterpolationRecordKey(interpolation.details.id)]:
         interpolation,
     });
@@ -34,7 +34,7 @@ describe("InterpolateStorage", () => {
     // Test implementation goes here
     await InterpolateStorage.create([interpolation1, interpolation2]);
 
-    expect(chrome.storage?.sync?.set).toHaveBeenCalledExactlyOnceWith({
+    expect(chrome.storage?.local?.set).toHaveBeenCalledExactlyOnceWith({
       [InterpolateStorage.getInterpolationRecordKey(interpolation1.details.id)]:
         interpolation1,
       [InterpolateStorage.getInterpolationRecordKey(interpolation2.details.id)]:
@@ -43,7 +43,7 @@ describe("InterpolateStorage", () => {
 
     await InterpolateStorage.deleteAll();
 
-    expect(chrome.storage.sync.clear).toHaveBeenCalledOnce();
+    expect(chrome.storage.local.clear).toHaveBeenCalledOnce();
   });
   it("should retrieve all interpolations", async () => {
     const interpolation1 = createHeaderInterpolation({
@@ -57,7 +57,7 @@ describe("InterpolateStorage", () => {
       headerValue: "Value2",
     });
     await InterpolateStorage.create([interpolation1, interpolation2]);
-    expect(chrome.storage?.sync?.set).toHaveBeenCalledExactlyOnceWith({
+    expect(chrome.storage?.local?.set).toHaveBeenCalledExactlyOnceWith({
       [InterpolateStorage.getInterpolationRecordKey(interpolation1.details.id)]:
         interpolation1,
       [InterpolateStorage.getInterpolationRecordKey(interpolation2.details.id)]:
