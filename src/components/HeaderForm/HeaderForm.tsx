@@ -4,6 +4,8 @@ import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { Button, Card, Flex } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
+import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
+import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
 
 const HeaderFormErrors = {
   MISSING_NAME: FormErrors.MISSING_NAME,
@@ -30,6 +32,24 @@ export interface HeaderFormValue {
   value?: string;
 }
 
+const handleCreateHeaderInterpolation = async ({
+  value,
+}: {
+  value: HeaderFormValue;
+}) => {
+  const { key, value: headerValue, name } = value;
+  const isValid =
+    typeof key === "string" &&
+    typeof headerValue === "string" &&
+    typeof name === "string";
+
+  const isInvalid = !isValid;
+  if (isInvalid) return;
+  await InterpolateStorage.create(
+    createHeaderInterpolation({ headerValue, headerKey: key, name }),
+  );
+};
+
 export const HeaderForm = ({
   defaultValues,
   onSubmit,
@@ -42,6 +62,7 @@ export const HeaderForm = ({
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value, formApi }) => {
+      handleCreateHeaderInterpolation({ value });
       void formApi.reset({
         name: "",
         key: "",
@@ -147,18 +168,19 @@ export const HeaderForm = ({
               />
             )}
           />
-          <Flex justify={"center"}>
-            <Button
-              type="submit"
-              size="2"
-              style={{ cursor: "pointer", backgroundColor: "black" }}
-            >
-              Create interpolation
-              <PlusCircledIcon />
-            </Button>
-          </Flex>
         </Flex>
       </Card>
+      <Flex justify={"center"}>
+        <Button
+          mt="2"
+          type="submit"
+          size="2"
+          style={{ cursor: "pointer", backgroundColor: "black" }}
+        >
+          Create interpolation
+          <PlusCircledIcon />
+        </Button>
+      </Flex>
     </form>
   );
 };

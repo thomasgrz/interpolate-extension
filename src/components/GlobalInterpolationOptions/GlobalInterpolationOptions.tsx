@@ -33,7 +33,7 @@ export const GlobalInterpolationOptions = ({
             onClick={resumeAll}
           >
             <Play />
-            Resume
+            Resume all
             <Count count={ruleCount} />
           </Button>
         ) : (
@@ -47,7 +47,7 @@ export const GlobalInterpolationOptions = ({
             onClick={pauseAll}
           >
             <Pause />
-            Pause
+            Pause all
             <Count count={ruleCount} />
           </Button>
         )}
@@ -69,7 +69,7 @@ export const GlobalInterpolationOptions = ({
                 color="red"
               >
                 <TrashIcon />
-                Delete
+                Delete all
                 <Count count={ruleCount} />
               </Button>
             </AlertDialog.Trigger>

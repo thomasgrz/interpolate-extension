@@ -1,9 +1,9 @@
 import preview from "#.storybook/preview";
 
-import { DashboardNav } from "./DashboardNav.tsx";
+import { InterpolateOptionsModal } from "./InterpolateOptionsModal.tsx";
 
 const meta = preview.meta({
-  component: DashboardNav,
+  component: InterpolateOptionsModal,
 });
 
 export default meta;

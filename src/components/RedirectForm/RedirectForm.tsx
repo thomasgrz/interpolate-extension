@@ -4,6 +4,8 @@ import { TextInput } from "../TextInput/TextInput";
 import { FormErrors } from "#src/constants.ts";
 import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
+import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
 
 const RedirectFormErrors = {
   MISSING_NAME: FormErrors.MISSING_NAME,
@@ -30,6 +32,27 @@ export enum RedirectFormPlaceholder {
   REDIRECT_TO = "https://example.com/$1",
 }
 
+const handleCreateRedirectInterpolation = async ({
+  value,
+}: {
+  value: RedirectFormValue;
+}) => {
+  const { destination, name, matcher } = value;
+  const isValid =
+    typeof name === "string" &&
+    typeof destination === "string" &&
+    typeof matcher === "string";
+  const isInvalid = !isValid;
+  if (isInvalid) return;
+  await InterpolateStorage.create(
+    createRedirectInterpolation({
+      source: matcher,
+      name: name,
+      destination: destination,
+    }),
+  );
+};
+
 export const RedirectForm = ({
   onSubmit,
   defaultValues,
@@ -42,12 +65,13 @@ export const RedirectForm = ({
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value, formApi }) => {
-      await onSubmit?.({ value });
+      await handleCreateRedirectInterpolation({ value });
       void formApi.reset({
         name: "",
         matcher: "",
         destination: "",
       });
+      await onSubmit?.({ value });
     },
     validators: {
       onSubmit({ value }) {
@@ -169,18 +193,19 @@ export const RedirectForm = ({
               )}
             />
           </Flex>
-          <Flex justify={"center"}>
-            <Button
-              type="submit"
-              size="2"
-              style={{ cursor: "pointer", backgroundColor: "black" }}
-            >
-              Create interpolation
-              <PlusCircledIcon />
-            </Button>
-          </Flex>
         </Flex>
       </Card>
+      <Flex justify={"center"}>
+        <Button
+          mt="2"
+          type="submit"
+          size="2"
+          style={{ cursor: "pointer", backgroundColor: "black" }}
+        >
+          Create interpolation
+          <PlusCircledIcon />
+        </Button>
+      </Flex>
     </form>
   );
 };

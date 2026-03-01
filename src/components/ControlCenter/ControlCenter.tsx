@@ -1,7 +1,10 @@
 import { Flex } from "@radix-ui/themes";
-import { Import } from "../Import/Import.tsx";
+import { ImportForm } from "../Import/Import.tsx";
 import { Exporter } from "../Exporter/Exporter.tsx";
-import { DashboardNav } from "../DashboardNav/DashboardNav.tsx";
+import {
+  InterpolateOptionsModal,
+  InterpolationOptionSelection,
+} from "../InterpolateOptionsModal/InterpolateOptionsModal.tsx";
 import {
   RedirectForm,
   RedirectFormValue,
@@ -19,16 +22,17 @@ import { createRedirectInterpolation } from "#src/utils/factories/createRedirect
 import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
 import { createScriptInterpolation } from "#src/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
 import { ScriptFormValue } from "../ScriptForm/ScriptForm.types.ts";
+import { useState } from "react";
 
 export const ControlCenter = () => {
   const { interpolations } = useInterpolations();
-  const { selectedForm, setSelectedForm } = useInterpolateFormSelection();
   const handleCreateRedirectInterpolation = async ({
     value,
   }: {
     value: RedirectFormValue;
   }) => {
     const { destination, name, matcher } = value;
+
     const isValid =
       typeof name === "string" &&
       typeof destination === "string" &&
@@ -78,52 +82,32 @@ export const ControlCenter = () => {
       createScriptInterpolation({ body: script, runAt, name }),
     );
   };
+  const handleInterpolationOptionOnChange = (
+    type: InterpolationOptionSelection,
+  ) => {};
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+  };
   return (
     <Flex gap="1" direction="column" className={styles.ControlCenterContainer}>
       <Flex
-        gap="1"
-        p="3"
-        flexGrow="1"
-        className={styles.ImportExportCTAs}
-        justify="between"
-        align="center"
-      >
-        <Import />
-        <Exporter
-          interpolations={interpolations}
-          disabled={!interpolations?.length}
-        />
-      </Flex>
-      <Flex
-        gap="2"
         direction={"column"}
         flexGrow={"1"}
         data-testid={"dashboard"}
         justify={"start"}
-        p="2"
-        pt="0"
+        gap="3"
+        p="3"
         className={styles.FormContainer}
       >
-        <Flex direction={"column"} width={"100%"}>
-          <Flex justify={"center"} p="2" width="stretch">
-            <DashboardNav value={selectedForm} onChange={setSelectedForm} />
-          </Flex>
-          <ErrorBoundary fallbackRender={() => "oops"}>
-            <Flex height={"100%"} direction="column" flexGrow={"1"}>
-              {selectedForm === FormType.REDIRECT && (
-                <RedirectForm onSubmit={handleCreateRedirectInterpolation} />
-              )}
-              {selectedForm === FormType.HEADER && (
-                <HeaderForm onSubmit={handleCreateHeaderInterpolation} />
-              )}
-              {selectedForm === FormType.SCRIPT && (
-                <ScriptForm onSubmit={handleCreateScriptInterpolation} />
-              )}
-            </Flex>
-          </ErrorBoundary>
-        </Flex>
         <GlobalInterpolationOptions />
+        <InterpolateOptionsModal
+          onOpenChange={handleOpenChange}
+          isOpen={isOpen}
+          onChange={handleInterpolationOptionOnChange}
+        />
       </Flex>
     </Flex>
   );
