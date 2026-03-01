@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Button, Dialog, Badge, Card, Checkbox, Flex } from "@radix-ui/themes";
-import { UploadIcon, ClipboardCopyIcon } from "@radix-ui/react-icons";
+import { Button, Badge, Card, Checkbox, Flex } from "@radix-ui/themes";
+import { ClipboardCopyIcon } from "@radix-ui/react-icons";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard.tsx";
-import styles from "./Exporter.module.scss";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { useInterpolations } from "#src/hooks/useInterpolations/useInterpolations.ts";
 
-export const ExportForm = ({ disabled }: { disabled?: boolean }) => {
+export const ExportForm = () => {
   const [selectedStates, setSelectedStates] = useState<
     Record<string, { isChecked: boolean } & AnyInterpolation>
   >({});

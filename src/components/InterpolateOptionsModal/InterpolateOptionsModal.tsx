@@ -80,15 +80,12 @@ const FormSelectionStep = ({
 export const InterpolateOptionsModal = ({
   onOpenChange,
   isOpen,
-  onChange,
 }: {
   onOpenChange: (value: boolean) => void;
   isOpen: boolean;
-  onChange: (value: InterpolationOptionSelection) => void;
 }) => {
   const [step, setStep] = useState(InterpolationOptionSelection.OPTIONS_VIEW);
   const handleChange = (value: InterpolationOptionSelection) => {
-    onChange?.(value);
     setStep(value);
   };
   const title = useMemo(() => {

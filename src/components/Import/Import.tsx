@@ -1,6 +1,6 @@
-import { Callout, Box, Flex, Button, Dialog, TextArea } from "@radix-ui/themes";
+import { Callout, Box, Flex, Button, TextArea } from "@radix-ui/themes";
 
-import { DownloadIcon, PlusCircledIcon } from "@radix-ui/react-icons";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { ChangeEvent, useState } from "react";
 import { InterpolateStorage } from "../../utils/storage/InterpolateStorage/InterpolateStorage";
 import { useForm } from "@tanstack/react-form";
@@ -46,9 +46,7 @@ export const ImportForm = ({
         json: "",
       });
     },
-    validators: {
-      onSubmit({ value }) {},
-    },
+    validators: {},
   });
 
   return (
