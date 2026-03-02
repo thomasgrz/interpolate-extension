@@ -1,12 +1,10 @@
 # Privacy Policy
 
-# WE ARE NOT HANDLING YOUR DATA
-
 > What information do you collect?
 
 we dont collect your information! there is currently not even analytics tracking in this extension.
 
-it's meant to become an open sourced developer debugging extension -- this extension is yours and we wont be tracking your usage for the foreseeable future.
+it's meant to become an open sourced developer debugging extension -- this extension is yours and we wont be tracking your usage
 
 > How do you use the information?
 
