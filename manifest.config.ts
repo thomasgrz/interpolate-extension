@@ -21,9 +21,6 @@ export default defineManifest({
     "contentSettings",
     "contextMenus", // add an item to the menu displayed on right click
     "debugger",
-    "nativeMessaging",
-    "notifications",
-    "offscreen",
     "sidePanel",
     "storage",
     "tabs",
