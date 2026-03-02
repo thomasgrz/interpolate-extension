@@ -132,7 +132,7 @@ export const InterpolateOptionsModal = ({
       </Dialog.Trigger>
       <Dialog.Content className={styles.DialogContent} maxWidth={"500px"}>
         <Dialog.Title align="center">
-          <Flex align="center" gap="2" justify={"start"}>
+          <Flex align="center" gap="2" justify={"center"}>
             {step !== InterpolationOptionSelection.OPTIONS_VIEW && (
               <ChevronLeftIcon
                 onClick={() => {

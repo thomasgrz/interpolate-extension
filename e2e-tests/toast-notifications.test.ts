@@ -1,12 +1,15 @@
 import { createTestHeaderInterpolation } from "./fixtures/createTestHeaderInterpolation.ts";
 import { createTestRedirectInterpolation } from "./fixtures/createTestRedirectInterpolation.ts";
 import { createTestScriptInterpolation } from "./fixtures/createTestScriptInterpolation.ts";
+import { enableUserScriptsForExtension } from "./fixtures/enableUserScriptsForExtension.ts";
 import { expect, test } from "./fixtures/expect.ts";
 
 test("should display toast notification for script interpolation", async ({
   page,
   extensionId,
 }) => {
+  await enableUserScriptsForExtension({ page });
+
   await createTestScriptInterpolation({
     page,
     extensionId,

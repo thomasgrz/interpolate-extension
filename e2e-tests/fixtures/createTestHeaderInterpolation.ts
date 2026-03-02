@@ -1,5 +1,6 @@
 import { HeaderFormPlaceholder } from "#src/components/HeaderForm/HeaderForm.tsx";
 import { FormType } from "#src/constants.ts";
+import { openInterpolationOptionsModal } from "./openInterpolationOptionsModal";
 
 export const createTestHeaderInterpolation = async (arg: {
   page: any;
@@ -8,14 +9,10 @@ export const createTestHeaderInterpolation = async (arg: {
   headerValue: string;
   extensionId: string;
 }) => {
-  const { name, headerName, headerValue, page } = arg;
-  await page.goto(
-    `chrome-extension://${arg.extensionId}/src/options/index.html`,
-  );
-  const dashboard = await page.getByTestId("dashboard");
-  await dashboard.waitFor({ state: "attached" });
-  await dashboard.waitFor({ state: "visible" });
-  await page.getByRole("radio", { name: FormType.HEADER }).click();
+  const { name, headerName, headerValue, page, extensionId } = arg;
+
+  await openInterpolationOptionsModal({ extensionId, page });
+  await page.getByText("Add headers").click();
   // fill interpolation name field
   await page
     .getByPlaceholder(HeaderFormPlaceholder.INTERPOLATION_NAME)
@@ -28,9 +25,8 @@ export const createTestHeaderInterpolation = async (arg: {
   await page
     .getByPlaceholder(HeaderFormPlaceholder.HEADER_VALUE)
     .fill(headerValue);
-  await page.getByText("Create Interpolation").click();
-  await page.getByTestId(/headers-preview-.*/).waitFor();
-
+  await page.getByText("Create header interpolation").click();
+  await page.getByTestId(`headers-preview-${name}`).waitFor();
   await page.goto("https://httpbin.org/headers");
   await page.goto(
     `chrome-extension://${arg.extensionId}/src/options/index.html`,

@@ -15,6 +15,7 @@ test("should apply redirect interpolation", async ({
   });
 
   await page.goto("https://something.com");
+  await page.reload();
   await expect(page.getByText(/Example Domain/)).toBeVisible();
 });
 

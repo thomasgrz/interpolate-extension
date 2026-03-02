@@ -202,7 +202,7 @@ export const RedirectForm = ({
           size="2"
           style={{ cursor: "pointer", backgroundColor: "black" }}
         >
-          Create interpolation
+          Create redirect interpolation
           <PlusCircledIcon />
         </Button>
       </Flex>

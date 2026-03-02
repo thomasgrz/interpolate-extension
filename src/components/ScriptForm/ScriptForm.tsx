@@ -209,7 +209,7 @@ export const ScriptForm = ({
               : {}),
           }}
         >
-          Create interpolation <PlusCircledIcon />
+          Create script interpolation <PlusCircledIcon />
         </Button>
       </Flex>
     </form>

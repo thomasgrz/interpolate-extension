@@ -1,4 +1,5 @@
 import { RedirectFormPlaceholder } from "#src/components/RedirectForm/RedirectForm.tsx";
+import { openInterpolationOptionsModal } from "./openInterpolationOptionsModal";
 
 export const createTestRedirectInterpolation = async (arg: {
   page: any;
@@ -8,12 +9,9 @@ export const createTestRedirectInterpolation = async (arg: {
   extensionId: string;
 }) => {
   const { source, destination, page, extensionId, name } = arg;
-  await page.goto("https://google.com");
 
-  await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
-  const dashboard = page.getByTestId("dashboard");
-  await dashboard.waitFor({ state: "attached" });
-  await dashboard.waitFor({ state: "visible" });
+  await openInterpolationOptionsModal({ extensionId, page });
+  await page.getByText("Redirect requests").click();
   await page
     .getByPlaceholder(RedirectFormPlaceholder.INTERPOLATION_NAME)
     .fill(name);
@@ -23,7 +21,7 @@ export const createTestRedirectInterpolation = async (arg: {
   await page
     .getByPlaceholder(RedirectFormPlaceholder.REDIRECT_TO)
     .fill(destination);
-  await page.getByText("Create Interpolation").click();
+  await page.getByText("Create redirect interpolation").click();
   const preview = page.getByText(name);
   await preview.waitFor({ state: "visible" });
 };

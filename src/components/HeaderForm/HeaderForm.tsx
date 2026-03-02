@@ -177,7 +177,7 @@ export const HeaderForm = ({
           size="2"
           style={{ cursor: "pointer", backgroundColor: "black" }}
         >
-          Create interpolation
+          Create header interpolation
           <PlusCircledIcon />
         </Button>
       </Flex>
