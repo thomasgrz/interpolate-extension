@@ -26,12 +26,12 @@ export const RedirectRulePreview = (props: {
       </DataList.Item>
       <DataList.Item>
         <DataList.Label>Redirect:</DataList.Label>
-        <DataList.Value>{rule?.details?.action?.redirect?.url}</DataList.Value>
+        <DataList.Value>{rule?.details?.destination}</DataList.Value>
       </DataList.Item>
       <DataList.Item>
         <DataList.Label>RegEx:</DataList.Label>
         <DataList.Value>
-          <strong>{rule?.details?.condition?.regexFilter}</strong>
+          <strong>{rule?.details?.regexFilter}</strong>
         </DataList.Value>
       </DataList.Item>
     </DataList.Root>

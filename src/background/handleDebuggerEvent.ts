@@ -83,7 +83,7 @@ export const handleDebuggerEvent = async (
     let regexPattern = ".*";
     switch (interp.type) {
       case "redirect":
-        regexPattern = interp?.details?.condition?.regexFilter ?? "";
+        regexPattern = interp?.details?.regexFilter ?? "";
 
         return regexPattern && requestUrl?.match?.(regexPattern)?.[0]?.length;
       case "script":

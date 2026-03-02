@@ -1,11 +1,10 @@
 import { TrashIcon } from "@radix-ui/react-icons";
-import { AlertDialog, Box, Button, Flex, Switch, Text } from "@radix-ui/themes";
+import { AlertDialog, Box, Button, Flex } from "@radix-ui/themes";
 import Pause from "../../assets/pause.svg";
 import Play from "../../assets/play.svg";
 import styles from "./GlobalInterpolationOptions.module.scss";
 import { useInterpolations } from "#src/hooks/useInterpolations/useInterpolations.ts";
 import { useMemo } from "react";
-import { Label } from "radix-ui";
 
 const Count = (props: { count?: number }) =>
   props.count ? <span>({props.count})</span> : null;

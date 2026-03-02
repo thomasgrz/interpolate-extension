@@ -3,13 +3,22 @@ export type ScriptInterpolationConfig = {
   name: string;
 };
 export type RedirectInterpolationConfig = {
-  details: chrome.declarativeNetRequest.Rule;
+  details: {
+    regexFilter: string;
+    destination: string;
+    id: number;
+  };
   name: string;
 };
 export type HeaderInterpolationConfig = {
-  details: chrome.declarativeNetRequest.Rule;
+  details: {
+    headerKey: string;
+    headerValue: string;
+    id: number;
+  };
   name: string;
 };
+
 export type InterpolationType = "script" | "redirect" | "headers";
 
 class Interpolation {
