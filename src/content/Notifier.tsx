@@ -5,14 +5,33 @@ import { useToastCreationContext } from "#src/hooks/useToastCreationContext/useT
 import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { GlobalInterpolationOptions } from "#src/components/GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 
 export const Notifier = () => {
   const createToast = useToastCreationContext();
   const isInitialized = useRef<boolean>(null);
+  const [isBrowserUIEnabled, setIsBrowserUIEnabled] = useState(true);
 
   useEffect(() => {
+    chrome.storage?.local?.onChanged?.addListener((changes) => {
+      if (changes?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY]) {
+        const value =
+          changes?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY]?.newValue;
+        setIsBrowserUIEnabled(value);
+      }
+    });
+  }, []);
+  useEffect(() => {
     if (isInitialized.current) return;
+
+    chrome.storage.local
+      .get(InterpolateStorage.BROWSER_UI_TOGGLE_KEY)
+      .then((value) => {
+        setIsBrowserUIEnabled(
+          value?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY],
+        );
+      });
 
     // @ts-expect-error testing
     window.__INTERPOLATE_NOTIFICATION_CACHE__ = new Set();
@@ -55,7 +74,7 @@ export const Notifier = () => {
     });
   }, []);
 
-  return (
+  return isBrowserUIEnabled ? (
     <InterpolateProvider>
       <Flex
         align="center"
@@ -64,5 +83,5 @@ export const Notifier = () => {
         <GlobalInterpolationOptions allowDelete={false} />
       </Flex>
     </InterpolateProvider>
-  );
+  ) : null;
 };
