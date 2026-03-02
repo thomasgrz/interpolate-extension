@@ -10,6 +10,7 @@ import { logger } from "@/utils/logger";
 import { INTERPOLATE_RECORD_PREFIX } from "../storage.constants";
 
 export const InterpolateStorage = {
+  BROWSER_UI_TOGGLE_KEY: "displayBrowserUI",
   DEBUGGING_TABS_KEY: "debuggingTabs",
   logInvocation(caller: string) {
     logger(`(invocation): ${caller}`);
@@ -429,6 +430,11 @@ export const InterpolateStorage = {
       [this.DEBUGGING_TABS_KEY]: debuggingTabsAsArray,
     });
     return debuggingTabs;
+  },
+  async toggleBrowserUI(value: boolean) {
+    await chrome.storage.local.set({
+      [this.BROWSER_UI_TOGGLE_KEY]: value,
+    });
   },
   async deleteDebuggerTab(tabId: number) {
     const debuggingTabs = await this.getDebuggerTabs();

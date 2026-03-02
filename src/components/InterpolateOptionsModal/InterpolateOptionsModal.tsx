@@ -36,7 +36,7 @@ const FormSelectionStep = ({
     <Flex gap="1" direction="column">
       <InterpolationOptionCard
         heading="Add headers"
-        subHeading="Append a header key-value to all outbound requests."
+        subHeading="Append a header key-value pair to all outbound requests."
         icon={FileTextIcon}
         onClick={() => {
           onChange(InterpolationOptionSelection.ADD_HEADERS);
