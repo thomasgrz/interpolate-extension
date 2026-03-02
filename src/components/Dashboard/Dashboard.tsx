@@ -16,6 +16,7 @@ export const Dashboard = () => {
     >
       <Container pb="50px" className={styles.Container} minHeight={"100dvh"}>
         <Flex
+          p="1"
           minHeight={"100dvh"}
           flexGrow={"1"}
           justify={"start"}

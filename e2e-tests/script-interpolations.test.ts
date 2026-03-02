@@ -1,8 +1,10 @@
 import { expect, test } from "./fixtures/expect";
 import { Dialog } from "@playwright/test";
 import { createTestScriptInterpolation } from "./fixtures/createTestScriptInterpolation";
+import { enableUserScriptsForExtension } from "./fixtures/enableUserScriptsForExtension";
 
 test("should apply script interpolation", async ({ page, extensionId }) => {
+  await enableUserScriptsForExtension({ page });
   page.on("dialog", async (dialog: Dialog) => {
     const message = dialog.message();
 
@@ -20,6 +22,7 @@ test("should apply script interpolation", async ({ page, extensionId }) => {
 });
 
 test("should pause a script", async ({ page, extensionId }) => {
+  await enableUserScriptsForExtension({ page });
   page.on("dialog", async (dialog: Dialog) => {
     const message = dialog.message();
 
@@ -49,6 +52,7 @@ test("should pause a script", async ({ page, extensionId }) => {
 });
 
 test("should resume a script", async ({ page, extensionId }) => {
+  await enableUserScriptsForExtension({ page });
   await createTestScriptInterpolation({
     page,
     extensionId,

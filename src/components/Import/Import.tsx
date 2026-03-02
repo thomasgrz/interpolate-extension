@@ -1,10 +1,23 @@
-import { Callout, Box, Flex, Button, Dialog, TextArea } from "@radix-ui/themes";
+import { Callout, Box, Flex, Button, TextArea } from "@radix-ui/themes";
 
-import { DownloadIcon } from "@radix-ui/react-icons";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { ChangeEvent, useState } from "react";
 import { InterpolateStorage } from "../../utils/storage/InterpolateStorage/InterpolateStorage";
+import { useForm } from "@tanstack/react-form";
 
-export const Import = () => {
+export interface ImportFormValue {
+  json?: string;
+}
+
+export const ImportForm = ({
+  onSubmit,
+  defaultValues,
+}: {
+  defaultValues?: ImportFormValue;
+  onSubmit?:
+    | (({ value }: { value: ImportFormValue }) => void)
+    | (({ value }: { value: ImportFormValue }) => Promise<void>);
+}) => {
   const [textareaInput, setTextAreaInput] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>();
   const [error, setError] = useState<string>();
@@ -25,33 +38,48 @@ export const Import = () => {
     }
   };
 
+  const form = useForm({
+    defaultValues,
+    onSubmit: async ({ value, formApi }) => {
+      await onSubmit?.({ value });
+      void formApi.reset({
+        json: "",
+      });
+    },
+    validators: {},
+  });
+
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
-        <Button size="1" color="blue">
-          Import <DownloadIcon />
-        </Button>
-      </Dialog.Trigger>
-      <Dialog.Content>
-        <TextArea
-          value={textareaInput}
-          onChange={onChange}
-          size="3"
-          placeholder="paste config here..."
-        />
-        <Flex justify="end">
-          {error && (
-            <Callout.Root>
-              <Callout.Text>{error}</Callout.Text>
-            </Callout.Root>
-          )}
-          <Box pt="1">
-            <Button disabled={isLoading} onClick={onSave}>
-              Save
-            </Button>
-          </Box>
-        </Flex>
-      </Dialog.Content>
-    </Dialog.Root>
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        await form.handleSubmit();
+      }}
+    >
+      <TextArea
+        value={textareaInput}
+        onChange={onChange}
+        size="3"
+        placeholder="paste config here..."
+      />
+      <Flex mt="1" gap="1" align="center" direction="column">
+        {error && (
+          <Callout.Root>
+            <Callout.Text>{error}</Callout.Text>
+          </Callout.Root>
+        )}
+        <Box pt="1">
+          <Button
+            style={{ backgroundColor: "black" }}
+            type="submit"
+            disabled={isLoading}
+            onClick={onSave}
+          >
+            Create interpolations <PlusCircledIcon />
+          </Button>
+        </Box>
+      </Flex>
+    </form>
   );
 };

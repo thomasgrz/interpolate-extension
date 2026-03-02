@@ -12,6 +12,27 @@ import {
   ScriptFormValidationError,
   ScriptFormValue,
 } from "./ScriptForm.types";
+import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
+import { createScriptInterpolation } from "#src/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
+
+const handleCreateScriptInterpolation = async ({
+  value,
+}: {
+  value: ScriptFormValue;
+}) => {
+  const { script, runAt, name } = value;
+  const isValid =
+    typeof script === "string" &&
+    typeof runAt === "string" &&
+    typeof name === "string";
+  const isInvalid = !isValid;
+
+  if (isInvalid) throw Error("form invalid");
+
+  await InterpolateStorage.create(
+    createScriptInterpolation({ body: script, runAt, name }),
+  );
+};
 
 export const ScriptForm = ({
   defaultValues = {
@@ -63,6 +84,7 @@ export const ScriptForm = ({
     },
     onSubmit: async ({ value, formApi }) => {
       await onSubmit?.({ value });
+      await handleCreateScriptInterpolation({ value });
       void formApi.reset({
         name: "",
         runAt: "",
@@ -89,14 +111,14 @@ export const ScriptForm = ({
   }, []);
 
   return (
-    <Card style={{ backgroundColor: "#E1D9FF" }}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
-        }}
-      >
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <Card style={{ backgroundColor: "#E1D9FF" }}>
         <Flex gap="1" direction={"column"}>
           {showWarning && <ScriptsPermissionWarning />}
           <form.Field
@@ -175,21 +197,21 @@ export const ScriptForm = ({
             )}
           />
         </Flex>
-        <Flex pt="2" justify={"center"}>
-          <Button
-            type="submit"
-            disabled={showWarning}
-            size="2"
-            style={{
-              ...(!showWarning
-                ? { cursor: "pointer", backgroundColor: "black" }
-                : {}),
-            }}
-          >
-            Create interpolation <PlusCircledIcon />
-          </Button>
-        </Flex>
-      </form>
-    </Card>
+      </Card>
+      <Flex pt="2" justify={"center"}>
+        <Button
+          type="submit"
+          disabled={showWarning}
+          size="2"
+          style={{
+            ...(!showWarning
+              ? { cursor: "pointer", backgroundColor: "black" }
+              : {}),
+          }}
+        >
+          Create script interpolation <PlusCircledIcon />
+        </Button>
+      </Flex>
+    </form>
   );
 };

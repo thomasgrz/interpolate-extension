@@ -1,0 +1,12 @@
+.Card {
+  cursor: pointer;
+  width: stretch;
+  &:hover {
+    opacity: 1;
+  }
+  [data-ui="interpolation-option-icon"] {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+}
