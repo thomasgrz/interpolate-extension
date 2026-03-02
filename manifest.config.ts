@@ -6,11 +6,11 @@ export default defineManifest({
   name: pkg.name,
   version: pkg.version,
   icons: {
-    48: "public/icon.png",
+    128: "public/logo.png",
   },
   action: {
     default_icon: {
-      48: "public/icon.png",
+      128: "public/logo.png",
     },
     // default_popup: "src/popup/index.html",
     default_title: "click to open sidepanel",
