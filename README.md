@@ -1,5 +1,9 @@
 # Interpolate web extension [beta]
 
+> [!WARN] this extension is in beta and is subject to breaking changes
+
+[Privacy Policy](./PRIVACY.md)
+
 Interpolate scripts, redirects, and headers into the current tab.
 
 #### User Script Interpolations
