@@ -166,9 +166,9 @@ export const InterpolationCard = ({
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               id,
-              matcher: details?.condition?.regexFilter,
+              matcher: details?.regexFilter,
               name,
-              destination: details?.action?.redirect?.url,
+              destination: details?.destination,
             }}
           />
         );
@@ -179,8 +179,8 @@ export const InterpolationCard = ({
             defaultValues={{
               id,
               name,
-              key: details?.action?.requestHeaders?.[0]?.header ?? "",
-              value: details?.action?.requestHeaders?.[0]?.value ?? "",
+              key: details?.headerKey,
+              value: details?.headerValue,
             }}
           />
         );

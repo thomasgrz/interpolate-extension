@@ -22,15 +22,11 @@ export const HeaderRulePreview = ({
       </DataList.Item>
       <DataList.Item>
         <DataList.Label>Key:</DataList.Label>
-        <DataList.Value>
-          {details?.action?.requestHeaders?.[0]?.header}
-        </DataList.Value>
+        <DataList.Value>{details?.headerKey}</DataList.Value>
       </DataList.Item>
       <DataList.Item>
         <DataList.Label>Value:</DataList.Label>
-        <DataList.Value>
-          {details?.action?.requestHeaders?.[0]?.value}
-        </DataList.Value>
+        <DataList.Value>{details?.headerValue}</DataList.Value>
       </DataList.Item>
     </DataList.Root>
   );

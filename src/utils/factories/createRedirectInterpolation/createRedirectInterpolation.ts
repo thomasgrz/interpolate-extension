@@ -10,16 +10,8 @@ export const createRedirectInterpolation = (rule: {
   return new RedirectInterpolation({
     name: rule.name,
     details: {
-      action: {
-        type: "redirect",
-        redirect: {
-          url: rule.destination,
-        },
-      },
-      condition: {
-        resourceTypes: ["main_frame"],
-        regexFilter: rule.source,
-      },
+      destination: rule.destination,
+      regexFilter: rule.source,
       id: rule?.id ?? generateRuleId(),
     },
   });

@@ -10,31 +10,8 @@ export const createHeaderInterpolation = (rule: {
   return new HeaderInterpolation({
     name: rule.name,
     details: {
-      action: {
-        type: "modifyHeaders",
-        requestHeaders: [
-          {
-            header: rule.headerKey,
-            operation: "set",
-            value: rule.headerValue,
-          },
-        ],
-      },
-      condition: {
-        resourceTypes: [
-          "sub_frame",
-          "font",
-          "main_frame",
-          "xmlhttprequest",
-          "script",
-          "image",
-          "webbundle",
-          "media",
-          "other",
-          "object",
-        ],
-        regexFilter: ".*",
-      },
+      headerKey: rule.headerKey,
+      headerValue: rule.headerValue,
       id: rule?.id ?? generateRuleId(),
     },
   });

@@ -17,7 +17,7 @@ export const continueRequestWithInterpolations = async ({
   // for now we'll apply the first url override we find in the interpolations array
   const urlOverride = interpolations?.find(
     (interp) => interp.type === "redirect",
-  )?.details?.action?.redirect?.url;
+  )?.details?.destination;
 
   const noInterpsApplied = !interpolations?.length;
 
@@ -36,8 +36,8 @@ export const continueRequestWithInterpolations = async ({
     interpolations?.filter?.((interp) => interp.type === "headers") ?? [];
 
   const requestHeadersOverrides = headerInterpolations.map((interp) => ({
-    name: interp?.details?.action?.requestHeaders?.[0]?.header,
-    value: interp?.details?.action?.requestHeaders?.[0]?.value,
+    name: interp?.details?.headerKey,
+    value: interp?.details?.headerValue,
   }));
 
   chrome.debugger.sendCommand({ tabId }, "Fetch.continueRequest", {
@@ -62,5 +62,5 @@ export const continueRequestWithInterpolations = async ({
       requestId,
       tabId,
     });
-  }, 2000);
+  }, 1000);
 };

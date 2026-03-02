@@ -152,9 +152,7 @@ export const InterpolateStorage = {
     const redirectRules = (await this.getAllByTypes([
       "redirect",
     ])) as RedirectInterpolation[];
-    const patterns = redirectRules?.map(
-      (rule) => rule?.details?.condition?.regexFilter,
-    );
+    const patterns = redirectRules?.map((rule) => rule?.details?.regexFilter);
     return patterns;
   },
   async getAllActive() {
