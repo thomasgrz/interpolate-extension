@@ -1,10 +1,12 @@
-# Interpolate web extension [beta]
+# Interpolate web extension [beta] <span><img src="./docs/artifacts/icon-128.png" width="25" height="25" /></span>
 
 > [!WARN] this extension is in beta and is subject to breaking changes
 
 [Privacy Policy](./PRIVACY.md)
 
 Interpolate scripts, redirects, and headers into the current tab.
+
+![](./docs/artifacts/redirect_google_example.png)
 
 #### User Script Interpolations
 
