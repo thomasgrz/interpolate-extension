@@ -18,7 +18,6 @@ export default defineManifest({
   devtools_page: "src/sidepanel/side-panel.html",
   permissions: [
     "activeTab",
-    "contentSettings",
     "contextMenus", // add an item to the menu displayed on right click
     "debugger",
     "sidePanel",
