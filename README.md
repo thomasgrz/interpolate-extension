@@ -4,7 +4,7 @@
 
 [Privacy Policy](./PRIVACY.md)
 
-Interpolate scripts, redirects, and headers into the current tab.
+Interpolate allows you to execute scripts, enforce request redirects, and add headers to requests within the current tab.
 
 ![](./docs/artifacts/redirect_google_example.png)
 
