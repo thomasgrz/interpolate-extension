@@ -6,6 +6,7 @@ import {
   FileTextIcon,
   MoveIcon,
   PlusCircledIcon,
+  RocketIcon,
   UploadIcon,
 } from "@radix-ui/react-icons";
 
@@ -17,6 +18,7 @@ import { ScriptForm } from "../ScriptForm/ScriptForm";
 import { RedirectForm } from "../RedirectForm/RedirectForm";
 import { ExportForm } from "../Exporter/Exporter";
 import { ImportForm } from "../Import/Import";
+import { MockResponseForm } from "../MockResponseForm/MockResponseForm";
 
 export enum InterpolationOptionSelection {
   OPTIONS_VIEW = "options-view",
@@ -25,6 +27,7 @@ export enum InterpolationOptionSelection {
   REDIRECT_REQUEST = "redirect-request",
   IMPORT = "import",
   EXPORT = "export",
+  MOCK_RESPONSE = "mock-resposne",
 }
 
 const FormSelectionStep = ({
@@ -58,6 +61,13 @@ const FormSelectionStep = ({
         icon={MoveIcon}
         onClick={() => onChange(InterpolationOptionSelection.REDIRECT_REQUEST)}
         color="#8EC8F6"
+      />
+      <InterpolationOptionCard
+        heading={"Mock API response"}
+        subHeading="Provide a mocked response to requests whose URL matches an specific regular expression"
+        icon={RocketIcon}
+        color="#FFDE21"
+        onClick={() => onChange(InterpolationOptionSelection.MOCK_RESPONSE)}
       />
       <Flex gap="1" flexGrow={"1"} width="stretch">
         <InterpolationOptionCard
@@ -102,6 +112,8 @@ export const InterpolateOptionsModal = ({
         return "Import configurations";
       case InterpolationOptionSelection.REDIRECT_REQUEST:
         return "Redirect requests";
+      case InterpolationOptionSelection.MOCK_RESPONSE:
+        return "Mock response";
       default:
         return "";
     }
@@ -160,6 +172,9 @@ export const InterpolateOptionsModal = ({
         )}
         {step === InterpolationOptionSelection.EXPORT && <ExportForm />}
         {step === InterpolationOptionSelection.IMPORT && <ImportForm />}
+        {step === InterpolationOptionSelection.MOCK_RESPONSE && (
+          <MockResponseForm onSubmit={handleFormSubmit} />
+        )}
       </Dialog.Content>
     </Dialog.Root>
   );

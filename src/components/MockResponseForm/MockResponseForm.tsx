@@ -1,0 +1,229 @@
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  SegmentedControl,
+  Strong,
+} from "@radix-ui/themes";
+import { useForm } from "@tanstack/react-form";
+import { FormEvent, useState } from "react";
+import { TextInput } from "../TextInput/TextInput";
+import { Label } from "radix-ui";
+import TextAreaInput from "../TextArea/TextArea";
+import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { createMockAPIInterpolation } from "#src/utils/factories/createMockAPIInterpolation/createMockAPIInterpolation.ts";
+import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
+
+export interface MockResponseFormValue {
+  id?: string | number;
+  name?: string;
+  matcher?: string;
+  httpCode?: number;
+  body?: string;
+}
+
+interface MockResponseFormProps {
+  onSubmit: ({ value }: { value: MockResponseFormValue }) => void;
+  defaultValues: Partial<MockResponseFormValue>;
+}
+
+enum MockResponseFormErrors {
+  INTERPOLATION_NAME = "Please provide a name for this interpolation",
+  MATCHER = "Please provide a regular expression",
+}
+
+enum MockResponseFormLabel {
+  INTERPOLATION_NAME = "Name:",
+  HTTP_STATUS = "HTTP Status Code:",
+  BODY = "Response body:",
+  MATCHER = "Request URL RegEx:",
+}
+
+enum MockResponseFormPlaceholder {
+  HTTP_STATUS = "200",
+  INTERPOLATION_NAME = "Mock Example API response",
+  BODY_HTML = "<h1>You've got example!</h1>",
+  BODY_JSON = `{ status: "success",  code: "foobar" }`,
+  MATCHER = ".*example.com/some/.*/path",
+}
+
+const handleCreateMockAPIInterpolation = async ({
+  value,
+}: {
+  value: MockResponseFormValue;
+}) => {
+  await InterpolateStorage.create(createMockAPIInterpolation(value));
+};
+
+export const MockResponseForm = ({
+  onSubmit,
+  defaultValues,
+}: MockResponseFormProps) => {
+  const [responseType, setResponseType] = useState("html");
+  const form = useForm({
+    defaultValues,
+    onSubmit: async ({ value, formApi }) => {
+      handleCreateMockAPIInterpolation({ value });
+      onSubmit?.({ value });
+      void formApi.reset({
+        id: "",
+        name: "",
+        matcher: "",
+        httpCode: 200,
+        body: "",
+      });
+    },
+    validators: {
+      onSubmit({ value }) {
+        const errors = new Map();
+        const nameError = validateStringLength({
+          value: value.name,
+          error: MockResponseFormErrors.INTERPOLATION_NAME,
+        });
+
+        if (nameError) {
+          errors.set("name", nameError);
+        }
+
+        const matcherError = validateStringLength({
+          value: value.matcher,
+          error: MockResponseFormErrors.MATCHER,
+        });
+
+        if (matcherError) {
+          errors.set("matcher", matcherError);
+        }
+
+        const isValid = !errors?.size;
+
+        if (isValid) {
+          return;
+        }
+
+        return {
+          fields: {
+            name: errors.get("name") ?? null,
+            matcher: errors.get("matcher") ?? null,
+          },
+        };
+      },
+    },
+  });
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await form.handleSubmit();
+  };
+
+  const handleChangeResponseType = (type: "json" | "html") => {
+    setResponseType(type);
+  };
+  return (
+    <form onSubmit={handleSubmit}>
+      <Card style={{ backgroundColor: "#FFDE21", width: "stretch" }}>
+        <Flex direction="column">
+          <form.Field
+            name="name"
+            children={(field) => {
+              return (
+                <TextInput
+                  label={MockResponseFormLabel.INTERPOLATION_NAME}
+                  placeholder={MockResponseFormPlaceholder.INTERPOLATION_NAME}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  errors={field.state.meta.errors}
+                />
+              );
+            }}
+          />
+          <form.Field
+            name="httpCode"
+            children={(field) => {
+              return (
+                <TextInput
+                  label={MockResponseFormLabel.HTTP_STATUS}
+                  placeholder={MockResponseFormPlaceholder.HTTP_STATUS}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  errors={field.state.meta.errors}
+                  type="number"
+                />
+              );
+            }}
+          />
+          <form.Field
+            name="matcher"
+            children={(field) => {
+              return (
+                <TextInput
+                  label={MockResponseFormLabel.MATCHER}
+                  placeholder={MockResponseFormPlaceholder.MATCHER}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  errors={field.state.meta.errors}
+                />
+              );
+            }}
+          />
+          <form.Field
+            name="body"
+            children={(field) => {
+              return (
+                <Box>
+                  <Flex direction={"column"} gap="1" p="1" maxWidth="250px">
+                    <Label.Root>
+                      <Strong>Response:</Strong>
+                    </Label.Root>
+                    <SegmentedControl.Root
+                      size="1"
+                      onValueChange={handleChangeResponseType}
+                      radius="full"
+                      value={responseType}
+                    >
+                      <SegmentedControl.Item value="html">
+                        HTML
+                      </SegmentedControl.Item>
+                      <SegmentedControl.Item value="json">
+                        JSON
+                      </SegmentedControl.Item>
+                    </SegmentedControl.Root>
+                  </Flex>
+                  {responseType === "html" && (
+                    <TextAreaInput
+                      placeholder={MockResponseFormPlaceholder.BODY_HTML}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      errors={field.state.meta.errors}
+                    />
+                  )}
+                  {responseType === "json" && (
+                    <TextAreaInput
+                      placeholder={MockResponseFormPlaceholder.BODY_JSON}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      errors={field.state.meta.errors}
+                    />
+                  )}
+                </Box>
+              );
+            }}
+          />
+        </Flex>
+      </Card>
+      <Flex justify={"center"}>
+        <Button
+          mt="2"
+          type="submit"
+          size="2"
+          style={{ cursor: "pointer", backgroundColor: "black" }}
+        >
+          Create mock API interpolation
+          <PlusCircledIcon />
+        </Button>
+      </Flex>
+    </form>
+  );
+};

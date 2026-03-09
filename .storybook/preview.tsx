@@ -3,6 +3,7 @@ import { definePreview } from "@storybook/react-vite";
 import { Theme } from "@radix-ui/themes";
 import { InterpolateProvider } from "../src/contexts/interpolate-context.tsx";
 import { createRedirectInterpolation } from "../src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
+import { ErrorBoundary } from "react-error-boundary";
 
 export default definePreview({
   decorators: [
@@ -17,13 +18,14 @@ export default definePreview({
         }),
         ...(parameters?.interpolations ?? []),
       ];
-      console.log("HIT");
       return (
-        <Theme radius="large">
-          <InterpolateProvider initialValue={initialValue}>
-            <Story />
-          </InterpolateProvider>
-        </Theme>
+        <ErrorBoundary fallback="something went horribly wrong~">
+          <Theme radius="large">
+            <InterpolateProvider initialValue={initialValue}>
+              <Story />
+            </InterpolateProvider>
+          </Theme>
+        </ErrorBoundary>
       );
     },
   ],
