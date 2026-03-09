@@ -13,7 +13,7 @@ export type RedirectInterpolationConfig = {
   name: string;
 };
 export type MockAPIInterpolationConfig = {
-  details: NonNullable<MockResponseFormValue> & { id: string };
+  details: NonNullable<MockResponseFormValue>;
   name: string;
 };
 export type HeaderInterpolationConfig = {

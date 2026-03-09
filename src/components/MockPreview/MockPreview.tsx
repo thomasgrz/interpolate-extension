@@ -1,4 +1,7 @@
-import { MockAPIInterpolation } from "#src/utils/factories/Interpolation.ts";
+import {
+  MockAPIInterpolation,
+  MockAPIInterpolationConfig,
+} from "#src/utils/factories/Interpolation.ts";
 import { DataList } from "@radix-ui/themes";
 
 export const MockPreview = ({
