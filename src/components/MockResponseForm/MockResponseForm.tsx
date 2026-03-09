@@ -22,11 +22,12 @@ export interface MockResponseFormValue {
   matcher?: string;
   httpCode?: number;
   body?: string;
+  isJson?: boolean;
 }
 
 interface MockResponseFormProps {
   onSubmit: ({ value }: { value: MockResponseFormValue }) => void;
-  defaultValues: Partial<MockResponseFormValue>;
+  defaultValues?: Partial<MockResponseFormValue>;
 }
 
 enum MockResponseFormErrors {
@@ -54,6 +55,7 @@ const handleCreateMockAPIInterpolation = async ({
 }: {
   value: MockResponseFormValue;
 }) => {
+  // @ts-expect-error TODO: FIXME
   await InterpolateStorage.create(createMockAPIInterpolation(value));
 };
 
@@ -65,7 +67,8 @@ export const MockResponseForm = ({
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value, formApi }) => {
-      handleCreateMockAPIInterpolation({ value });
+      const isJson = responseType === "json";
+      handleCreateMockAPIInterpolation({ value: { ...value, isJson } });
       onSubmit?.({ value });
       void formApi.reset({
         id: "",
@@ -96,6 +99,16 @@ export const MockResponseForm = ({
           errors.set("matcher", matcherError);
         }
 
+        const isJson = responseType === "json";
+
+        if (isJson && value?.body) {
+          try {
+            JSON.parse(value?.body);
+          } catch (e) {
+            errors.set("body", "Invalid JSON.");
+          }
+        }
+
         const isValid = !errors?.size;
 
         if (isValid) {
@@ -106,6 +119,7 @@ export const MockResponseForm = ({
           fields: {
             name: errors.get("name") ?? null,
             matcher: errors.get("matcher") ?? null,
+            body: errors.get("body") ?? null,
           },
         };
       },
@@ -147,6 +161,7 @@ export const MockResponseForm = ({
                   label={MockResponseFormLabel.HTTP_STATUS}
                   placeholder={MockResponseFormPlaceholder.HTTP_STATUS}
                   value={field.state.value}
+                  // @ts-expect-error TODO fixme
                   onChange={(e) => field.handleChange(e.target.value)}
                   errors={field.state.meta.errors}
                   type="number"
