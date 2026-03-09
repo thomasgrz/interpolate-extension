@@ -9,13 +9,13 @@ export const TextInput = ({
 }: TextField.RootProps & {
   helperText?: string;
   errors?: (string | undefined | null)[];
-  label: string;
+  label?: string | React.ReactNode;
 }) => {
   return (
     <Flex p="1" direction={"column"}>
       <Label.Root>
         <Strong>
-          <Text size="2">{label}</Text>
+          {typeof label === "string" ? <Text size="2">{label}</Text> : label}
         </Strong>
       </Label.Root>
       <TextField.Root {...props} value={props.value} />

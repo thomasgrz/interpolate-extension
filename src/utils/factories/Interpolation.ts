@@ -1,3 +1,5 @@
+import { MockResponseFormValue } from "#src/components/MockResponseForm/MockResponseForm.tsx";
+
 export type ScriptInterpolationConfig = {
   details: chrome.userScripts.RegisteredUserScript;
   name: string;
@@ -10,6 +12,10 @@ export type RedirectInterpolationConfig = {
   };
   name: string;
 };
+export type MockAPIInterpolationConfig = {
+  details: NonNullable<MockResponseFormValue> & { id: string };
+  name: string;
+};
 export type HeaderInterpolationConfig = {
   details: {
     headerKey: string;
@@ -19,7 +25,7 @@ export type HeaderInterpolationConfig = {
   name: string;
 };
 
-export type InterpolationType = "script" | "redirect" | "headers";
+export type InterpolationType = "script" | "redirect" | "headers" | "mockAPI";
 
 class Interpolation {
   isActive: boolean;
@@ -59,6 +65,17 @@ export class RedirectInterpolation extends Interpolation {
   }
 }
 
+export class MockAPIInterpolation extends Interpolation {
+  details: MockAPIInterpolationConfig["details"];
+  type: "mockAPI";
+
+  constructor(config: MockAPIInterpolationConfig) {
+    super(config);
+    this.type = "mockAPI";
+    this.details = config.details;
+  }
+}
+
 export class HeaderInterpolation extends Interpolation {
   details: HeaderInterpolationConfig["details"];
   type: "headers";
@@ -74,5 +91,6 @@ export default Interpolation;
 
 export type AnyInterpolation =
   | HeaderInterpolation
+  | MockAPIInterpolation
   | RedirectInterpolation
   | ScriptInterpolation;

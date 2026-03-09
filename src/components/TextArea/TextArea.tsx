@@ -14,16 +14,18 @@ export default function TextAreaInput({
   ...props
 }: {
   errors: (string | undefined | null)[];
-  label: string;
+  label?: string;
 } & TextAreaProps) {
   return (
     <Box flexGrow={"1"}>
       <Flex gap={"1"} align="start" direction={"column"}>
-        <Label.Root>
-          <Text size="2">
-            <Strong>{label}</Strong>
-          </Text>
-        </Label.Root>
+        {label && (
+          <Label.Root>
+            <Text size="2">
+              <Strong>{label}</Strong>
+            </Text>
+          </Label.Root>
+        )}
         <Box width={"100%"}>
           <TextArea radius={"large"} {...props} />
         </Box>

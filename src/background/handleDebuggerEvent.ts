@@ -84,7 +84,9 @@ export const handleDebuggerEvent = async (
     switch (interp.type) {
       case "redirect":
         regexPattern = interp?.details?.regexFilter ?? "";
-
+        return regexPattern && requestUrl?.match?.(regexPattern)?.[0]?.length;
+      case "mockAPI":
+        regexPattern = interp?.details?.matcher ?? "";
         return regexPattern && requestUrl?.match?.(regexPattern)?.[0]?.length;
       case "script":
       case "headers":

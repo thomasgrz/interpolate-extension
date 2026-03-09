@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import {
-  HeaderInterpolation,
-  RedirectInterpolation,
-  ScriptInterpolation,
-} from "@/utils/factories/Interpolation";
+import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import {
   Cross1Icon,
@@ -34,9 +30,11 @@ import { InterpolationOptions } from "../InterpolationOptions/InterpolationOptio
 import { ScriptForm } from "../ScriptForm/ScriptForm.tsx";
 import { RedirectForm } from "../RedirectForm/RedirectForm.tsx";
 import { HeaderForm } from "../HeaderForm/HeaderForm.tsx";
+import { MockPreview } from "../MockPreview/MockPreview.tsx";
+import { MockResponseForm } from "../MockResponseForm/MockResponseForm.tsx";
 
 type InterpolationCardProps = {
-  info: RedirectInterpolation | HeaderInterpolation | ScriptInterpolation;
+  info: AnyInterpolation;
 };
 
 export const InterpolationCard = ({
@@ -108,6 +106,8 @@ export const InterpolationCard = ({
 
   const badgeColor = () => {
     switch (type) {
+      case "mockAPI":
+        return "yellow";
       case "headers":
         return "green";
       case "script":
@@ -153,6 +153,14 @@ export const InterpolationCard = ({
         );
       case "redirect":
         return <RedirectRulePreview name={name} rule={info} />;
+      case "mockAPI":
+        return (
+          <MockPreview
+            name={name}
+            dataOrientation={orientation}
+            details={details}
+          />
+        );
       case "script":
         return <ScriptPreview name={name} rule={info} />;
     }
@@ -186,6 +194,16 @@ export const InterpolationCard = ({
         );
       case "script":
         return <ScriptForm />;
+      case "mockAPI":
+        return (
+          <MockResponseForm
+            onSubmit={() => setEditModeEnabled(false)}
+            defaultValues={{
+              ...info.details,
+              name,
+            }}
+          />
+        );
       default:
         return <div>something went wrong</div>;
     }
