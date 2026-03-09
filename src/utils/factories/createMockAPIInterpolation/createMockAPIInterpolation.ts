@@ -7,6 +7,6 @@ export const createMockAPIInterpolation = (
   const { id, name } = interp;
   return new MockAPIInterpolation({
     name,
-    details: { ...interp, id: (id as string) ?? crypto.randomUUID() },
+    details: { ...interp, id: id ?? crypto.randomUUID() },
   });
 };

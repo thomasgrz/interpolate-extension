@@ -42,18 +42,10 @@ export const continueRequestWithInterpolations = async ({
 
   const apiMock = interpolations?.find((interp) => interp.type === "mockAPI");
 
-  const { isJson } = apiMock?.details ?? {};
-  if (isJson) {
-    requestHeadersOverrides.push({
-      name: "Content-Type",
-      value: "application/json",
-    });
-  }
-
   if (apiMock) {
     chrome.debugger.sendCommand({ tabId }, "Fetch.fulfillRequest", {
       requestId,
-      responseCode: Number(apiMock?.details?.httpCode) ?? 200,
+      responseCode: apiMock?.details?.httpCode ?? 200,
       body: btoa(apiMock?.details?.body ?? ""),
       responseHeaders: [...originalHeaders, ...requestHeadersOverrides],
     });
