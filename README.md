@@ -4,7 +4,7 @@
 
 [Privacy Policy](./PRIVACY.md)
 
-Interpolate allows you to execute scripts, enforce request redirects, and add headers to requests within the current tab.
+Interpolate allows you to execute scripts, enforce request redirects, mock API responses, and add headers to requests within the current tab.
 
 ![](./docs/artifacts/redirect_google_example.png)
 
@@ -24,8 +24,12 @@ Append headers to outbound requests.
 
 Intercept and redirect requests that match a regex expression.
 
-![example_options](./docs/artifacts/example_options.png "Show the original interpolations menu")
-
-![example_redirect_form](./docs/artifacts/example_redirect_form.png "Example of defining a regex")
-
 ![example_redirect](./docs/artifacts/example_redirect_enforced.png "Example of redirect being enforced")
+
+#### Mock API Interpolations
+
+Intercept and mock responses to requests that match a regex expression.
+
+| Mocked HTML response                                                                        | Mocked JSON payload response                                                                    |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| ![example_mock "Example of a mocked HTML response"](./docs/artifacts/example_mock_html.png) | ![example_mock_json "Example of a mocked JSON payload"](./docs/artifacts/example_mock_json.png) |
