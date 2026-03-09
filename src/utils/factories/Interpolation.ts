@@ -13,7 +13,7 @@ export type RedirectInterpolationConfig = {
   name: string;
 };
 export type MockAPIInterpolationConfig = {
-  details: NonNullable<MockResponseFormValue>;
+  details: NonNullable<MockResponseFormValue> & { id: string };
   name: string;
 };
 export type HeaderInterpolationConfig = {
@@ -25,7 +25,7 @@ export type HeaderInterpolationConfig = {
   name: string;
 };
 
-export type InterpolationType = "script" | "redirect" | "headers";
+export type InterpolationType = "script" | "redirect" | "headers" | "mockAPI";
 
 class Interpolation {
   isActive: boolean;
