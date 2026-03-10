@@ -91,7 +91,7 @@ test("should resume a script", async ({ page, extensionId }) => {
   expect(invokedWhilePaused).toBe(true);
 });
 
-test.only("should edit a script in place", async ({ page, extensionId }) => {
+test("should edit a script in place", async ({ page, extensionId }) => {
   await createTestScriptInterpolation({
     page,
     extensionId,
