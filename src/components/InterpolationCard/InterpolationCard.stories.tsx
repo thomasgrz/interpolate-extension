@@ -17,7 +17,7 @@ export default meta;
 
 // 👇 A story named Primary that renders `<Button primary label="Button" />`
 export const RedirectPreview = meta.story({
-  // @ts-expect-error CSF next issue?
+  // @ts-expect-error TS asserts that args is not assignable to never
   args: {
     info: createRedirectInterpolation({
       source: ".*example.com",
@@ -28,7 +28,7 @@ export const RedirectPreview = meta.story({
 });
 
 export const HeaderPreview = meta.story({
-  // @ts-expect-error CSF next issue?
+  // @ts-expect-error TS asserts that args is not assignable to never
   args: {
     info: createHeaderInterpolation({
       headerKey: "header key",
@@ -39,10 +39,10 @@ export const HeaderPreview = meta.story({
 });
 
 export const ScriptPreview = meta.story({
-  // @ts-expect-error CSF next issue?
+  // @ts-expect-error TS asserts that args is not assignable to never
   args: {
     info: createScriptInterpolation({
-      body: 'console.log("hello world")!',
+      script: 'console.log("hello world")!',
       name: "say hello world",
     }),
   },

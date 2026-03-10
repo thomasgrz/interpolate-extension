@@ -18,20 +18,9 @@ import { createScriptInterpolation } from "#src/utils/factories/createScriptInte
 const handleCreateScriptInterpolation = async ({
   value,
 }: {
-  value: ScriptFormValue;
+  value: Required<ScriptFormValue>;
 }) => {
-  const { script, runAt, name } = value;
-  const isValid =
-    typeof script === "string" &&
-    typeof runAt === "string" &&
-    typeof name === "string";
-  const isInvalid = !isValid;
-
-  if (isInvalid) throw Error("form invalid");
-
-  await InterpolateStorage.create(
-    createScriptInterpolation({ body: script, runAt, name }),
-  );
+  await InterpolateStorage.create(createScriptInterpolation(value));
 };
 
 export const ScriptForm = ({
@@ -84,7 +73,10 @@ export const ScriptForm = ({
     },
     onSubmit: async ({ value, formApi }) => {
       await onSubmit?.({ value });
-      await handleCreateScriptInterpolation({ value });
+      await handleCreateScriptInterpolation({
+        // @ts-expect-error TS asserts name might be undefined
+        value: { ...value, runAt: value?.runAt ?? "document_start" },
+      });
       void formApi.reset({
         name: "",
         runAt: "",
@@ -133,6 +125,7 @@ export const ScriptForm = ({
             name="name"
             children={(field) => (
               <TextInput
+                id="name-field"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
@@ -162,27 +155,6 @@ export const ScriptForm = ({
               />
             )}
           />
-
-          {/* <form.Field */}
-          {/*   name="matches" */}
-          {/*   validators={{ */}
-          {/*     onChange({ value }) { */}
-          {/*       return validateStringLength({ */}
-          {/*         value, */}
-          {/*         error: ScriptFormValidationError.MATCHER, */}
-          {/*       }); */}
-          {/*     }, */}
-          {/*   }} */}
-          {/*   children={(field) => ( */}
-          {/*     <TextInput */}
-          {/*       value={field.state.value} */}
-          {/*       onChange={(e) => field.handleChange(e.target.value)} */}
-          {/*       onBlur={field.handleBlur} */}
-          {/*       label="RegEx matcher:" */}
-          {/*       errors={field.state.meta.errors} */}
-          {/*     /> */}
-          {/*   )} */}
-          {/* /> */}
           <form.Field
             name="runAt"
             children={(field) => (

@@ -367,7 +367,7 @@ export const InterpolateStorage = {
         acc.add(
           matchingInterp ??
             createScriptInterpolation({
-              body: curr.js?.[0]?.code ?? "",
+              script: curr.js?.[0]?.code ?? "",
               name: "unknown-" + currentId,
               matches: curr?.matches?.[0],
               runAt: curr?.runAt,

@@ -11,7 +11,7 @@ const meta = preview.meta({
 export default meta;
 
 export const Default = meta.story({
-  // @ts-expect-error testing
+  // @ts-expect-error TS says parameters should be undefined
   parameters: {
     interpolations: [
       createRedirectInterpolation({
@@ -24,7 +24,10 @@ export const Default = meta.story({
         headerValue: "headerValue",
         name: "example header interpolation",
       }),
-      createScriptInterpolation({ name: "example script", body: "" }),
+      createScriptInterpolation({
+        name: "example script",
+        script: "console.log('hello world');",
+      }),
     ],
   },
 });

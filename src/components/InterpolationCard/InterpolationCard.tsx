@@ -193,7 +193,18 @@ export const InterpolationCard = ({
           />
         );
       case "script":
-        return <ScriptForm />;
+        console.log({ defaultValues: info.details });
+        return (
+          <ScriptForm
+            onSubmit={() => setEditModeEnabled(false)}
+            defaultValues={{
+              name: info.name,
+              id: info.details?.id,
+              runAt: info.details?.runAt ?? "document_start",
+              script: info.details?.js[0]?.code,
+            }}
+          />
+        );
       case "mockAPI":
         return (
           <MockResponseForm

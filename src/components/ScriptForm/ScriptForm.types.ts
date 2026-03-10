@@ -1,4 +1,5 @@
 export interface ScriptFormValue {
+  id?: string;
   name?: string;
   runAt?: string;
   script?: string;

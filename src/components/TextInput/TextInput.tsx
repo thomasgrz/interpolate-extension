@@ -5,6 +5,7 @@ export const TextInput = ({
   label,
   errors,
   helperText,
+  id,
   ...props
 }: TextField.RootProps & {
   helperText?: string;
@@ -13,12 +14,12 @@ export const TextInput = ({
 }) => {
   return (
     <Flex p="1" direction={"column"}>
-      <Label.Root>
+      <Label.Root htmlFor={id}>
         <Strong>
           {typeof label === "string" ? <Text size="2">{label}</Text> : label}
         </Strong>
       </Label.Root>
-      <TextField.Root {...props} value={props.value} />
+      <TextField.Root {...props} id={id} value={props.value} />
       {errors?.map?.((error?: string | null) => (
         <Text align={"left"} size="1" key={error} color="red">
           {error}
