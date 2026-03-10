@@ -8,8 +8,9 @@ export const createTestScriptInterpolation = async (arg: {
   script: string;
   extensionId: string;
   runAt?: "document_start" | "document_idle" | "document_end";
+  endOnOptionsPage?: boolean;
 }) => {
-  const { extensionId, name, page, script } = arg;
+  const { extensionId, name, page, script, endOnOptionsPage } = arg;
   await openInterpolationOptionsModal({ extensionId, page });
   await page.getByText("Create user script").click();
   await page
@@ -21,5 +22,6 @@ export const createTestScriptInterpolation = async (arg: {
   // await page.getByText(ScriptFormPlaceholder.RUN_AT).click();
   await page.getByText("Create script interpolation").click();
   await page.getByTestId(/script-preview-.*/).waitFor();
+  if (endOnOptionsPage) return;
   await page.goto("https://example.com");
 };

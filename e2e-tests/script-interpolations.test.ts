@@ -3,8 +3,11 @@ import { Dialog } from "@playwright/test";
 import { createTestScriptInterpolation } from "./fixtures/createTestScriptInterpolation";
 import { enableUserScriptsForExtension } from "./fixtures/enableUserScriptsForExtension";
 
-test("should apply script interpolation", async ({ page, extensionId }) => {
+test.beforeEach(async ({ page }) => {
   await enableUserScriptsForExtension({ page });
+});
+
+test("should apply script interpolation", async ({ page, extensionId }) => {
   page.on("dialog", async (dialog: Dialog) => {
     const message = dialog.message();
 
@@ -22,7 +25,6 @@ test("should apply script interpolation", async ({ page, extensionId }) => {
 });
 
 test("should pause a script", async ({ page, extensionId }) => {
-  await enableUserScriptsForExtension({ page });
   page.on("dialog", async (dialog: Dialog) => {
     const message = dialog.message();
 
@@ -62,7 +64,6 @@ test("should resume a script", async ({ page, extensionId }) => {
     dialog.accept();
   });
 
-  await enableUserScriptsForExtension({ page });
   await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
   await page.getByText("Browser UI").click();
   await createTestScriptInterpolation({
@@ -88,4 +89,38 @@ test("should resume a script", async ({ page, extensionId }) => {
   await page.reload();
 
   expect(invokedWhilePaused).toBe(true);
+});
+
+test.only("should edit a script in place", async ({ page, extensionId }) => {
+  await createTestScriptInterpolation({
+    page,
+    extensionId,
+    runAt: "document_start",
+    script: "alert('hello world');",
+    name: "test script",
+    endOnOptionsPage: true,
+  });
+
+  const options = page.getByTestId("interpolation-options-trigger");
+
+  await options.isVisible();
+
+  await options.click();
+
+  const edit = page.getByText("Edit");
+
+  await edit.click();
+
+  const editForm = page.getByText("Script interpolation");
+
+  const name = page.getByLabel("Name:");
+
+  await expect(name).toBeVisible();
+  await name.click();
+
+  await name.fill("example 2");
+
+  await page.getByText("Create script interpolation").click();
+  await page.getByTestId(/script-preview-example 2/).waitFor();
+  expect(page.getByText("test script")).not.toBeInViewport();
 });

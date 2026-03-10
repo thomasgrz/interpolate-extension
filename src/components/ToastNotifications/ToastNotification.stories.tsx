@@ -26,7 +26,7 @@ const meta = preview.meta({
             headerValue: "header value",
           }),
           createScriptInterpolation({
-            body: "script body",
+            script: "script body",
             name: "script test",
             runAt: "idk",
           }),

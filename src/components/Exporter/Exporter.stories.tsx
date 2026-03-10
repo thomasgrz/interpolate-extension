@@ -11,7 +11,7 @@ const meta = preview.meta({
 export default meta;
 
 export const Default = meta.story({
-  // @ts-expect-error TODO: fix types
+  // @ts-expect-error TS asserts args not assignable to never
   args: {
     interpolations: [
       createHeaderInterpolation({
@@ -24,7 +24,10 @@ export const Default = meta.story({
         source: "",
         destination: "",
       }),
-      createScriptInterpolation({ name: "script", body: "" }),
+      createScriptInterpolation({
+        name: "script",
+        script: "console.log('hello world')",
+      }),
     ],
   },
 });

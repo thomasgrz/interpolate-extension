@@ -26,7 +26,11 @@ export const InterpolationOptions = ({
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
-        <IconButton className={styles.Button} variant="outline">
+        <IconButton
+          data-testid={"interpolation-options-trigger"}
+          className={styles.Button}
+          variant="outline"
+        >
           <DotsHorizontalIcon />
         </IconButton>
       </DropdownMenu.Trigger>
