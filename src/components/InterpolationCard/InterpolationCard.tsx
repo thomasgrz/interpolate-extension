@@ -24,7 +24,6 @@ import { Collapsible } from "radix-ui";
 import { HeaderRulePreview } from "../HeaderPreview/HeaderPreview";
 import { RedirectRulePreview } from "../RedirectPreview/RedirectPreview";
 import { RuleToggle } from "../RuleToggle/RuleToggle";
-import styles from "./InterpolationCard.module.scss";
 import { ScriptPreview } from "../ScriptPreview/ScriptPreview";
 import { InterpolationOptions } from "../InterpolationOptions/InterpolationOptions";
 import { ScriptForm } from "../ScriptForm/ScriptForm.tsx";
@@ -32,6 +31,7 @@ import { RedirectForm } from "../RedirectForm/RedirectForm.tsx";
 import { HeaderForm } from "../HeaderForm/HeaderForm.tsx";
 import { MockPreview } from "../MockPreview/MockPreview.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm.tsx";
+import styles from "./InterpolationCard.module.scss";
 
 type InterpolationCardProps = {
   info: AnyInterpolation;
@@ -245,6 +245,7 @@ export const InterpolationCard = ({
       data-ui-error={!!info.error}
       data-testid={`${type}-preview-${info?.name}`}
       className={styles.InterpolationCard}
+      style={{ padding: 0 }}
       variant="surface"
     >
       <Collapsible.Root

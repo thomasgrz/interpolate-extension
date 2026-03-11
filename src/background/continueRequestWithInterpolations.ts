@@ -15,19 +15,39 @@ export const continueRequestWithInterpolations = async ({
   interpolations?: AnyInterpolation[];
 }) => {
   // for now we'll apply the first url override we find in the interpolations array
-  const urlOverride = interpolations?.find(
+  const redirectInterpolation = interpolations?.find(
     (interp) => interp.type === "redirect",
-  )?.details?.destination;
+  );
 
+  let urlOverride = redirectInterpolation?.details?.destination!;
+  const regex = new RegExp(redirectInterpolation?.details?.regexFilter!);
   const noInterpsApplied = !interpolations?.length;
-
   if (noInterpsApplied) {
     return chrome.debugger.sendCommand({ tabId }, "Fetch.continueRequest", {
       requestId,
-      url: urlOverride ?? requestUrl,
+      url: requestUrl,
     });
   }
 
+  if (urlOverride) {
+    // check if the matcher contains capture groups
+    const captureGroupNames = [...urlOverride.matchAll(/\$\d/g)].map(
+      (match) => match[0],
+    );
+    const matches = regex.exec(requestUrl!);
+    const capturedGroups = matches?.slice?.(1) ?? [];
+    const eligibleForUrlTransformation =
+      !!captureGroupNames?.length && !!capturedGroups?.length;
+    if (eligibleForUrlTransformation) {
+      captureGroupNames.forEach((groupName) => {
+        const indexOfCaptureGroupName = +groupName.replace("$", "");
+        const matchingCaptureGroup =
+          capturedGroups[indexOfCaptureGroupName - 1];
+        if (typeof matchingCaptureGroup !== "string") return;
+        urlOverride = urlOverride.replace(groupName, matchingCaptureGroup);
+      });
+    }
+  }
   const originalHeaders = Object.entries(request.headers).map(
     ([key, value]) => ({ name: key, value }),
   );
@@ -53,7 +73,7 @@ export const continueRequestWithInterpolations = async ({
   if (apiMock) {
     chrome.debugger.sendCommand({ tabId }, "Fetch.fulfillRequest", {
       requestId,
-      responseCode: Number(apiMock?.details?.httpCode) ?? 200,
+      responseCode: Number(apiMock?.details?.httpCode ?? 200),
       body: btoa(apiMock?.details?.body ?? ""),
       responseHeaders: [...originalHeaders, ...requestHeadersOverrides],
     });

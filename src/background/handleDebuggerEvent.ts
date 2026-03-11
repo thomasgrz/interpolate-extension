@@ -98,6 +98,7 @@ export const handleDebuggerEvent = async (
     tabId: tabId as number,
     request,
     requestId,
+    requestUrl,
     interpolations: applicableInterpolations,
   });
 };
