@@ -46,7 +46,12 @@ const handleCreateHeaderInterpolation = async ({
   const isInvalid = !isValid;
   if (isInvalid) return;
   await InterpolateStorage.create(
-    createHeaderInterpolation({ headerValue, headerKey: key, name }),
+    createHeaderInterpolation({
+      id: value?.id as number,
+      headerValue,
+      headerKey: key,
+      name,
+    }),
   );
 };
 

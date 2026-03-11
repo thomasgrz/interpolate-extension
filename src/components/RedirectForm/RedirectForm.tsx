@@ -46,6 +46,7 @@ const handleCreateRedirectInterpolation = async ({
   if (isInvalid) return;
   await InterpolateStorage.create(
     createRedirectInterpolation({
+      id: value?.id as number,
       source: matcher,
       name: name,
       destination: destination,
