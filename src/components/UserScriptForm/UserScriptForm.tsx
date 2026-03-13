@@ -1,5 +1,4 @@
-import { Card, Flex, Button } from "@radix-ui/themes";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { Card, Flex } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { ScriptsPermissionWarning } from "../ScriptsPermissionWarning/ScriptsPermissionWarning";
 import { useForm } from "@tanstack/react-form";
