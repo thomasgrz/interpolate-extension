@@ -1,4 +1,4 @@
-import { ScriptFormPlaceholder } from "#src/components/ScriptForm/ScriptForm.types.ts";
+import { UserScriptFormPlaceholder } from "#src/components/UserScriptForm/UserScriptForm.types.ts";
 import { enableUserScriptsForExtension } from "./enableUserScriptsForExtension";
 import { openInterpolationOptionsModal } from "./openInterpolationOptionsModal";
 
@@ -14,12 +14,12 @@ export const createTestScriptInterpolation = async (arg: {
   await openInterpolationOptionsModal({ extensionId, page });
   await page.getByText("Create user script").click();
   await page
-    .getByPlaceholder(ScriptFormPlaceholder.INTERPOLATION_NAME)
+    .getByPlaceholder(UserScriptFormPlaceholder.INTERPOLATION_NAME)
     .fill(name);
   // fill interpolation script
-  await page.getByPlaceholder(ScriptFormPlaceholder.SCRIPT_BODY).fill(script);
+  await page.getByPlaceholder(UserScriptFormPlaceholder.SCRIPT_BODY).fill(script);
   // select run at value
-  // await page.getByText(ScriptFormPlaceholder.RUN_AT).click();
+  // await page.getByText(UserScriptFormPlaceholder.RUN_AT).click();
   await page.getByText("Create script interpolation").click();
   await page.getByTestId(/script-preview-.*/).waitFor();
   if (endOnOptionsPage) return;

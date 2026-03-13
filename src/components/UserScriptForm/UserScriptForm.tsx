@@ -8,31 +8,32 @@ import TextAreaInput from "../TextArea/TextArea";
 import SelectField from "../SelectField/SelectField";
 import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
 import {
-  ScriptFormPlaceholder,
-  ScriptFormValidationError,
-  ScriptFormValue,
-} from "./ScriptForm.types";
+  UserScriptFormPlaceholder,
+  UserScriptFormValidationError,
+  UserScriptFormValue,
+} from "./UserScriptForm.types";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { createScriptInterpolation } from "#src/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
+import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 const handleCreateScriptInterpolation = async ({
   value,
 }: {
-  value: Required<ScriptFormValue>;
+  value: Required<UserScriptFormValue>;
 }) => {
   await InterpolateStorage.create(createScriptInterpolation(value));
 };
 
-export const ScriptForm = ({
+export const UserScriptForm = ({
   defaultValues = {
     runAt: "document_start",
   },
   onSubmit,
 }: {
   onSubmit?:
-    | (({ value }: { value: ScriptFormValue }) => void)
-    | (({ value }: { value: ScriptFormValue }) => Promise<void>);
-  defaultValues?: ScriptFormValue;
+    | (({ value }: { value: UserScriptFormValue }) => void)
+    | (({ value }: { value: UserScriptFormValue }) => Promise<void>);
+  defaultValues?: UserScriptFormValue;
 }) => {
   const form = useForm({
     defaultValues,
@@ -41,7 +42,7 @@ export const ScriptForm = ({
         const errors = new Map();
         const nameError = validateStringLength({
           value: value.name,
-          error: ScriptFormValidationError.INTERPOLATION_NAME,
+          error: UserScriptFormValidationError.INTERPOLATION_NAME,
         });
 
         if (nameError) {
@@ -50,7 +51,7 @@ export const ScriptForm = ({
 
         const scriptBodyError = validateStringLength({
           value: value.script,
-          error: ScriptFormValidationError.SCRIPT_BODY,
+          error: UserScriptFormValidationError.SCRIPT_BODY,
         });
 
         if (scriptBodyError) {
@@ -118,7 +119,7 @@ export const ScriptForm = ({
               onChange({ value }) {
                 return validateStringLength({
                   value,
-                  error: ScriptFormValidationError.INTERPOLATION_NAME,
+                  error: UserScriptFormValidationError.INTERPOLATION_NAME,
                 });
               },
             }}
@@ -140,7 +141,7 @@ export const ScriptForm = ({
               onChange({ value }) {
                 return validateStringLength({
                   value,
-                  error: ScriptFormValidationError.SCRIPT_BODY,
+                  error: UserScriptFormValidationError.SCRIPT_BODY,
                 });
               },
             }}
@@ -150,7 +151,7 @@ export const ScriptForm = ({
                 label="Script:"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
-                placeholder={ScriptFormPlaceholder.SCRIPT_BODY}
+                placeholder={UserScriptFormPlaceholder.SCRIPT_BODY}
                 errors={field.state.meta.errors}
               />
             )}
@@ -171,18 +172,9 @@ export const ScriptForm = ({
         </Flex>
       </Card>
       <Flex pt="2" justify={"center"}>
-        <Button
-          type="submit"
-          disabled={showWarning}
-          size="2"
-          style={{
-            ...(!showWarning
-              ? { cursor: "pointer", backgroundColor: "black" }
-              : {}),
-          }}
-        >
-          Create script interpolation <PlusCircledIcon />
-        </Button>
+        <SubmitButton disabled={showWarning}>
+          Create script interpolation
+        </SubmitButton>
       </Flex>
     </form>
   );
