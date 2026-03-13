@@ -1,10 +1,10 @@
 import { Callout, Container, Flex } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
-import styles from "./Dashboard.module.scss";
+import styles from "./DashboardView.module.scss";
 import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView.tsx";
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
 
-export const Dashboard = () => {
+export const DashboardView = () => {
   return (
     <ErrorBoundary
       onError={console.error}

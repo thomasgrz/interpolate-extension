@@ -2,9 +2,9 @@ import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpo
 import { renderInBrowser } from "../../../test-utils/renderInBrowser";
 import { describe, it, expect } from "vitest";
 import { page } from "vitest/browser";
-import { Dashboard } from "./Dashboard";
+import { DashboardView } from "./DashboardView";
 
-describe("Dashboard", () => {
+describe("DashboardView", () => {
   it("should display existing rules", async () => {
     const interpolation = createHeaderInterpolation({
       headerKey: "test header key",
@@ -15,7 +15,7 @@ describe("Dashboard", () => {
       [`interpolation-config-${interpolation.details.id}`]: interpolation,
     });
 
-    renderInBrowser(<Dashboard />);
+    renderInBrowser(<DashboardView />);
     const preview = page.getByTestId(/headers-preview-.*/);
     await expect.element(preview).toBeVisible();
   });

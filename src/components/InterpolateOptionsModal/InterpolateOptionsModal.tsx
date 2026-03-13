@@ -13,7 +13,7 @@ import {
 import { InterpolationOptionCard } from "../InterpolationOptionCard/InterpolationOptionCard";
 import styles from "./InterpolateOptionsModal.module.scss";
 import { useMemo, useState } from "react";
-import { HeaderForm } from "../HeaderForm/HeaderForm";
+import { AddHeaderForm } from "../AddHeaderForm/AddHeaderForm";
 import { UserScriptForm } from "../UserScriptForm/UserScriptForm";
 import { RedirectForm } from "../RedirectForm/RedirectForm";
 import { ExportForm } from "../Exporter/Exporter";
@@ -162,7 +162,7 @@ export const InterpolateOptionsModal = ({
           <FormSelectionStep onChange={handleChange} />
         )}
         {step === InterpolationOptionSelection.ADD_HEADERS && (
-          <HeaderForm onSubmit={handleFormSubmit} />
+          <AddHeaderForm onSubmit={handleFormSubmit} />
         )}
         {step === InterpolationOptionSelection.CREATE_USER_SCRIPT && (
           <UserScriptForm onSubmit={handleFormSubmit} />

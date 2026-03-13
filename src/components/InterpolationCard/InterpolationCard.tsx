@@ -28,7 +28,7 @@ import { ScriptPreview } from "../ScriptPreview/ScriptPreview";
 import { InterpolationOptions } from "../InterpolationOptions/InterpolationOptions";
 import { UserScriptForm } from "../UserScriptForm/UserScriptForm.tsx";
 import { RedirectForm } from "../RedirectForm/RedirectForm.tsx";
-import { HeaderForm } from "../HeaderForm/HeaderForm.tsx";
+import { AddHeaderForm } from "../AddHeaderForm/AddHeaderForm.tsx";
 import { MockPreview } from "../MockPreview/MockPreview.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm.tsx";
 import styles from "./InterpolationCard.module.scss";
@@ -182,7 +182,7 @@ export const InterpolationCard = ({
         );
       case "headers":
         return (
-          <HeaderForm
+          <AddHeaderForm
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               id,

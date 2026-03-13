@@ -1,11 +1,11 @@
-import { Dashboard } from "../components/Dashboard/Dashboard";
+import { DashboardView } from "../components/DashboardView/DashboardView";
 import preview from "#.storybook/preview";
 import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
 import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
 import { createScriptInterpolation } from "#src/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
 
 const meta = preview.meta({
-  component: Dashboard,
+  component: DashboardView,
 });
 
 export default meta;

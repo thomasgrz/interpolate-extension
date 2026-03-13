@@ -1,10 +1,10 @@
 import { describe, it } from "vitest";
 
 import { renderWithProviders } from "../../test-utils/renderWithProviders";
-import { Dashboard } from "@/components/Dashboard/Dashboard";
+import { DashboardView } from "@/components/DashboardView/DashboardView";
 
 describe("Sidepanel", () => {
   it("should render the sidepanel", () => {
-    renderWithProviders(<Dashboard />);
+    renderWithProviders(<DashboardView />);
   });
 });

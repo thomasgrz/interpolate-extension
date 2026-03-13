@@ -7,25 +7,25 @@ import { TextInput } from "../TextInput/TextInput";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
 
-const HeaderFormErrors = {
+const AddHeaderFormErrors = {
   MISSING_NAME: FormErrors.MISSING_NAME,
   MISSING_HEADER_KEY: "Please provide a valid header key",
   MISSING_HEADER_VALUE: "Please provide a valid header value",
 };
 
-export enum HeaderFormPlaceholder {
+export enum AddHeaderFormPlaceholder {
   HEADER_KEY = "x-test-header",
   HEADER_VALUE = "foobar",
   INTERPOLATION_NAME = "My Test Header",
 }
 
-export enum HeaderFormLabel {
+export enum AddHeaderFormLabel {
   INTERPOLATION_NAME = "Name:",
   HEADER_KEY = "Header key:",
   HEADER_VALUE = "Header value:",
 }
 
-export interface HeaderFormValue {
+export interface AddHeaderFormValue {
   id?: string | number;
   name?: string;
   key?: string;
@@ -35,7 +35,7 @@ export interface HeaderFormValue {
 const handleCreateHeaderInterpolation = async ({
   value,
 }: {
-  value: HeaderFormValue;
+  value: AddHeaderFormValue;
 }) => {
   const { key, value: headerValue, name } = value;
   const isValid =
@@ -55,14 +55,14 @@ const handleCreateHeaderInterpolation = async ({
   );
 };
 
-export const HeaderForm = ({
+export const AddHeaderForm = ({
   defaultValues,
   onSubmit,
 }: {
-  defaultValues?: HeaderFormValue;
+  defaultValues?: AddHeaderFormValue;
   onSubmit?:
-    | (({ value }: { value: HeaderFormValue }) => void)
-    | (({ value }: { value: HeaderFormValue }) => Promise<void>);
+    | (({ value }: { value: AddHeaderFormValue }) => void)
+    | (({ value }: { value: AddHeaderFormValue }) => Promise<void>);
 }) => {
   const form = useForm({
     defaultValues,
@@ -79,15 +79,15 @@ export const HeaderForm = ({
       onSubmit: ({ value }) => {
         const nameError = validateStringLength({
           value: value?.name,
-          error: HeaderFormErrors.MISSING_NAME,
+          error: AddHeaderFormErrors.MISSING_NAME,
         });
         const keyError = validateStringLength({
           value: value?.key,
-          error: HeaderFormErrors.MISSING_HEADER_KEY,
+          error: AddHeaderFormErrors.MISSING_HEADER_KEY,
         });
         const valueError = validateStringLength({
           value: value?.value,
-          error: HeaderFormErrors.MISSING_HEADER_VALUE,
+          error: AddHeaderFormErrors.MISSING_HEADER_VALUE,
         });
 
         return {
@@ -115,14 +115,14 @@ export const HeaderForm = ({
               onChange: ({ value }) =>
                 validateStringLength({
                   value,
-                  error: HeaderFormErrors.MISSING_NAME,
+                  error: AddHeaderFormErrors.MISSING_NAME,
                 }),
             }}
             name="name"
             children={(field) => (
               <TextInput
-                label={HeaderFormLabel.INTERPOLATION_NAME}
-                placeholder={HeaderFormPlaceholder.INTERPOLATION_NAME}
+                label={AddHeaderFormLabel.INTERPOLATION_NAME}
+                placeholder={AddHeaderFormPlaceholder.INTERPOLATION_NAME}
                 name={field.name}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
@@ -136,14 +136,14 @@ export const HeaderForm = ({
               onChange: ({ value }) =>
                 validateStringLength({
                   value,
-                  error: HeaderFormErrors.MISSING_HEADER_KEY,
+                  error: AddHeaderFormErrors.MISSING_HEADER_KEY,
                 }),
             }}
             name="key"
             children={(field) => (
               <TextInput
-                label={HeaderFormLabel.HEADER_KEY}
-                placeholder={HeaderFormPlaceholder.HEADER_KEY}
+                label={AddHeaderFormLabel.HEADER_KEY}
+                placeholder={AddHeaderFormPlaceholder.HEADER_KEY}
                 name={field.name}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
@@ -157,14 +157,14 @@ export const HeaderForm = ({
               onChange: ({ value }) =>
                 validateStringLength({
                   value,
-                  error: HeaderFormErrors.MISSING_HEADER_VALUE,
+                  error: AddHeaderFormErrors.MISSING_HEADER_VALUE,
                 }),
             }}
             name="value"
             children={(field) => (
               <TextInput
-                label={HeaderFormLabel.HEADER_VALUE}
-                placeholder={HeaderFormPlaceholder.HEADER_VALUE}
+                label={AddHeaderFormLabel.HEADER_VALUE}
+                placeholder={AddHeaderFormPlaceholder.HEADER_VALUE}
                 name={field.name}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
