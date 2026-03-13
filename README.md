@@ -6,7 +6,14 @@
 
 [Built with CRXJS](https://github.com/crxjs/chrome-extension-tools)
 
-Interpolate allows you to execute scripts, enforce request redirects, mock API responses, and add headers to requests within the current tab.
+Interpolate allows developers to easily, and declaratively, do things like:
+1. mock API responses with HTML or JSON payloads
+2. add headers to requests
+3. create & execute scripts
+4. redirect any subset of requests
+
+
+Interpolate configurations are reusable and modular -- they can easily be exported and imported as JSON.
 
 ![](./docs/artifacts/redirect_google_example.png)
 
