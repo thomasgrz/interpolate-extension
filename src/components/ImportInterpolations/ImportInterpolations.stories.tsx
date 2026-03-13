@@ -1,9 +1,9 @@
 import preview from "#.storybook/preview";
 
-import { ImportForm } from "./Import.tsx";
+import { ImportInterpolations } from "./ImportInterpolations.tsx";
 
 const meta = preview.meta({
-  component: ImportForm,
+  component: ImportInterpolations,
 });
 
 export default meta;

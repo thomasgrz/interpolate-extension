@@ -1,13 +1,13 @@
 import preview from "#.storybook/preview";
 import { useState } from "react";
 
-import { InterpolateOptionsModal } from "./InterpolateOptionsModal.tsx";
+import { CreateInterpolationsView } from "./CreateInterpolationsView.tsx";
 
 const meta = preview.meta({
   component: (props) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
-      <InterpolateOptionsModal
+      <CreateInterpolationsView
         {...props}
         onOpenChange={setIsOpen}
         isOpen={isOpen}

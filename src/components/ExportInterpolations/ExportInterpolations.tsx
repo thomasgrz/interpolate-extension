@@ -5,7 +5,7 @@ import { InterpolationCard } from "../InterpolationCard/InterpolationCard.tsx";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { useInterpolations } from "#src/hooks/useInterpolations/useInterpolations.ts";
 
-export const ExportForm = () => {
+export const ExportInterpolations = () => {
   const [selectedStates, setSelectedStates] = useState<
     Record<string, { isChecked: boolean } & AnyInterpolation>
   >({});

@@ -5,18 +5,18 @@ import { ChangeEvent, useState } from "react";
 import { InterpolateStorage } from "../../utils/storage/InterpolateStorage/InterpolateStorage";
 import { useForm } from "@tanstack/react-form";
 
-export interface ImportFormValue {
+export interface ImportInterpolationsValue {
   json?: string;
 }
 
-export const ImportForm = ({
+export const ImportInterpolations = ({
   onSubmit,
   defaultValues,
 }: {
-  defaultValues?: ImportFormValue;
+  defaultValues?: ImportInterpolationsValue;
   onSubmit?:
-    | (({ value }: { value: ImportFormValue }) => void)
-    | (({ value }: { value: ImportFormValue }) => Promise<void>);
+    | (({ value }: { value: ImportInterpolationsValue }) => void)
+    | (({ value }: { value: ImportInterpolationsValue }) => Promise<void>);
 }) => {
   const [textareaInput, setTextAreaInput] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>();

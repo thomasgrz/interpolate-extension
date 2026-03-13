@@ -11,13 +11,13 @@ import {
 } from "@radix-ui/react-icons";
 
 import { InterpolationOptionCard } from "../InterpolationOptionCard/InterpolationOptionCard";
-import styles from "./InterpolateOptionsModal.module.scss";
+import styles from "./CreateInterpolationsView.module.scss";
 import { useMemo, useState } from "react";
 import { AddHeaderForm } from "../AddHeaderForm/AddHeaderForm";
 import { UserScriptForm } from "../UserScriptForm/UserScriptForm";
 import { RedirectForm } from "../RedirectForm/RedirectForm";
-import { ExportForm } from "../Exporter/Exporter";
-import { ImportForm } from "../Import/Import";
+import { ExportInterpolations } from "../ExportInterpolations/ExportInterpolations";
+import { ImportInterpolations } from "../ImportInterpolations/ImportInterpolations.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm";
 
 export enum InterpolationOptionSelection {
@@ -87,7 +87,7 @@ const FormSelectionStep = ({
   );
 };
 
-export const InterpolateOptionsModal = ({
+export const CreateInterpolationsView = ({
   onOpenChange,
   isOpen,
 }: {
@@ -134,7 +134,7 @@ export const InterpolateOptionsModal = ({
       <Dialog.Trigger>
         <Flex justify={"center"} width="stretch">
           <Button
-            className={styles.InterpolateOptionsModal}
+            className={styles.CreateInterpolationsView}
             radius="full"
             style={{ width: "250px", backgroundColor: "black" }}
           >
@@ -170,8 +170,12 @@ export const InterpolateOptionsModal = ({
         {step === InterpolationOptionSelection.REDIRECT_REQUEST && (
           <RedirectForm onSubmit={handleFormSubmit} />
         )}
-        {step === InterpolationOptionSelection.EXPORT && <ExportForm />}
-        {step === InterpolationOptionSelection.IMPORT && <ImportForm />}
+        {step === InterpolationOptionSelection.EXPORT && (
+          <ExportInterpolations />
+        )}
+        {step === InterpolationOptionSelection.IMPORT && (
+          <ImportInterpolations />
+        )}
         {step === InterpolationOptionSelection.MOCK_RESPONSE && (
           <MockResponseForm onSubmit={handleFormSubmit} />
         )}
