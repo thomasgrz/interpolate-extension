@@ -2,6 +2,8 @@
 
 > [!WARN] this extension is in beta and is subject to breaking changes
 
+[Currently available in Chrome Web Store](https://chromewebstore.google.com/detail/interpolatebeta/hjcffgbkfajlmfpmjijiafmlbeofhbpe)
+
 [Privacy Policy](./PRIVACY.md)
 
 [Built with CRXJS](https://github.com/crxjs/chrome-extension-tools)
