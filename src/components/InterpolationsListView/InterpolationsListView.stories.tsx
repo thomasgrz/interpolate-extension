@@ -1,8 +1,8 @@
 import preview from "#.storybook/preview";
-import { InterpolationsList } from "./InterpolationsList.tsx";
+import { InterpolationsListView } from "./InterpolationsListView.tsx";
 
 const meta = preview.meta({
-  component: InterpolationsList,
+  component: InterpolationsListView,
 });
 
 export default meta;

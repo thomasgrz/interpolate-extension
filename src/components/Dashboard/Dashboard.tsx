@@ -1,7 +1,7 @@
 import { Callout, Container, Flex } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./Dashboard.module.scss";
-import { InterpolationsList } from "../InterpolationsList/InterpolationsList.tsx";
+import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView.tsx";
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
 
 export const Dashboard = () => {
@@ -25,7 +25,7 @@ export const Dashboard = () => {
           <Flex className={styles.FormArea} justify="center">
             <ControlCenter />
           </Flex>
-          <InterpolationsList />
+          <InterpolationsListView />
         </Flex>
       </Container>
     </ErrorBoundary>
