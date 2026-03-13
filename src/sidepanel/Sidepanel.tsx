@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import "@radix-ui/themes/styles.css";
 import "./Sidepanel.css";
 
-import { Dashboard } from "@/components/Dashboard/Dashboard";
+import { DashboardView } from "@/components/DashboardView/DashboardView";
 import { Theme } from "@radix-ui/themes";
 import { InterpolateProvider } from "@/contexts/interpolate-context";
 
@@ -14,7 +14,7 @@ if (node instanceof HTMLElement) {
     <StrictMode>
       <Theme style={{ backgroundColor: "#FFDE21" }} radius="large">
         <InterpolateProvider>
-          <Dashboard />
+          <DashboardView />
         </InterpolateProvider>
       </Theme>
     </StrictMode>,

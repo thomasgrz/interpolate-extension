@@ -1,4 +1,4 @@
-import { HeaderFormPlaceholder } from "#src/components/HeaderForm/HeaderForm.tsx";
+import { AddHeaderFormPlaceholder } from "#src/components/AddHeaderForm/AddHeaderForm.tsx";
 import { FormType } from "#src/constants.ts";
 import { openInterpolationOptionsModal } from "./openInterpolationOptionsModal";
 
@@ -15,15 +15,15 @@ export const createTestHeaderInterpolation = async (arg: {
   await page.getByText("Add headers").click();
   // fill interpolation name field
   await page
-    .getByPlaceholder(HeaderFormPlaceholder.INTERPOLATION_NAME)
+    .getByPlaceholder(AddHeaderFormPlaceholder.INTERPOLATION_NAME)
     .fill(name);
   // fill interpolation header name
   await page
-    .getByPlaceholder(HeaderFormPlaceholder.HEADER_KEY)
+    .getByPlaceholder(AddHeaderFormPlaceholder.HEADER_KEY)
     .fill(headerName);
   // file interpolation header value
   await page
-    .getByPlaceholder(HeaderFormPlaceholder.HEADER_VALUE)
+    .getByPlaceholder(AddHeaderFormPlaceholder.HEADER_VALUE)
     .fill(headerValue);
   await page.getByText("Create header interpolation").click();
   await page.getByTestId(`headers-preview-${name}`).waitFor();

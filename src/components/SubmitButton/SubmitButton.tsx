@@ -1,21 +1,24 @@
-import { Button } from "@radix-ui/themes";
+import { Button, ButtonProps } from "@radix-ui/themes";
 import styles from "./SubmitButton.module.scss";
+import { baseButtonPropDefs } from "@radix-ui/themes/components/_internal/base-button.props";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 export const SubmitButton = ({
-  onClick,
   children,
+  ...buttonProps
 }: {
   children: string;
-  onClick: () => void;
-}) => {
+} & ButtonProps) => {
   return (
     <Button
-      type="button"
+      radius="full"
+      type="submit"
       style={{ backgroundColor: "black" }}
       className={styles.Button}
-      onClick={onClick}
+      {...buttonProps}
     >
       {children}
+      <PlusCircledIcon />
     </Button>
   );
 };

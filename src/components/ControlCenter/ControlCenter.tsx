@@ -1,5 +1,5 @@
 import { Flex, Switch, Text } from "@radix-ui/themes";
-import { InterpolateOptionsModal } from "../InterpolateOptionsModal/InterpolateOptionsModal.tsx";
+import { CreateInterpolationsView } from "../CreateInterpolationsView/CreateInterpolationsView.tsx";
 import { GlobalInterpolationOptions } from "../GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
 import styles from "./ControlCenter.module.scss";
 import { useEffect, useState } from "react";
@@ -38,7 +38,7 @@ export const ControlCenter = () => {
         p="3"
         className={styles.FormContainer}
       >
-        <InterpolateOptionsModal
+        <CreateInterpolationsView
           onOpenChange={handleOpenChange}
           isOpen={isOpen}
         />
