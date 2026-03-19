@@ -295,14 +295,14 @@ export const InterpolationCard = ({
             </Flex>
             <Tooltip content="options">
               <Collapsible.Trigger asChild>
-                <IconButton
+                <Button
                   className={styles.ToggleCollapse}
                   size="1"
                   radius="none"
                   variant="outline"
                 >
                   {isOpen ? <DoubleArrowUpIcon /> : <DoubleArrowDownIcon />}
-                </IconButton>
+                </Button>
               </Collapsible.Trigger>
             </Tooltip>
           </Flex>
