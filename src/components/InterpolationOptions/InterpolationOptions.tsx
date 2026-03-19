@@ -1,4 +1,4 @@
-import { DropdownMenu, IconButton } from "@radix-ui/themes";
+import { DropdownMenu, IconButton, Tooltip } from "@radix-ui/themes";
 import {
   DotsHorizontalIcon,
   GearIcon,
@@ -31,7 +31,9 @@ export const InterpolationOptions = ({
           className={styles.Button}
           variant="outline"
         >
-          <DotsHorizontalIcon />
+          <Tooltip content="Show options">
+            <DotsHorizontalIcon />
+          </Tooltip>
         </IconButton>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>

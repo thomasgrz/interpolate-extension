@@ -293,13 +293,15 @@ export const InterpolationCard = ({
                 )}
               </Flex>
             </Flex>
-            <Tooltip content="options">
+            <Tooltip content="Toggle info panel">
               <Collapsible.Trigger asChild>
                 <Button
                   className={styles.ToggleCollapse}
                   size="1"
                   radius="none"
                   variant="outline"
+                  // TODO: rm inline styles when prod build doesnt break className styles
+                  style={{ height: "unset", boxShadow: "none" }}
                 >
                   {isOpen ? <DoubleArrowUpIcon /> : <DoubleArrowDownIcon />}
                 </Button>
