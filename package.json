@@ -1,9 +1,8 @@
 {
-  "name": "interpolate_BETA",
+  "name": "interpolate",
   "type": "module",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
-  "description": "THIS EXTENSION IS FOR BETA TESTING",
   "imports": {
     "#*": [
       "./*",
