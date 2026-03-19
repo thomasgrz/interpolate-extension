@@ -74,8 +74,11 @@ export const UserScriptForm = ({
     onSubmit: async ({ value, formApi }) => {
       await onSubmit?.({ value });
       await handleCreateScriptInterpolation({
-        // @ts-expect-error TS asserts name might be undefined
-        value: { ...value, runAt: value?.runAt ?? "document_start" },
+        value: {
+          id: defaultValues?.id as string,
+          ...value,
+          runAt: value?.runAt ?? "document_start",
+        } as Required<UserScriptFormValue>,
       });
       void formApi.reset({
         name: "",

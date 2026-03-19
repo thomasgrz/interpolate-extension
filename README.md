@@ -41,4 +41,4 @@ Intercept and mock responses to requests that match a regex expression.
 
 Create and manage user scripts that, when enabled, can be executed during specific document lifecycle events like `"document_start"`, `"document_end"`, or `"document_idle"`
 
-![example_user_script](./docs/artifacts/example_user_script.png "Example of a user script that just console.log's hello world")
+![example_user_script](./docs/artifacts/user-scripts.png "Example of a user script that just console.log's hello world")
