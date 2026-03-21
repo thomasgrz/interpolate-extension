@@ -14,7 +14,6 @@ import {
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { createScriptInterpolation } from "#src/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 const handleCreateScriptInterpolation = async ({
   value,
