@@ -7,6 +7,7 @@ import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
 import TextAreaInput from "../TextArea/TextArea";
+import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 const RedirectFormErrors = {
   MISSING_NAME: FormErrors.MISSING_NAME,
@@ -58,11 +59,13 @@ const handleCreateRedirectInterpolation = async ({
 export const RedirectForm = ({
   onSubmit,
   defaultValues,
+  mode = "create",
 }: {
   defaultValues?: RedirectFormValue;
   onSubmit?:
     | (({ value }: { value: RedirectFormValue }) => void)
     | (({ value }: { value: RedirectFormValue }) => Promise<void>);
+  mode?: "create" | "edit";
 }) => {
   const form = useForm({
     defaultValues,
@@ -198,15 +201,10 @@ export const RedirectForm = ({
         </Flex>
       </Card>
       <Flex justify={"center"}>
-        <Button
-          mt="2"
-          type="submit"
-          size="2"
-          style={{ cursor: "pointer", backgroundColor: "black" }}
-        >
-          Create redirect interpolation
-          <PlusCircledIcon />
-        </Button>
+        <SubmitButton>
+          {mode === "create" && "Create redirect"}
+          {mode === "edit" && "Save redirect"}
+        </SubmitButton>
       </Flex>
     </form>
   );

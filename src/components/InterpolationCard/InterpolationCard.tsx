@@ -171,6 +171,7 @@ export const InterpolationCard = ({
       case "redirect":
         return (
           <RedirectForm
+            mode="edit"
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               id,
@@ -183,6 +184,7 @@ export const InterpolationCard = ({
       case "headers":
         return (
           <AddHeaderForm
+            mode="edit"
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               id,
@@ -196,6 +198,7 @@ export const InterpolationCard = ({
         console.log({ defaultValues: info.details });
         return (
           <UserScriptForm
+            mode="edit"
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               name: info.name,
@@ -208,6 +211,7 @@ export const InterpolationCard = ({
       case "mockAPI":
         return (
           <MockResponseForm
+            mode="edit"
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               ...info.details,
@@ -314,7 +318,7 @@ export const InterpolationCard = ({
         </Collapsible.Content>
       </Collapsible.Root>
       <Dialog.Root open={editModeEnabled}>
-        <Dialog.Content asChild>
+        <Dialog.Content>
           <Flex direction={"column"} p="0">
             {getEditForm()}
             <Dialog.Close style={{ position: "absolute", right: 5, top: 5 }}>
