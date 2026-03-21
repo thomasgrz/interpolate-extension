@@ -6,6 +6,7 @@ import { validateStringLength } from "#src/utils/validators/validateStringLength
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
+import TextAreaInput from "../TextArea/TextArea";
 
 const RedirectFormErrors = {
   MISSING_NAME: FormErrors.MISSING_NAME,
@@ -183,7 +184,7 @@ export const RedirectForm = ({
               }}
               name="destination"
               children={(field) => (
-                <TextInput
+                <TextAreaInput
                   label={RedirectFormLabel.REDIRECT_TO}
                   placeholder={RedirectFormPlaceholder.REDIRECT_TO}
                   onChange={(e) => field.handleChange(e.target.value)}
