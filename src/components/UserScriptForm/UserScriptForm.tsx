@@ -28,11 +28,13 @@ export const UserScriptForm = ({
     runAt: "document_start",
   },
   onSubmit,
+  mode = "create",
 }: {
   onSubmit?:
     | (({ value }: { value: UserScriptFormValue }) => void)
     | (({ value }: { value: UserScriptFormValue }) => Promise<void>);
   defaultValues?: UserScriptFormValue;
+  mode?: "create" | "edit";
 }) => {
   const form = useForm({
     defaultValues,
@@ -175,7 +177,8 @@ export const UserScriptForm = ({
       </Card>
       <Flex pt="2" justify={"center"}>
         <SubmitButton disabled={showWarning}>
-          Create script interpolation
+          {mode === "create" && "Create script"}
+          {mode === "edit" && "Save script"}
         </SubmitButton>
       </Flex>
     </form>

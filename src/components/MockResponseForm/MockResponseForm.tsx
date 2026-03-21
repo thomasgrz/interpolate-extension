@@ -1,20 +1,13 @@
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  SegmentedControl,
-  Strong,
-} from "@radix-ui/themes";
+import { Box, Card, Flex, SegmentedControl, Strong } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
 import { FormEvent, useState } from "react";
 import { TextInput } from "../TextInput/TextInput";
 import { Label } from "radix-ui";
 import TextAreaInput from "../TextArea/TextArea";
 import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { createMockAPIInterpolation } from "#src/utils/factories/createMockAPIInterpolation/createMockAPIInterpolation.ts";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
+import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 export interface MockResponseFormValue {
   id?: string | number;
@@ -28,6 +21,7 @@ export interface MockResponseFormValue {
 interface MockResponseFormProps {
   onSubmit: ({ value }: { value: MockResponseFormValue }) => void;
   defaultValues?: Partial<MockResponseFormValue>;
+  mode?: "edit" | "create";
 }
 
 enum MockResponseFormErrors {
@@ -62,6 +56,7 @@ const handleCreateMockAPIInterpolation = async ({
 export const MockResponseForm = ({
   onSubmit,
   defaultValues,
+  mode = "create",
 }: MockResponseFormProps) => {
   const [responseType, setResponseType] = useState("html");
   const form = useForm({
@@ -229,15 +224,10 @@ export const MockResponseForm = ({
         </Flex>
       </Card>
       <Flex justify={"center"}>
-        <Button
-          mt="2"
-          type="submit"
-          size="2"
-          style={{ cursor: "pointer", backgroundColor: "black" }}
-        >
-          Create mock API interpolation
-          <PlusCircledIcon />
-        </Button>
+        <SubmitButton>
+          {mode === "create" && "Create mock"}
+          {mode === "edit" && "Save"}
+        </SubmitButton>
       </Flex>
     </form>
   );

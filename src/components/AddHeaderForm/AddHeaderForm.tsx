@@ -1,11 +1,11 @@
 import { FormErrors } from "#src/constants.ts";
 import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
-import { Button, Card, Flex } from "@radix-ui/themes";
+import { Card, Flex } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
+import { SubmitButton } from "../SubmitButton/SubmitButton";
 
 const AddHeaderFormErrors = {
   MISSING_NAME: FormErrors.MISSING_NAME,
@@ -58,11 +58,13 @@ const handleCreateHeaderInterpolation = async ({
 export const AddHeaderForm = ({
   defaultValues,
   onSubmit,
+  mode,
 }: {
   defaultValues?: AddHeaderFormValue;
   onSubmit?:
     | (({ value }: { value: AddHeaderFormValue }) => void)
     | (({ value }: { value: AddHeaderFormValue }) => Promise<void>);
+  mode?: "edit" | "create";
 }) => {
   const form = useForm({
     defaultValues,
@@ -176,15 +178,10 @@ export const AddHeaderForm = ({
         </Flex>
       </Card>
       <Flex justify={"center"}>
-        <Button
-          mt="2"
-          type="submit"
-          size="2"
-          style={{ cursor: "pointer", backgroundColor: "black" }}
-        >
-          Create header interpolation
-          <PlusCircledIcon />
-        </Button>
+        <SubmitButton>
+          {mode === "create" && "Create header"}
+          {mode === "edit" && "Save"}
+        </SubmitButton>
       </Flex>
     </form>
   );
