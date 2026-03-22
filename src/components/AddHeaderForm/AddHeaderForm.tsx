@@ -6,24 +6,11 @@ import { TextInput } from "../TextInput/TextInput";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
-
-const AddHeaderFormErrors = {
-  MISSING_NAME: FormErrors.MISSING_NAME,
-  MISSING_HEADER_KEY: "Please provide a valid header key",
-  MISSING_HEADER_VALUE: "Please provide a valid header value",
-};
-
-export enum AddHeaderFormPlaceholder {
-  HEADER_KEY = "x-test-header",
-  HEADER_VALUE = "foobar",
-  INTERPOLATION_NAME = "My Test Header",
-}
-
-export enum AddHeaderFormLabel {
-  INTERPOLATION_NAME = "Name:",
-  HEADER_KEY = "Header key:",
-  HEADER_VALUE = "Header value:",
-}
+import {
+  AddHeaderFormErrors,
+  AddHeaderFormLabel,
+  AddHeaderFormPlaceholder,
+} from "./AddHeaderForm.constants";
 
 export interface AddHeaderFormValue {
   id?: string | number;

@@ -41,7 +41,8 @@ test("should pause a script", async ({ page, extensionId }) => {
     name: "test script",
   });
 
-  const pauseAll = page.getByText("Pause all");
+  const pauseAll = page.getByText(/Pause.*/);
+  await expect(pauseAll).toBeVisible();
   await pauseAll.scrollIntoViewIfNeeded();
   await pauseAll.click();
 
@@ -74,7 +75,7 @@ test("should resume a script", async ({ page, extensionId }) => {
     name: "test script",
   });
 
-  const globalPause = page.getByText("Pause all");
+  const globalPause = page.getByText(/Pause.*/);
   invokedWhilePaused = false;
 
   await globalPause.scrollIntoViewIfNeeded();
@@ -111,8 +112,6 @@ test("should edit a script in place", async ({ page, extensionId }) => {
 
   await edit.click();
 
-  const editForm = page.getByText("Script interpolation");
-
   const name = page.getByLabel("Name:");
 
   await expect(name).toBeVisible();
@@ -120,7 +119,7 @@ test("should edit a script in place", async ({ page, extensionId }) => {
 
   await name.fill("example 2");
 
-  await page.getByText("Create script interpolation").click();
+  await page.getByText("Save script").click();
   await page.getByTestId(/script-preview-example 2/).waitFor();
   expect(page.getByText("test script")).not.toBeInViewport();
 });

@@ -1,5 +1,4 @@
-import { AddHeaderFormPlaceholder } from "#src/components/AddHeaderForm/AddHeaderForm.tsx";
-import { FormType } from "#src/constants.ts";
+import { AddHeaderFormPlaceholder } from "#src/components/AddHeaderForm/AddHeaderForm.constants.ts";
 import { openInterpolationOptionsModal } from "./openInterpolationOptionsModal";
 
 export const createTestHeaderInterpolation = async (arg: {
@@ -25,7 +24,7 @@ export const createTestHeaderInterpolation = async (arg: {
   await page
     .getByPlaceholder(AddHeaderFormPlaceholder.HEADER_VALUE)
     .fill(headerValue);
-  await page.getByText("Create header interpolation").click();
+  await page.getByText("Create header").click();
   await page.getByTestId(`headers-preview-${name}`).waitFor();
   await page.goto("https://httpbin.org/headers");
   await page.goto(
