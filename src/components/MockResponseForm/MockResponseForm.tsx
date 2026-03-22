@@ -8,6 +8,11 @@ import { validateStringLength } from "#src/utils/validators/validateStringLength
 import { createMockAPIInterpolation } from "#src/utils/factories/createMockAPIInterpolation/createMockAPIInterpolation.ts";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
+import {
+  MockResponseFormErrors,
+  MockResponseFormLabel,
+  MockResponseFormPlaceholder,
+} from "./MockResponseForm.constants";
 
 export interface MockResponseFormValue {
   id?: string | number;
@@ -23,27 +28,6 @@ interface MockResponseFormProps {
   defaultValues?: Partial<MockResponseFormValue>;
   mode?: "edit" | "create";
 }
-
-enum MockResponseFormErrors {
-  INTERPOLATION_NAME = "Please provide a name for this interpolation",
-  MATCHER = "Please provide a regular expression",
-}
-
-enum MockResponseFormLabel {
-  INTERPOLATION_NAME = "Name:",
-  HTTP_STATUS = "HTTP Status Code:",
-  BODY = "Response body:",
-  MATCHER = "Request URL RegEx:",
-}
-
-enum MockResponseFormPlaceholder {
-  HTTP_STATUS = "200",
-  INTERPOLATION_NAME = "Mock Example API response",
-  BODY_HTML = "<h1>You've got example!</h1>",
-  BODY_JSON = `{ status: "success",  code: "foobar" }`,
-  MATCHER = ".*example.com/some/.*/path",
-}
-
 const handleCreateMockAPIInterpolation = async ({
   value,
 }: {

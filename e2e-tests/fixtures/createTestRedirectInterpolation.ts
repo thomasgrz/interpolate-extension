@@ -1,5 +1,5 @@
-import { RedirectFormPlaceholder } from "#src/components/RedirectForm/RedirectForm.tsx";
 import { openInterpolationOptionsModal } from "./openInterpolationOptionsModal";
+import { RedirectFormPlaceholder } from "../../src/components/RedirectForm/RedirectForm.constants.ts";
 
 export const createTestRedirectInterpolation = async (arg: {
   page: any;
@@ -21,7 +21,7 @@ export const createTestRedirectInterpolation = async (arg: {
   await page
     .getByPlaceholder(RedirectFormPlaceholder.REDIRECT_TO)
     .fill(destination);
-  await page.getByText("Create redirect interpolation").click();
+  await page.getByText("Create redirect").click();
   const preview = page.getByText(name);
   await preview.waitFor({ state: "visible" });
 };
