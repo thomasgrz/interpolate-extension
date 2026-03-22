@@ -152,6 +152,7 @@ export const UserScriptForm = ({
             name="script"
             children={(field) => (
               <TextAreaInput
+                resize="both"
                 label="Script:"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}

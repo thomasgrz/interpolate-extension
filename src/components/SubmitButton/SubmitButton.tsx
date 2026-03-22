@@ -12,8 +12,8 @@ export const SubmitButton = ({ children, ...buttonProps }: ButtonProps) => {
       className={styles.Button}
       {...buttonProps}
     >
-      {children}
       <PlusCircledIcon />
+      {children}
     </Button>
   );
 };

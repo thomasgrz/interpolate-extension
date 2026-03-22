@@ -19,6 +19,7 @@ import { RedirectForm } from "../RedirectForm/RedirectForm";
 import { ExportInterpolations } from "../ExportInterpolations/ExportInterpolations";
 import { ImportInterpolations } from "../ImportInterpolations/ImportInterpolations.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm";
+import { BrowseInterpolations } from "../BrowseInterpolations/BrowseInterpolations.tsx";
 
 export enum InterpolationOptionSelection {
   OPTIONS_VIEW = "options-view",
@@ -83,6 +84,7 @@ const FormSelectionStep = ({
           color="#0090FF"
         />
       </Flex>
+      <BrowseInterpolations />
     </Flex>
   );
 };
@@ -138,7 +140,8 @@ export const CreateInterpolationsView = ({
             radius="full"
             style={{ width: "250px", backgroundColor: "black" }}
           >
-            Create interpolation <PlusCircledIcon />
+            <PlusCircledIcon />
+            Create interpolation
           </Button>
         </Flex>
       </Dialog.Trigger>
@@ -180,7 +183,7 @@ export const CreateInterpolationsView = ({
             <ExportInterpolations />
           )}
           {step === InterpolationOptionSelection.IMPORT && (
-            <ImportInterpolations />
+            <ImportInterpolations onSubmit={handleFormSubmit} />
           )}
           {step === InterpolationOptionSelection.MOCK_RESPONSE && (
             <MockResponseForm onSubmit={handleFormSubmit} />

@@ -6,6 +6,8 @@ import { InterpolateStorage } from "../../utils/storage/InterpolateStorage/Inter
 import { useForm } from "@tanstack/react-form";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
+import { SubmitButton } from "../SubmitButton/SubmitButton";
+import { BrowseInterpolations } from "../BrowseInterpolations/BrowseInterpolations";
 
 export interface ImportInterpolationsValue {
   json?: string;
@@ -69,6 +71,7 @@ export const ImportInterpolations = ({
     defaultValues,
     onSubmit: async ({ value, formApi }) => {
       await onSubmit?.({ value });
+      onSave();
       void formApi.reset({
         json: "",
       });
@@ -85,35 +88,29 @@ export const ImportInterpolations = ({
           await form.handleSubmit();
         }}
       >
-        <TextArea
-          resize="vertical"
-          value={textareaInput}
-          radius="none"
-          onChange={onChange}
-          size="3"
-          placeholder="Define or Copy/Paste an interpolation config object or array of interpolation config objects."
-          style={{ minHeight: "150px" }}
-        />
-        <Flex mt="1" gap="1" align="center" direction="column">
+        <Flex width="stretch" mt="1" gap="1" align="center" direction="column">
           {error && (
             <Callout.Root>
               <Callout.Text>{error}</Callout.Text>
             </Callout.Root>
           )}
 
+          <TextArea
+            resize="vertical"
+            value={textareaInput}
+            radius="none"
+            onChange={onChange}
+            size="3"
+            placeholder="Define or Copy/Paste an interpolation config object or array of interpolation config objects."
+            style={{ minHeight: "150px", width: "stretch" }}
+          />
           <Flex pt="1" gap="1" direction="column">
             {preview()}
           </Flex>
-          <Box pt="1">
-            <Button
-              style={{ backgroundColor: "black" }}
-              type="submit"
-              disabled={isLoading}
-              onClick={onSave}
-            >
-              Create interpolations <PlusCircledIcon />
-            </Button>
-          </Box>
+          <Flex width="stretch" pt="1" gap="1" direction="column">
+            <BrowseInterpolations />
+            <SubmitButton>Save</SubmitButton>
+          </Flex>
         </Flex>
       </form>
     </Flex>
