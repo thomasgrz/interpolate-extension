@@ -87,14 +87,6 @@ export const ImportInterpolations = ({
 
   return (
     <Flex flexGrow={"1"} direction={"column"}>
-      <Text size="1">Looking for example configurations?</Text>
-      <Text size="1">
-        See our collection of{" "}
-        <Link href="https://github.com/thomasgrz/interpolate-extension/tree/84/presets">
-          presets
-        </Link>
-        .
-      </Text>
       <form
         onSubmit={async (e) => {
           e.preventDefault();
