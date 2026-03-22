@@ -1,0 +1,9 @@
+{
+  "createdAt": 1774209688225,
+  "details": { "headerKey": "x-foo", "headerValue": "bar", "id": 3322 },
+  "enabledByUser": true,
+  "error": null,
+  "isActive": false,
+  "name": "test header",
+  "type": "headers"
+}

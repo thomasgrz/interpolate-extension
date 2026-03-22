@@ -58,7 +58,7 @@ const handleCreateHeaderInterpolation = async ({
 export const AddHeaderForm = ({
   defaultValues,
   onSubmit,
-  mode,
+  mode = "create",
 }: {
   defaultValues?: AddHeaderFormValue;
   onSubmit?:
