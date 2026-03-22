@@ -142,43 +142,50 @@ export const CreateInterpolationsView = ({
           </Button>
         </Flex>
       </Dialog.Trigger>
-      <Dialog.Content className={styles.DialogContent} maxWidth={"500px"}>
-        <Dialog.Title align="center">
-          <Flex align="center" gap="2" justify={"center"}>
-            {step !== InterpolationOptionSelection.OPTIONS_VIEW && (
-              <ChevronLeftIcon
-                onClick={() => {
-                  setStep(InterpolationOptionSelection.OPTIONS_VIEW);
-                }}
-                cursor="pointer"
-                height="1rem"
-                width="1rem"
-              />
-            )}
-            {title}
-          </Flex>
-        </Dialog.Title>
-        {step === InterpolationOptionSelection.OPTIONS_VIEW && (
-          <FormSelectionStep onChange={handleChange} />
-        )}
-        {step === InterpolationOptionSelection.ADD_HEADERS && (
-          <AddHeaderForm onSubmit={handleFormSubmit} />
-        )}
-        {step === InterpolationOptionSelection.CREATE_USER_SCRIPT && (
-          <UserScriptForm onSubmit={handleFormSubmit} />
-        )}
-        {step === InterpolationOptionSelection.REDIRECT_REQUEST && (
-          <RedirectForm onSubmit={handleFormSubmit} />
-        )}
-        {step === InterpolationOptionSelection.EXPORT && (
-          <ExportInterpolations />
-        )}
-        {step === InterpolationOptionSelection.IMPORT && (
-          <ImportInterpolations />
-        )}
-        {step === InterpolationOptionSelection.MOCK_RESPONSE && (
-          <MockResponseForm onSubmit={handleFormSubmit} />
-        )}
+      <Dialog.Content className={styles.DialogContent}>
+        <Flex
+          minHeight="100%"
+          height="stretch"
+          flexGrow="1"
+          direction={"column"}
+        >
+          <Dialog.Title align="center">
+            <Flex align="center" gap="2" justify={"center"}>
+              {step !== InterpolationOptionSelection.OPTIONS_VIEW && (
+                <ChevronLeftIcon
+                  onClick={() => {
+                    setStep(InterpolationOptionSelection.OPTIONS_VIEW);
+                  }}
+                  cursor="pointer"
+                  height="1rem"
+                  width="1rem"
+                />
+              )}
+              {title}
+            </Flex>
+          </Dialog.Title>
+          {step === InterpolationOptionSelection.OPTIONS_VIEW && (
+            <FormSelectionStep onChange={handleChange} />
+          )}
+          {step === InterpolationOptionSelection.ADD_HEADERS && (
+            <AddHeaderForm onSubmit={handleFormSubmit} />
+          )}
+          {step === InterpolationOptionSelection.CREATE_USER_SCRIPT && (
+            <UserScriptForm onSubmit={handleFormSubmit} />
+          )}
+          {step === InterpolationOptionSelection.REDIRECT_REQUEST && (
+            <RedirectForm onSubmit={handleFormSubmit} />
+          )}
+          {step === InterpolationOptionSelection.EXPORT && (
+            <ExportInterpolations />
+          )}
+          {step === InterpolationOptionSelection.IMPORT && (
+            <ImportInterpolations />
+          )}
+          {step === InterpolationOptionSelection.MOCK_RESPONSE && (
+            <MockResponseForm onSubmit={handleFormSubmit} />
+          )}
+        </Flex>
       </Dialog.Content>
     </Dialog.Root>
   );
