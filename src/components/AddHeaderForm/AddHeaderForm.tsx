@@ -1,4 +1,3 @@
-import { FormErrors } from "#src/constants.ts";
 import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
 import { Card, Flex } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
