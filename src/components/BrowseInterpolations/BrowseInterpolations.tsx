@@ -6,6 +6,7 @@ export const BrowseInterpolations = () => {
     <Button
       size="2"
       radius="full"
+      type="button"
       onClick={() => {
         chrome.tabs?.create({
           url: "https://github.com/thomasgrz/interpolate-extension/tree/main/interpolations",
@@ -13,7 +14,7 @@ export const BrowseInterpolations = () => {
       }}
     >
       <MagnifyingGlassIcon />
-      Browse interpolations{" "}
+      Browse interpolations
     </Button>
   );
 };
