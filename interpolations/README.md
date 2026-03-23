@@ -4,10 +4,10 @@ Interpolation configurations allow you configure the "interpolate" web extension
 
 To get started find the interpolation you'd like to import into interpolate.
 
-1. [headers interpolations](./headers/)
-2. [redirect interpolations](./redirects/)
-3. [mock API interpolations](./mock-apis)
-4. [user script interpolations](./scripts/)
+1. [headers interpolations](./headers)
+2. [redirect interpolations](./redirects)
+3. [mock API interpolations](./mockAPIs)
+4. [user script interpolations](./scripts)
 
 In the interpolate web extension, click "Create interpolation".
 

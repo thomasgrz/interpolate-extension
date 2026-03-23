@@ -1,6 +1,5 @@
-import { Callout, Box, Flex, Button, TextArea, Text } from "@radix-ui/themes";
+import { Callout, Flex, TextArea, Text } from "@radix-ui/themes";
 
-import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { ChangeEvent, useCallback, useState } from "react";
 import { InterpolateStorage } from "../../utils/storage/InterpolateStorage/InterpolateStorage";
 import { useForm } from "@tanstack/react-form";
@@ -71,7 +70,7 @@ export const ImportInterpolations = ({
     defaultValues,
     onSubmit: async ({ value, formApi }) => {
       await onSubmit?.({ value });
-      onSave();
+      await onSave();
       void formApi.reset({
         json: "",
       });
@@ -109,7 +108,9 @@ export const ImportInterpolations = ({
           </Flex>
           <Flex width="stretch" pt="1" gap="1" direction="column">
             <BrowseInterpolations />
-            <SubmitButton>Save</SubmitButton>
+            <SubmitButton disabled={isLoading}>
+              {isLoading ? "Saving..." : "Save"}
+            </SubmitButton>
           </Flex>
         </Flex>
       </form>
