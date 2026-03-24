@@ -51,14 +51,6 @@ export const GlobalInterpolationOptions = ({
             <Count count={ruleCount} />
           </Button>
         )}
-        {/* <Button
-          className={styles.SyncAllRules}
-          size={"3"}
-          onClick={onSyncAllRules}
-        >
-          <Refresh />
-          Sync
-        </Button> */}
         {allowDelete && (
           <AlertDialog.Root>
             <AlertDialog.Trigger>
@@ -67,6 +59,7 @@ export const GlobalInterpolationOptions = ({
                 size={"2"}
                 className={styles.DeleteAllRules}
                 color="red"
+                radius="full"
               >
                 <TrashIcon />
                 Delete
