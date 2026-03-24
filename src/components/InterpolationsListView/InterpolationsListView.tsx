@@ -1,4 +1,4 @@
-import { Flex, Box, Tabs } from "@radix-ui/themes";
+import { Flex, Box } from "@radix-ui/themes";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard.tsx";
 import styles from "./InterpolationsListView.module.scss";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";

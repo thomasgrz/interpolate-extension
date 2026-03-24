@@ -12,10 +12,7 @@ const node = document.getElementById("root");
 if (node instanceof HTMLElement) {
   createRoot(node).render(
     <StrictMode>
-      <Theme
-        style={{ backgroundColor: "#FFDE21", "--background-color": "#FFDE21" }}
-        radius="large"
-      >
+      <Theme style={{ backgroundColor: "#FFDE21" }} radius="large">
         <InterpolateProvider>
           <DashboardView />
         </InterpolateProvider>
