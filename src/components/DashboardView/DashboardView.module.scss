@@ -6,6 +6,11 @@
   background-color: black;
 }
 
-.FormArea {
+.DashboardControls {
+  background-color: #ffde21;
+  z-index: 500;
+  position: sticky;
+  top: 0px;
   max-width: 1000px;
+  box-shadow: var(--shadow-3);
 }
