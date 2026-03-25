@@ -22,7 +22,9 @@ export const DashboardView = () => {
   const sortedInterpolations = useMemo(() => {
     switch (sortOption) {
       case "atoz":
-        return interpolations?.sort?.((a, b) => (a?.name > b?.name ? 1 : -1));
+        return interpolations?.sort?.((a, b) =>
+          a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1,
+        );
       case "newest":
         return interpolations?.sort?.((a, b) =>
           b.createdAt > a.createdAt ? 1 : -1,
