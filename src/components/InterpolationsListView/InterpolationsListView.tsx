@@ -11,7 +11,7 @@ export const InterpolationsListView = ({
   configs?: AnyInterpolation[];
 }) => {
   return (
-    <Flex direction="column">
+    <Flex className={styles.InterpolationsContainer}>
       {configs?.map?.((interpolation) => (
         <Box
           key={interpolation.details?.id}

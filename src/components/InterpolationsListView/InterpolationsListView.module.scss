@@ -2,15 +2,19 @@
   .InterpolationsCardContainer {
     width: 100%;
   }
+  .InterpolationsContainer {
+    flex-direction: column;
+  }
 }
 
 @media screen and (min-width: 500px) {
   .InterpolationsCardContainer {
     width: 50%;
   }
-}
-
-.InterpolationsCardContainer {
+  .InterpolationsContainer {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 }
 
 .ActiveIndicator {
