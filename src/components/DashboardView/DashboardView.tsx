@@ -21,15 +21,20 @@ import { TextInput } from "../TextInput/TextInput.tsx";
 
 export const DashboardView = () => {
   const { interpolations, recentlyActive } = useInterpolationsContext();
-  const [sortOption, setSortOption] = useState<"oldest" | "newest" | "atoz">(
-    "newest",
-  );
+  const [sortOption, setSortOption] = useState<
+    "oldest" | "newest" | "atoz" | "ztoa"
+  >("newest");
+  const [selectedTab, setSelectedTab] = useState("all");
   const [filter, setFilter] = useState("");
   const sortedInterpolations = useMemo(() => {
     switch (sortOption) {
       case "atoz":
         return interpolations?.sort?.((a, b) =>
           a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1,
+        );
+      case "ztoa":
+        return interpolations?.sort((a, b) =>
+          a?.name?.toLowerCase() > b?.name?.toLowerCase() ? -1 : 1,
         );
       case "newest":
         return interpolations?.sort?.((a, b) =>
@@ -55,6 +60,11 @@ export const DashboardView = () => {
       ),
     [filter],
   );
+  const enabledInterpolations = useMemo(
+    () => interpolations?.filter((interp) => interp?.enabledByUser),
+    [sortedInterpolations],
+  );
+
   return (
     <ErrorBoundary
       onError={console.error}
@@ -72,7 +82,12 @@ export const DashboardView = () => {
           justify={"start"}
           direction={"column"}
         >
-          <Tabs.Root className={styles.TabsRoot} defaultValue="all">
+          <Tabs.Root
+            value={selectedTab}
+            onValueChange={setSelectedTab}
+            className={styles.TabsRoot}
+            defaultValue="all"
+          >
             <Flex
               direction="column"
               className={styles.DashboardControls}
@@ -114,34 +129,45 @@ export const DashboardView = () => {
                           <Text size="1">A-Z</Text>
                           {sortOption === "atoz" && <CheckIcon />}
                         </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          onSelect={() => setSortOption("ztoa")}
+                        >
+                          <Text size="1">Z-A</Text>
+                          {sortOption === "ztoa" && <CheckIcon />}
+                        </DropdownMenu.Item>
                       </DropdownMenu.Content>
                     </DropdownMenu.Root>
                   </Flex>
 
                   <Tabs.Trigger value="all">
+                    <Text size="1">All ({interpolations?.length})</Text>
+                  </Tabs.Trigger>
+                  <Tabs.Trigger value="enabled">
                     <Text size="1">
-                      interpolations ({interpolations?.length})
+                      Enabled ({enabledInterpolations?.length})
                     </Text>
                   </Tabs.Trigger>
                   <Tabs.Trigger value="active">
                     <Text size="1">
-                      active in tab ({recentlyActive?.length})
+                      Invoked ({recentlyActive?.length ?? 0})
                     </Text>
                   </Tabs.Trigger>
                 </Flex>
               </Tabs.List>
               <Flex>
-                <TextInput
-                  size="1"
-                  style={{ maxWidth: "300px" }}
-                  value={filter}
-                  placeholder="Filter by keyword..."
-                  onChange={handleFilterChange}
-                  icon={<MagnifyingGlassIcon />}
-                />
+                {selectedTab === "all" && (
+                  <TextInput
+                    size="1"
+                    style={{ maxWidth: "300px" }}
+                    value={filter}
+                    placeholder="Filter by keyword..."
+                    onChange={handleFilterChange}
+                    icon={<MagnifyingGlassIcon />}
+                  />
+                )}
               </Flex>
             </Flex>
-            {!!parsedFilterValue && (
+            {!!parsedFilterValue && selectedTab === "all" && (
               <Text size="1">
                 {filteredSortedOptions?.length} matches for "{filter}"
               </Text>
@@ -150,6 +176,9 @@ export const DashboardView = () => {
               <InterpolationsListView
                 configs={filter ? filteredSortedOptions : sortedInterpolations}
               />
+            </Tabs.Content>
+            <Tabs.Content value="enabled">
+              <InterpolationsListView configs={enabledInterpolations} />
             </Tabs.Content>
             <Tabs.Content value="active">
               <InterpolationsListView configs={recentlyActive} />
