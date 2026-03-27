@@ -5,7 +5,9 @@ import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 
 export const InterpolationsListView = ({
   configs,
+  hideRuleToggle,
 }: {
+  hideRuleToggle?: boolean;
   configs?: AnyInterpolation[];
 }) => {
   return (
@@ -16,7 +18,10 @@ export const InterpolationsListView = ({
           p="1"
           className={styles.InterpolationsCardContainer}
         >
-          <InterpolationCard info={interpolation} />
+          <InterpolationCard
+            hideRuleToggle={hideRuleToggle}
+            info={interpolation}
+          />
         </Box>
       ))}
     </Flex>

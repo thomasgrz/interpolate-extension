@@ -10,6 +10,7 @@ import {
   AddHeaderFormLabel,
   AddHeaderFormPlaceholder,
 } from "./AddHeaderForm.constants";
+import TextAreaInput from "../TextArea/TextArea";
 
 export interface AddHeaderFormValue {
   id?: string | number;
@@ -129,7 +130,8 @@ export const AddHeaderForm = ({
             }}
             name="key"
             children={(field) => (
-              <TextInput
+              <TextAreaInput
+                resize="vertical"
                 label={AddHeaderFormLabel.HEADER_KEY}
                 placeholder={AddHeaderFormPlaceholder.HEADER_KEY}
                 name={field.name}
@@ -150,7 +152,8 @@ export const AddHeaderForm = ({
             }}
             name="value"
             children={(field) => (
-              <TextInput
+              <TextAreaInput
+                resize="vertical"
                 label={AddHeaderFormLabel.HEADER_VALUE}
                 placeholder={AddHeaderFormPlaceholder.HEADER_VALUE}
                 name={field.name}

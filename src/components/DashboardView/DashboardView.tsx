@@ -5,6 +5,8 @@ import {
   Flex,
   Tabs,
   Text,
+  Strong,
+  IconButton,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
@@ -14,6 +16,7 @@ import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/us
 import {
   CaretSortIcon,
   CheckIcon,
+  InfoCircledIcon,
   MagnifyingGlassIcon,
 } from "@radix-ui/react-icons";
 import { ChangeEvent, useMemo, useState } from "react";
@@ -101,44 +104,6 @@ export const DashboardView = () => {
                   justify={"between"}
                   align={"center"}
                 >
-                  <Flex align="center">
-                    <DropdownMenu.Root>
-                      <DropdownMenu.Trigger>
-                        <CaretSortIcon height="20px" width="20px" />
-                      </DropdownMenu.Trigger>
-                      <DropdownMenu.Content>
-                        <Text size="1" align="center">
-                          Sort by:
-                        </Text>
-                        <DropdownMenu.Separator />
-                        <DropdownMenu.Item
-                          onSelect={() => setSortOption("newest")}
-                        >
-                          <Text size="1">Newest</Text>
-                          {sortOption === "newest" && <CheckIcon />}
-                        </DropdownMenu.Item>
-                        <DropdownMenu.Item
-                          onSelect={() => setSortOption("oldest")}
-                        >
-                          <Text size="1">Oldest</Text>
-                          {sortOption === "oldest" && <CheckIcon />}
-                        </DropdownMenu.Item>
-                        <DropdownMenu.Item
-                          onSelect={() => setSortOption("atoz")}
-                        >
-                          <Text size="1">A-Z</Text>
-                          {sortOption === "atoz" && <CheckIcon />}
-                        </DropdownMenu.Item>
-                        <DropdownMenu.Item
-                          onSelect={() => setSortOption("ztoa")}
-                        >
-                          <Text size="1">Z-A</Text>
-                          {sortOption === "ztoa" && <CheckIcon />}
-                        </DropdownMenu.Item>
-                      </DropdownMenu.Content>
-                    </DropdownMenu.Root>
-                  </Flex>
-
                   <Tabs.Trigger value="all">
                     <Text size="1">All ({interpolations?.length})</Text>
                   </Tabs.Trigger>
@@ -154,8 +119,41 @@ export const DashboardView = () => {
                   </Tabs.Trigger>
                 </Flex>
               </Tabs.List>
-              <Flex>
-                {selectedTab === "all" && (
+              {selectedTab === "all" && (
+                <Flex width="stretch" p="1" align={"center"} justify={"start"}>
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                      <IconButton variant="outline" size="1">
+                        <CaretSortIcon height="20px" width="20px" />
+                      </IconButton>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                      <Text size="1" align="center">
+                        Sort by:
+                      </Text>
+                      <DropdownMenu.Separator />
+                      <DropdownMenu.Item
+                        onSelect={() => setSortOption("newest")}
+                      >
+                        <Text size="1">Newest</Text>
+                        {sortOption === "newest" && <CheckIcon />}
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        onSelect={() => setSortOption("oldest")}
+                      >
+                        <Text size="1">Oldest</Text>
+                        {sortOption === "oldest" && <CheckIcon />}
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item onSelect={() => setSortOption("atoz")}>
+                        <Text size="1">A-Z</Text>
+                        {sortOption === "atoz" && <CheckIcon />}
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item onSelect={() => setSortOption("ztoa")}>
+                        <Text size="1">Z-A</Text>
+                        {sortOption === "ztoa" && <CheckIcon />}
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
                   <TextInput
                     size="1"
                     style={{ maxWidth: "300px" }}
@@ -164,8 +162,8 @@ export const DashboardView = () => {
                     onChange={handleFilterChange}
                     icon={<MagnifyingGlassIcon />}
                   />
-                )}
-              </Flex>
+                </Flex>
+              )}
             </Flex>
             {!!parsedFilterValue && selectedTab === "all" && (
               <Text size="1">
@@ -178,10 +176,31 @@ export const DashboardView = () => {
               />
             </Tabs.Content>
             <Tabs.Content value="enabled">
-              <InterpolationsListView configs={enabledInterpolations} />
+              <Callout.Root color="gray" m="1" variant="soft" size="1">
+                <Callout.Icon>
+                  <InfoCircledIcon />
+                </Callout.Icon>
+                <Callout.Text size="1">
+                  These are the interpolations you have <Strong>enabled</Strong>
+                </Callout.Text>
+              </Callout.Root>
+
+              <InterpolationsListView
+                hideRuleToggle
+                configs={enabledInterpolations}
+              />
             </Tabs.Content>
             <Tabs.Content value="active">
-              <InterpolationsListView configs={recentlyActive} />
+              <Callout.Root color="gray" m="1" variant="soft" size="1">
+                <Callout.Icon>
+                  <InfoCircledIcon />
+                </Callout.Icon>
+                <Callout.Text size="1">
+                  These interpolations have been <Strong>invoked</Strong> within
+                  this tab <Strong>since the last page load.</Strong>
+                </Callout.Text>
+              </Callout.Root>
+              <InterpolationsListView hideRuleToggle configs={recentlyActive} />
             </Tabs.Content>
           </Tabs.Root>
         </Flex>
