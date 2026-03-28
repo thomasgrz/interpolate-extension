@@ -29,7 +29,7 @@ export default defineManifest({
   content_scripts: [
     {
       js: ["src/content/main.tsx"],
-      matches: ["https://*/*"],
+      matches: ["https://*/*", "http://*/*"],
     },
   ],
   options_page: "src/options/index.html",

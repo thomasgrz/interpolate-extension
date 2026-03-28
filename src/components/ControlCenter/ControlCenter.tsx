@@ -1,10 +1,11 @@
-import { Flex, Switch, Text } from "@radix-ui/themes";
+import { Flex, Strong, Switch, Text, Tooltip } from "@radix-ui/themes";
 import { CreateInterpolationsView } from "../CreateInterpolationsView/CreateInterpolationsView.tsx";
 import { GlobalInterpolationOptions } from "../GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
 import styles from "./ControlCenter.module.scss";
 import { useEffect, useState } from "react";
 import { Label } from "radix-ui";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 
 export const ControlCenter = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -49,6 +50,23 @@ export const ControlCenter = () => {
               checked={isBrowserUIEnabled}
               onCheckedChange={handleBrowserUIToggle}
             />
+            <Tooltip
+              content={
+                <Flex direction="column">
+                  <Text>
+                    When enabled this will pin a global Pause/Resume button in
+                    bottom left corner of the viewport.
+                  </Text>
+                  <Strong>
+                    {" "}
+                    You may need to reload the page the first time you enable
+                    the UI.
+                  </Strong>
+                </Flex>
+              }
+            >
+              <QuestionMarkCircledIcon />
+            </Tooltip>
           </Flex>
         </Label.Root>
         <GlobalInterpolationOptions />
