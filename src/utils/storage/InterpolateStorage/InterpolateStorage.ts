@@ -160,6 +160,13 @@ export const InterpolateStorage = {
     const active = interpolations?.filter?.((interp) => interp.isActive);
     return active;
   },
+  async getAllEnabled() {
+    const interpolations = await this.getAllInterpolations();
+    const allEnabled = interpolations?.filter?.(
+      (interp) => interp?.enabledByUser,
+    );
+    return allEnabled;
+  },
   getInterpolationRecordKey(id: number | string) {
     if (typeof id === "string" && id?.startsWith("interp")) {
       return id;

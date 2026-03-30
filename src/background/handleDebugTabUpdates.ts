@@ -14,6 +14,11 @@ export const handleDebugTabUpdates = async (
   const isDebuggerAttached = debuggerTabs.has(tabId);
   if (isDebuggerAttached) return;
   // Attach to the tab's debugger session.
+  const allEnabled = await InterpolateStorage.getAllEnabled();
+
+  const allDisabled = !allEnabled?.length;
+  if (allDisabled) return;
+
   chrome.debugger.attach({ tabId }, "1.3", () => {
     if (debuggerTabs.has(tabId)) return;
 
