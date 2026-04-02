@@ -195,7 +195,6 @@ export const InterpolationCard = ({
           />
         );
       case "script":
-        console.log({ defaultValues: info.details });
         return (
           <UserScriptForm
             mode="edit"
