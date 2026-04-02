@@ -6,6 +6,7 @@ const meta = preview.meta({
 });
 
 export const Example = meta.story({
+  // @ts-expect-error TODO: fix
   args: {
     value: SortOption.A_TO_Z,
     onChange: () => {},

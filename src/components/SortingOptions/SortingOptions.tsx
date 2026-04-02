@@ -1,5 +1,4 @@
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import { DropdownMenu, Flex, IconButton, Select, Text } from "@radix-ui/themes";
+import { Flex, Select, Text } from "@radix-ui/themes";
 
 export enum SortOption {
   A_TO_Z = "atoz",
