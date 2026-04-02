@@ -120,7 +120,7 @@ export const ExportInterpolations = () => {
                     // @ts-expect-error TODO: fix types
                     onClick={(e) => handleChange(e, interp)}
                   />
-                  <InterpolationCard hideRuleToggle info={interp} />
+                  <InterpolationCard noShadow hideRuleToggle info={interp} />
                 </Flex>
               );
             })}
