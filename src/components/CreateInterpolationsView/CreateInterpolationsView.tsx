@@ -102,8 +102,6 @@ export const CreateInterpolationsView = ({
   };
   const title = useMemo(() => {
     switch (step) {
-      case InterpolationOptionSelection.OPTIONS_VIEW:
-        return "What would you like to do?";
       case InterpolationOptionSelection.ADD_HEADERS:
         return "Add headers";
       case InterpolationOptionSelection.CREATE_USER_SCRIPT:
@@ -152,9 +150,9 @@ export const CreateInterpolationsView = ({
           flexGrow="1"
           direction={"column"}
         >
-          <Dialog.Title align="center">
-            <Flex align="center" gap="2" justify={"center"}>
-              {step !== InterpolationOptionSelection.OPTIONS_VIEW && (
+          {step !== InterpolationOptionSelection.OPTIONS_VIEW && (
+            <Dialog.Title align="center">
+              <Flex align="center" gap="2" justify={"center"}>
                 <ChevronLeftIcon
                   onClick={() => {
                     setStep(InterpolationOptionSelection.OPTIONS_VIEW);
@@ -163,10 +161,10 @@ export const CreateInterpolationsView = ({
                   height="1rem"
                   width="1rem"
                 />
-              )}
-              {title}
-            </Flex>
-          </Dialog.Title>
+                {title}
+              </Flex>
+            </Dialog.Title>
+          )}
           {step === InterpolationOptionSelection.OPTIONS_VIEW && (
             <FormSelectionStep onChange={handleChange} />
           )}

@@ -1,24 +1,10 @@
-import {
-  DropdownMenu,
-  Callout,
-  Container,
-  Flex,
-  Tabs,
-  Text,
-  Strong,
-  IconButton,
-} from "@radix-ui/themes";
+import { Callout, Container, Flex, Tabs, Text, Strong } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
 import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView.tsx";
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
-import {
-  CaretSortIcon,
-  CheckIcon,
-  InfoCircledIcon,
-  MagnifyingGlassIcon,
-} from "@radix-ui/react-icons";
+import { InfoCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { ChangeEvent, useMemo, useState } from "react";
 import { TextInput } from "../TextInput/TextInput.tsx";
 import {
@@ -26,6 +12,7 @@ import {
   SortOption,
 } from "../SortingOptions/SortingOptions.tsx";
 import { Label } from "radix-ui";
+import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
 
 export const DashboardView = () => {
   const { interpolations, recentlyActive } = useInterpolationsContext();
@@ -33,25 +20,7 @@ export const DashboardView = () => {
   const [selectedTab, setSelectedTab] = useState("all");
   const [filter, setFilter] = useState("");
   const sortedInterpolations = useMemo(() => {
-    switch (sortOption) {
-      case "atoz":
-        return interpolations?.toSorted?.((a, b) =>
-          a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1,
-        );
-      case "ztoa":
-        return interpolations?.toSorted((a, b) =>
-          a?.name?.toLowerCase() > b?.name?.toLowerCase() ? -1 : 1,
-        );
-      case "newest":
-        return interpolations?.toSorted?.((a, b) =>
-          b.createdAt > a.createdAt ? 1 : -1,
-        );
-      case "oldest":
-      default:
-        return interpolations?.toSorted?.((a, b) =>
-          a.createdAt > b.createdAt ? 1 : -1,
-        );
-    }
+    return sortInterpolations(interpolations!, sortOption);
   }, [sortOption, interpolations]);
 
   const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
