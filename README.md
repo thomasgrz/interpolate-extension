@@ -1,3 +1,8 @@
+> [!WARN] Currently there is a bug where user created scripts are broken
+> and will not execute in the browser as expected
+> 
+> Please follow the issue at https://github.com/thomasgrz/interpolate-extension/issues/109
+
 # Interpolate web extension [beta] <span><img src="./docs/artifacts/icon-128.png" width="25" height="25" /></span>
 
 > [!WARN] this extension is in beta and is subject to breaking changes
