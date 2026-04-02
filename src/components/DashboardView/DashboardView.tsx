@@ -21,31 +21,34 @@ import {
 } from "@radix-ui/react-icons";
 import { ChangeEvent, useMemo, useState } from "react";
 import { TextInput } from "../TextInput/TextInput.tsx";
+import {
+  SortingOptions,
+  SortOption,
+} from "../SortingOptions/SortingOptions.tsx";
+import { Label } from "radix-ui";
 
 export const DashboardView = () => {
   const { interpolations, recentlyActive } = useInterpolationsContext();
-  const [sortOption, setSortOption] = useState<
-    "oldest" | "newest" | "atoz" | "ztoa"
-  >("newest");
+  const [sortOption, setSortOption] = useState<SortOption>(SortOption.NEWEST);
   const [selectedTab, setSelectedTab] = useState("all");
   const [filter, setFilter] = useState("");
   const sortedInterpolations = useMemo(() => {
     switch (sortOption) {
       case "atoz":
-        return interpolations?.sort?.((a, b) =>
+        return interpolations?.toSorted?.((a, b) =>
           a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1,
         );
       case "ztoa":
-        return interpolations?.sort((a, b) =>
+        return interpolations?.toSorted((a, b) =>
           a?.name?.toLowerCase() > b?.name?.toLowerCase() ? -1 : 1,
         );
       case "newest":
-        return interpolations?.sort?.((a, b) =>
+        return interpolations?.toSorted?.((a, b) =>
           b.createdAt > a.createdAt ? 1 : -1,
         );
       case "oldest":
       default:
-        return interpolations?.sort?.((a, b) =>
+        return interpolations?.toSorted?.((a, b) =>
           a.createdAt > b.createdAt ? 1 : -1,
         );
     }
@@ -120,40 +123,13 @@ export const DashboardView = () => {
                 </Flex>
               </Tabs.List>
               {selectedTab === "all" && (
-                <Flex width="stretch" p="1" align={"center"} justify={"start"}>
-                  <DropdownMenu.Root>
-                    <DropdownMenu.Trigger>
-                      <IconButton variant="outline" size="1">
-                        <CaretSortIcon height="20px" width="20px" />
-                      </IconButton>
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content>
-                      <Text size="1" align="center">
-                        Sort by:
-                      </Text>
-                      <DropdownMenu.Separator />
-                      <DropdownMenu.Item
-                        onSelect={() => setSortOption("newest")}
-                      >
-                        <Text size="1">Newest</Text>
-                        {sortOption === "newest" && <CheckIcon />}
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        onSelect={() => setSortOption("oldest")}
-                      >
-                        <Text size="1">Oldest</Text>
-                        {sortOption === "oldest" && <CheckIcon />}
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item onSelect={() => setSortOption("atoz")}>
-                        <Text size="1">A-Z</Text>
-                        {sortOption === "atoz" && <CheckIcon />}
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item onSelect={() => setSortOption("ztoa")}>
-                        <Text size="1">Z-A</Text>
-                        {sortOption === "ztoa" && <CheckIcon />}
-                      </DropdownMenu.Item>
-                    </DropdownMenu.Content>
-                  </DropdownMenu.Root>
+                <Flex
+                  width="stretch"
+                  direction={"column"}
+                  p="1"
+                  align={"start"}
+                  justify={"start"}
+                >
                   <TextInput
                     size="1"
                     style={{ maxWidth: "300px" }}
@@ -162,12 +138,23 @@ export const DashboardView = () => {
                     onChange={handleFilterChange}
                     icon={<MagnifyingGlassIcon />}
                   />
+                  <Flex>
+                    <Label.Root>
+                      <Text size="1">Sort:</Text>
+                    </Label.Root>
+                    <SortingOptions
+                      value={sortOption}
+                      onChange={setSortOption}
+                    />
+                  </Flex>
                 </Flex>
               )}
             </Flex>
             {!!parsedFilterValue && selectedTab === "all" && (
               <Text size="1">
-                {filteredSortedOptions?.length} matches for "{filter}"
+                {filteredSortedOptions?.length}{" "}
+                {filteredSortedOptions?.length === 1 ? "match" : "matches"} for
+                "{filter}"
               </Text>
             )}
             <Tabs.Content value="all">
