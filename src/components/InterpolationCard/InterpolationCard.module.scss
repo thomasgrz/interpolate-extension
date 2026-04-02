@@ -1,5 +1,7 @@
 .InterpolationCard {
-  box-shadow: var(--shadow-5);
+  &[data-ui-no-shadow="false"] {
+    box-shadow: var(--shadow-5);
+  }
   padding: 0;
   width: stretch;
 }
