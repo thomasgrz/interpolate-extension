@@ -41,9 +41,11 @@ export const InterpolationCard = ({
   info,
   hideRuleToggle,
   hideOptions,
+  noShadow,
 }: {
   hideRuleToggle?: boolean;
   hideOptions?: boolean;
+  noShadow?: boolean;
 } & InterpolationCardProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { error, type, details, name } = info;
@@ -195,7 +197,6 @@ export const InterpolationCard = ({
           />
         );
       case "script":
-        console.log({ defaultValues: info.details });
         return (
           <UserScriptForm
             mode="edit"
@@ -247,6 +248,7 @@ export const InterpolationCard = ({
     <Card
       ref={ref}
       data-ui-error={!!info.error}
+      data-ui-no-shadow={noShadow}
       data-testid={`${type}-preview-${info?.name}`}
       className={styles.InterpolationCard}
       style={{ padding: 0 }}
