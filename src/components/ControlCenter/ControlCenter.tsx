@@ -53,9 +53,18 @@ export const ControlCenter = () => {
             <Tooltip
               content={
                 <Flex direction="column">
-                  <Text>
-                    When enabled this will pin a global Pause/Resume button in
-                    bottom left corner of the viewport.
+                  <Text mb="3">
+                    When enabled:
+                    <ol>
+                      <li>
+                        1. pin a global Pause/Resume button in bottom left
+                        corner of the viewport.
+                      </li>
+                      <li>
+                        2. display a toast notification anytime an interpolation
+                        is invoked on a page
+                      </li>
+                    </ol>
                   </Text>
                   <Strong>
                     {" "}

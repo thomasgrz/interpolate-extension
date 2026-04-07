@@ -51,7 +51,15 @@ export const ImportInterpolations = ({
   }, [textareaInput]);
 
   const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setTextAreaInput(event.target?.value);
+    try {
+      const parsed = JSON.parse(event?.target?.value);
+      const formattedJson = JSON.stringify(parsed, null, 4);
+      setTextAreaInput(formattedJson);
+      setError(undefined);
+    } catch (e) {
+      setError((e as Error).message);
+      setTextAreaInput(event.target?.value);
+    }
   };
 
   const onSave = async () => {
@@ -88,22 +96,21 @@ export const ImportInterpolations = ({
         }}
       >
         <Flex width="stretch" mt="1" gap="1" align="center" direction="column">
-          {error && (
-            <Callout.Root>
-              <Callout.Text>{error}</Callout.Text>
-            </Callout.Root>
-          )}
-
           <TextArea
             resize="vertical"
             value={textareaInput}
             radius="none"
             onChange={onChange}
-            size="3"
+            size="1"
             placeholder="Define or Copy/Paste an interpolation config object or array of interpolation config objects."
             style={{ minHeight: "150px", width: "stretch" }}
           />
           <Flex pt="1" gap="1" direction="column">
+            {error && (
+              <Callout.Root>
+                <Callout.Text size="1">{error}</Callout.Text>
+              </Callout.Root>
+            )}
             {preview()}
           </Flex>
           <Flex width="stretch" pt="1" gap="1" direction="column">
