@@ -1,5 +1,4 @@
 {
-  "createdAt": 1774225208888,
   "details": {
     "body": "{ \"status\": \"foobar\", \"bar\": [\"baz\", \"beep\", { \"1\": true }] }",
     "id": "107df3cc-90ac-45d1-8b3b-136f1f600588",
@@ -7,9 +6,6 @@
     "matcher": ".*example.*",
     "name": "mock example.com response JSON"
   },
-  "enabledByUser": true,
-  "error": null,
-  "isActive": false,
   "name": "mock example.com response JSON",
   "type": "mockAPI"
 }

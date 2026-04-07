@@ -1,7 +1,5 @@
 {
-  "createdAt": 1774216633899,
   "details": {
-    "id": "1467",
     "js": [
       {
         "code": "const aiElements = document.querySelectorAll('[data-mcpr]');\naiElements.forEach((e) => e.remove());"
@@ -9,9 +7,6 @@
     ],
     "matches": ["*://*/*"]
   },
-  "enabledByUser": true,
-  "error": null,
-  "isActive": false,
   "name": "Remove Google AI Summary from Google Search pages",
   "type": "script"
 }

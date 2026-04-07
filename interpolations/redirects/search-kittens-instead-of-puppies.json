@@ -1,13 +1,9 @@
 {
-  "createdAt": 1774217500076,
   "details": {
-    "destination": "$1search?q=kittens$3",
+    "destination": "$1q=kittens$3",
     "id": 1111,
-    "regexFilter": "(.*)(search\\?q=puppies)(.*)"
+    "regexFilter": "(.*)q=puppies)(.*)"
   },
-  "enabledByUser": true,
-  "error": null,
-  "isActive": false,
-  "name": "Google Kittens Instead of Puppies",
+  "name": "Search for Kittens Instead of Puppies",
   "type": "redirect"
 }

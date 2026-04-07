@@ -1,5 +1,4 @@
 {
-  "createdAt": 1774225072835,
   "details": {
     "body": "<h1>this is a mocked response for example.com</h1>",
     "id": "107df3cc-90ac-45d1-8b3b-136f1f600588",
@@ -7,9 +6,6 @@
     "matcher": ".*example.*",
     "name": "mock example.com response"
   },
-  "enabledByUser": true,
-  "error": null,
-  "isActive": false,
   "name": "mock example.com response",
   "type": "mockAPI"
 }

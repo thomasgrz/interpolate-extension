@@ -22,7 +22,14 @@ import { TextInput } from "../TextInput/TextInput.tsx";
 
 export const ExportInterpolations = () => {
   const [selectedStates, setSelectedStates] = useState<
-    Record<string, { isChecked: boolean } & AnyInterpolation>
+    Record<
+      string,
+      {
+        isChecked: boolean;
+        details: Record<string, unknown>;
+        name: string;
+      }
+    >
   >({});
   const [copied, setCopied] = useState(false);
   const numOfSelected = Object.values(selectedStates)?.filter(
@@ -34,11 +41,14 @@ export const ExportInterpolations = () => {
     // @ts-expect-error TODO: fix types
     const isCheckedAfterChange = e?.target?.ariaChecked === "false";
     setSelectedStates((prev) => {
+      const { id, ...detailsWithoutId } = interp.details;
       return {
         ...prev,
         [interp?.details?.id]: {
           isChecked: isCheckedAfterChange,
-          ...interp,
+          type: interp.type,
+          details: detailsWithoutId,
+          name: interp.name,
         },
       };
     });

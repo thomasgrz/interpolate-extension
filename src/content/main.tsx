@@ -16,7 +16,7 @@ document.body.prepend(container);
 await chrome.storage.local
   .get(InterpolateStorage.BROWSER_UI_TOGGLE_KEY)
   .then(async (value) => {
-    if (value?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY] === false) return;
+    if (value?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY] !== true) return;
 
     // conditionally importing the radix ui styles
     // because they seem to conflict with websites using radix ui styles..
