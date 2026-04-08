@@ -1,8 +1,7 @@
 {
   "details": {
     "destination": "$1q=kittens$3",
-    "id": 1111,
-    "regexFilter": "(.*)q=puppies)(.*)"
+    "regexFilter": "(.*)(q=puppies)(.*)"
   },
   "name": "Search for Kittens Instead of Puppies",
   "type": "redirect"

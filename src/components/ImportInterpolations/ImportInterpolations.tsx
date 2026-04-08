@@ -7,6 +7,10 @@ import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
 import { BrowseInterpolations } from "../BrowseInterpolations/BrowseInterpolations";
+import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
+import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
+import { createMockAPIInterpolation } from "#src/utils/factories/createMockAPIInterpolation/createMockAPIInterpolation.ts";
+import { createScriptInterpolation } from "#src/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
 
 export interface ImportInterpolationsValue {
   json?: string;
@@ -66,7 +70,43 @@ export const ImportInterpolations = ({
     setIsLoading(true);
     try {
       const parsedConfig = JSON.parse(textareaInput ?? "");
-      await InterpolateStorage.create(parsedConfig);
+      const hydrateInterpolation = (interp: AnyInterpolation) => {
+        switch (interp.type) {
+          case "headers":
+            return createHeaderInterpolation({
+              headerKey: interp.details.headerKey,
+              headerValue: interp.details?.headerValue,
+              name: interp.name,
+            });
+          case "redirect":
+            return createRedirectInterpolation({
+              source: interp?.details?.regexFilter,
+              destination: interp?.details?.destination,
+              name: interp.name,
+            });
+          case "mockAPI":
+            return createMockAPIInterpolation({
+              body: interp?.details?.body,
+              name: interp.name,
+              httpCode: interp?.details?.httpCode,
+              isJson: interp?.details?.isJson,
+              matcher: interp?.details?.matcher,
+            });
+          case "script":
+            return createScriptInterpolation({
+              script: interp?.details?.js?.[0]?.code ?? "",
+              name: interp.name,
+            });
+          default:
+            return interp;
+        }
+      };
+
+      const hydratedConfigs = Array.isArray(parsedConfig)
+        ? parsedConfig?.map(hydrateInterpolation)
+        : hydrateInterpolation(parsedConfig);
+
+      await InterpolateStorage.create(hydratedConfigs);
       setIsLoading(false);
     } catch (e) {
       setIsLoading(false);
