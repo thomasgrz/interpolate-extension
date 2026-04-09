@@ -7,15 +7,9 @@ export default {
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     [
-      "@semantic-release/github",
-      {
-        assets: [{ path: "dist" }],
-      },
-    ],
-    [
       "@semantic-release/git",
       {
-        assets: ["dist/**/*", "package.json"],
+        assets: ["release/*.zip"],
         message: "chore(release): ${nextRelease.version} [skip ci]\n\n",
       },
     ],
