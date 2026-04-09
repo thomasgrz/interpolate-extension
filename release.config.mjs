@@ -9,7 +9,7 @@ export default {
     [
       "@semantic-release/github",
       {
-        assets: [{ path: "dist", label: "packed packed" }],
+        assets: [{ path: "dist" }],
       },
     ],
     [
