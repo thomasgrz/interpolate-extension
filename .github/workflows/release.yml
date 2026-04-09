@@ -22,7 +22,6 @@ jobs:
         with:
           fetch-depth: 0
           version: 10
-          persist-credentials: false
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
