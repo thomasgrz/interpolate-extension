@@ -1,0 +1,74 @@
+{
+  "manifest_version": 3,
+  "name": "interpolate",
+  "version": "1.9.3",
+  "icons": {
+    "128": "public/logo.png"
+  },
+  "action": {
+    "default_icon": {
+      "128": "public/logo.png"
+    },
+    "default_title": "click to open sidepanel"
+  },
+  "devtools_page": "src/sidepanel/side-panel.html",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "debugger",
+    "sidePanel",
+    "storage",
+    "tabs",
+    "userScripts",
+    "webNavigation"
+  ],
+  "content_scripts": [
+    {
+      "js": [
+        "assets/main.tsx-loader-Dfh4rTfL.js"
+      ],
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ],
+      "css": [
+        "assets/GlobalInterpolationOptions-B0uGNpFw.css",
+        "assets/main-Besk3Caj.css"
+      ]
+    }
+  ],
+  "options_page": "src/options/index.html",
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "side_panel": {
+    "default_path": "src/sidepanel/side-panel.html"
+  },
+  "background": {
+    "service_worker": "service-worker-loader.js",
+    "type": "module"
+  },
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "resources": [
+        "public/logo.png"
+      ],
+      "use_dynamic_url": false
+    },
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "resources": [
+        "assets/GlobalInterpolationOptions-BTCY2wb3.js",
+        "assets/InterpolateStorage-COm7ct_p.js",
+        "assets/main.tsx-B7D5IQTb.js"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}

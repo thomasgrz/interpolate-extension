@@ -1,0 +1,67 @@
+{
+  "../../../../../@crx/manifest": {
+    "file": "assets/crx-manifest.js-CU_s4-PU.js",
+    "name": "crx-manifest.js",
+    "src": "../../../../../@crx/manifest",
+    "isEntry": true
+  },
+  "_GlobalInterpolationOptions-B0uGNpFw.css": {
+    "file": "assets/GlobalInterpolationOptions-B0uGNpFw.css",
+    "src": "_GlobalInterpolationOptions-B0uGNpFw.css"
+  },
+  "_GlobalInterpolationOptions-BTCY2wb3.js": {
+    "file": "assets/GlobalInterpolationOptions-BTCY2wb3.js",
+    "name": "GlobalInterpolationOptions",
+    "imports": [
+      "_InterpolateStorage-COm7ct_p.js"
+    ],
+    "css": [
+      "assets/GlobalInterpolationOptions-B0uGNpFw.css"
+    ]
+  },
+  "_InterpolateStorage-COm7ct_p.js": {
+    "file": "assets/InterpolateStorage-COm7ct_p.js",
+    "name": "InterpolateStorage"
+  },
+  "_Sidepanel-BNhwJWoE.css": {
+    "file": "assets/Sidepanel-BNhwJWoE.css",
+    "src": "_Sidepanel-BNhwJWoE.css"
+  },
+  "_Sidepanel-Cp8n6lbw.js": {
+    "file": "assets/Sidepanel-Cp8n6lbw.js",
+    "name": "Sidepanel",
+    "imports": [
+      "_GlobalInterpolationOptions-BTCY2wb3.js",
+      "_InterpolateStorage-COm7ct_p.js"
+    ],
+    "css": [
+      "assets/Sidepanel-BNhwJWoE.css"
+    ]
+  },
+  "_main.tsx-loader-Dfh4rTfL.js": {
+    "file": "assets/main.tsx-loader-Dfh4rTfL.js",
+    "src": "_main.tsx-loader-Dfh4rTfL.js"
+  },
+  "src/background/background.ts": {
+    "file": "assets/background.ts-38_kBJbi.js",
+    "name": "background.ts",
+    "src": "src/background/background.ts",
+    "isEntry": true,
+    "imports": [
+      "_InterpolateStorage-COm7ct_p.js"
+    ]
+  },
+  "src/content/main.tsx": {
+    "file": "assets/main.tsx-B7D5IQTb.js",
+    "name": "main.tsx",
+    "src": "src/content/main.tsx",
+    "isEntry": true,
+    "imports": [
+      "_GlobalInterpolationOptions-BTCY2wb3.js",
+      "_InterpolateStorage-COm7ct_p.js"
+    ],
+    "css": [
+      "assets/main-Besk3Caj.css"
+    ]
+  }
+}
