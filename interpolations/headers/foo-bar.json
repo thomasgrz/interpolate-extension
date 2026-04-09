@@ -1,5 +1,5 @@
 {
-  "details": { "headerKey": "x-foo", "headerValue": "bar", "id": 3322 },
+  "details": { "headerKey": "x-foo", "headerValue": "bar" },
   "name": "test header",
   "type": "headers"
 }
