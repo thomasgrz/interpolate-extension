@@ -1,2 +1,7 @@
-npm run check &&
-npm run test:component
+if [ "$CI" ]
+then 
+  exit 0
+else
+  npm run check &&
+  npm run test:component
+fi
