@@ -1,5 +1,12 @@
 import { TrashIcon } from "@radix-ui/react-icons";
-import { AlertDialog, Button, Flex, IconButton } from "@radix-ui/themes";
+import {
+  AlertDialog,
+  Button,
+  Flex,
+  Heading,
+  IconButton,
+  Text,
+} from "@radix-ui/themes";
 
 export const RuleDeleteAction = ({
   onDelete,
@@ -28,8 +35,12 @@ export const RuleDeleteAction = ({
         </AlertDialog.Trigger>
       )}
       <AlertDialog.Content>
-        <AlertDialog.Title>{title}</AlertDialog.Title>
-        <AlertDialog.Description>{info}</AlertDialog.Description>
+        <AlertDialog.Title>
+          <Heading size="3">{title}</Heading>
+        </AlertDialog.Title>
+        <AlertDialog.Description>
+          <Text size="1">{info}</Text>
+        </AlertDialog.Description>
         <Flex p="3" justify={"between"}>
           <AlertDialog.Cancel onClick={onCancel}>
             <Button radius="small" variant="soft" color="gray">

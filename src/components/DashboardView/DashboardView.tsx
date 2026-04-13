@@ -5,9 +5,7 @@ import {
   Tabs,
   Text,
   Strong,
-  Box,
   Switch,
-  Checkbox,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
@@ -55,12 +53,23 @@ export const DashboardView = () => {
     [sortedInterpolations],
   );
 
+  const handleShowGroupsClick = (isOpen: boolean) => {
+    setShowGroups(isOpen);
+    chrome.storage.local.set({ showGroups: isOpen });
+  };
+
   useEffect(() => {
     const getInitialSortOption = async () => {
       const result = await chrome.storage.local.get("sortOption");
       setSortOption(result.sortOption);
     };
     getInitialSortOption().catch();
+
+    const getInitialGroupView = async () => {
+      const result = await chrome.storage.local.get("showGroups");
+      setShowGroups(result.showGroups);
+    };
+    getInitialGroupView();
   }, []);
 
   const onSortOptionSelected = (option: SortOption) => {
@@ -149,7 +158,7 @@ export const DashboardView = () => {
                         <Switch
                           radius="small"
                           checked={showGroups}
-                          onCheckedChange={setShowGroups}
+                          onCheckedChange={handleShowGroupsClick}
                         />
                       </Flex>
                     </Label.Root>

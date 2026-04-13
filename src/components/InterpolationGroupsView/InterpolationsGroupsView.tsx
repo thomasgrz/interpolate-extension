@@ -33,6 +33,8 @@ export const InterpolationsGroupsView = ({
 }) => {
   const { groups, removeGroup } = useInterpolationsContext();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteModalConfig, setDeleteModalConfig] =
+    useState<GroupConfigInStorage | null>(null);
   const [hydratedGroups, setHydratedGroups] = useState<
     | { createdAt: number; name: string; interpolations: AnyInterpolation[] }[]
     | []
@@ -70,13 +72,20 @@ export const InterpolationsGroupsView = ({
     setEditGroup(config);
   };
 
-  const onDeleteSelected = () => {
+  const onDeleteSelected = (config: GroupConfigInStorage) => {
+    setDeleteModalConfig(config);
     setShowDeleteModal(true);
   };
 
-  const onDelete = (groupId: string) => {
+  const handleDeleteGroup = () => {
     setShowDeleteModal(false);
-    removeGroup(groupId);
+    removeGroup(deleteModalConfig?.groupId);
+    setDeleteModalConfig(null);
+  };
+
+  const handleCancelDeleteGroup = () => {
+    setShowDeleteModal(false);
+    setDeleteModalConfig(null);
   };
 
   const sortedHydratedGroups = useMemo(() => {
@@ -91,12 +100,25 @@ export const InterpolationsGroupsView = ({
 
   return (
     <Flex direction="column" gap="2" p="2">
-      <CreateGroupView
-        onOpenChange={(isOpen) => setShowGroupEditModal(false)}
-        forceOpen={showGroupEditModal}
-        hideTrigger
-        config={editGroup}
-      />
+      {showGroupEditModal && (
+        <CreateGroupView
+          onSuccess={() => setShowGroupEditModal(false)}
+          onOpenChange={(isOpen) => setShowGroupEditModal(false)}
+          forceOpen={true}
+          hideTrigger
+          config={editGroup}
+        />
+      )}
+      {showDeleteModal && (
+        <RuleDeleteAction
+          hideTrigger
+          title="Delete this group?"
+          info="This will not delete the interpolations"
+          onDelete={handleDeleteGroup}
+          open={showDeleteModal}
+          onCancel={handleCancelDeleteGroup}
+        />
+      )}
       {query && (
         <Text size="1">
           Showing {sortedHydratedGroups?.length} groups matching "{query}"
@@ -104,7 +126,7 @@ export const InterpolationsGroupsView = ({
       )}
       {sortedHydratedGroups.map((config, index) => (
         <>
-          <Card variant="surface">
+          <Card variant="surface" key={config.groupId}>
             <Flex justify="center" gap="1" direction="column">
               <Flex width="stretch" justify={"between"}>
                 <Flex direction="column">
@@ -118,7 +140,7 @@ export const InterpolationsGroupsView = ({
 
                 <InterpolationOptions
                   disableAddToGroup
-                  onDeleteSelected={onDeleteSelected}
+                  onDeleteSelected={() => onDeleteSelected(config)}
                   onEditSelected={onEditSelected}
                   config={{
                     groupName: config.name,
@@ -175,15 +197,6 @@ export const InterpolationsGroupsView = ({
               </Flex>
             </Flex>
           </Card>
-
-          <RuleDeleteAction
-            hideTrigger
-            title="Delete this group?"
-            info="This will not delete the interpolations"
-            onDelete={() => onDelete(config.groupId)}
-            open={showDeleteModal}
-            onCancel={() => setShowDeleteModal(false)}
-          />
           <Separator size="4" />
         </>
       ))}

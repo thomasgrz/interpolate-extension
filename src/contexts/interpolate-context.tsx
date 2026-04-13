@@ -220,27 +220,58 @@ export const InterpolateProvider = ({
   }, []);
 
   const callbackRefs = useRef<{
-    handleTabActive?: boolean;
-    handleTabChanges?: boolean;
+    handleTabActivated?: boolean;
+    handleTabChangesInStorage?: boolean;
     handleGroupChanges?: boolean;
     initRecentlyActive?: boolean;
   }>({});
 
   useEffect(() => {
+    // USE THIS EFFECT TO HANDLE GROUP CHANGES
+    if (callbackRefs.current.handleGroupChanges) return;
+    callbackRefs.current.handleGroupChanges = true;
+
+    chrome?.storage?.local?.onChanged?.addListener(async (changes) => {
+      InterpolateStorage.handleGroupChanges(changes, (updates) => {
+        setGroups((prevState) => {
+          const filteredGroups = prevState?.filter?.((group) => {
+            // @ts-expect-error
+            const isNotRemoved = !updates.removedGroups[group?.groupId];
+
+            return isNotRemoved && !!group;
+          });
+          const updatedGroups = filteredGroups.map((group) => {
+            // @ts-expect-error
+            const isUpdated = !!updates.updatedGroups[group?.groupId];
+            // @ts-expect-error
+            if (isUpdated) return updates.updatedGroups[group?.groupId];
+            return group;
+          });
+
+          const newGroups = Object.values(updates.newGroups) ?? [];
+
+          return updatedGroups?.concat(newGroups);
+        });
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    // USE THIS EFFECT TO HANDLE TAB ACTIVE
+    if (callbackRefs.current["handleTabActivated"])
+      callbackRefs.current["handleTabActivated"] = true;
     // Update recentlyActive when a user switches tabs
     chrome.tabs?.onActivated?.addListener(async ({ tabId }) => {
-      if (callbackRefs.current["handleTabActive"])
-        callbackRefs.current["handleTabActive"] = true;
-
       const currentActivity = await InterpolateStorage.getTabActivity(tabId);
       setRecentlyActive(currentActivity);
     });
+  }, []);
 
+  useEffect(() => {
+    if (callbackRefs.current["handleTabChangesInStorage"])
+      callbackRefs.current["handleTabChangesInStorage"] = true;
     // Update recentlyActive when an active tab invokes interpolation
     chrome?.storage?.local?.onChanged?.addListener(async (changes) => {
-      if (callbackRefs.current["handleTabChanges"]) return;
-      callbackRefs.current["handleTabChanges"] = true;
-
       const currentTabActivityKey = await InterpolateStorage.getActiveTab();
       const currentTabChanges =
         changes[InterpolateStorage.getTabActivityId(currentTabActivityKey)]
@@ -251,36 +282,14 @@ export const InterpolateProvider = ({
 
       setRecentlyActive(currentTabChanges);
     });
+  }, []);
 
-    chrome?.storage?.local?.onChanged?.addListener(async (changes) => {
-      if (callbackRefs.current["handleGroupChanges"]) return;
-      callbackRefs.current["handleGroupChanges"] = true;
-
-      InterpolateStorage.handleGroupChanges(changes, (updates) => {
-        setGroups((prevState) => {
-          return prevState
-            ?.filter?.((group) => {
-              // @ts-expect-error
-              const isNotRemoved = !updates.removedGroups[group?.groupId];
-
-              return isNotRemoved && !!group;
-            })
-            .map((group) => {
-              // @ts-expect-error
-              const isUpdated = !!updates.updatedGroups[group?.groupId];
-              // @ts-expect-error
-              if (isUpdated) return updates.updatedGroups[group?.groupId];
-              return group;
-            })
-            .concat([...Object.values(updates.newGroups)]);
-        });
-      });
-    });
+  useEffect(() => {
+    // USE THIS EFFECT TO HANDLE INIT RECENTLY ACTIVE
+    if (callbackRefs.current["initRecentlyActive"]) return;
+    callbackRefs.current["initRecentlyActive"] = true;
 
     const initRecentlyActive = async () => {
-      if (callbackRefs.current["initRecentlyActive"]) return;
-      callbackRefs.current["initRecentlyActive"] = true;
-
       let queryOptions = { active: true, lastFocusedWindow: true };
       // `tab` will either be a `tabs.Tab` instance or `undefined`.
       let [tab] = (await chrome.tabs?.query?.(queryOptions)) ?? [{ id: null }];
@@ -294,6 +303,7 @@ export const InterpolateProvider = ({
   }, []);
 
   useEffect(() => {
+    // USE THIS EFFECT TO HANDLE INITIALIZATION
     if (isInitialized.current) return;
 
     handleInitialization();

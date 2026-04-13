@@ -279,7 +279,7 @@ export const InterpolationCard = ({
           )}
           <Flex width="100%" direction="column">
             <Flex width="100%" justify="between" align="center" pl="2">
-              <Text weight="medium" size="2">
+              <Text weight="medium" size="1">
                 {name}
               </Text>
               <Flex gap="2" p="2" align="center">

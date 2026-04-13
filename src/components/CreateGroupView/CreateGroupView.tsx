@@ -44,7 +44,9 @@ export const CreateGroupView = ({
 }) => {
   const { interpolations } = useInterpolationsContext();
   const [isOpen, setIsOpen] = useState(false);
-  const allSelectedFromConfig =
+  const [selectedStates, setSelectedStates] = useState<
+    Record<string, { isChecked: boolean } & AnyInterpolation>
+  >(
     config?.interpolations.reduce((acc, current) => {
       return {
         ...acc,
@@ -53,10 +55,8 @@ export const CreateGroupView = ({
           ...current,
         },
       };
-    }, {}) ?? {};
-  const [selectedStates, setSelectedStates] = useState<
-    Record<string, { isChecked: boolean } & AnyInterpolation>
-  >(config ? allSelectedFromConfig : {});
+    }, {}) ?? {},
+  );
   const numOfSelected = Object.values(selectedStates)?.filter(
     ({ isChecked }) => isChecked,
   ).length;
@@ -71,8 +71,9 @@ export const CreateGroupView = ({
     });
 
     return selected;
-  }, [selectedStates]);
+  }, [selectedStates, config]);
 
+  console.log({ selectedStates, config, selectedInterpolations });
   const form = useForm({
     defaultValues: {
       groupName: config?.groupName ?? "",
@@ -186,6 +187,9 @@ export const CreateGroupView = ({
                   <Flex width="stretch" flexGrow="1" gap="2" align="center">
                     <Checkbox
                       key={interp?.details?.id}
+                      defaultChecked={
+                        selectedStates[interp?.details?.id]?.isChecked
+                      }
                       // @ts-expect-error TODO: fix types
                       onClick={(e) => handleChange(e, interp)}
                     />
