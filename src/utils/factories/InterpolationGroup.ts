@@ -16,8 +16,21 @@ export class InterpolationGroup {
     return `group-${name?.trim()?.toLowerCase()}`;
   }
 
-  constructor(config: { name: string; interpolationIds: string[] }) {
-    this.createdAt = Date.now();
+  createStorageRecord() {
+    return {
+      enabledByUser: this.enabledByUser,
+      createdAt: this.createdAt,
+      groupId: this.groupId,
+      interpolationIds: this.interpolationIds,
+    };
+  }
+
+  constructor(config: {
+    name: string;
+    interpolationIds: string[];
+    createdAt?: number;
+  }) {
+    this.createdAt = config.createdAt ?? Date.now();
     this.enabledByUser = true;
     this.name = config.name;
     this.groupId = this.createGroupId(config.name);

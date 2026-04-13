@@ -67,6 +67,10 @@ export const DashboardView = () => {
     setSortOption(option);
     chrome.storage.local.set({ sortOption: option });
   };
+
+  const showFilterMatchText =
+    !!parsedFilterValue && selectedTab === "all" && !showGroups;
+
   return (
     <ErrorBoundary
       onError={(error, errorInfo) => setError(error?.stack)}
@@ -141,7 +145,7 @@ export const DashboardView = () => {
                     />
                     <Label.Root>
                       <Flex gap="2" align={"center"}>
-                        <Text size="1">Groups</Text>
+                        <Text size="1">Show groups</Text>
                         <Switch
                           radius="small"
                           checked={showGroups}
@@ -153,7 +157,7 @@ export const DashboardView = () => {
                 </Flex>
               )}
             </Flex>
-            {!!parsedFilterValue && selectedTab === "all" && (
+            {showFilterMatchText && (
               <Text size="1">
                 {filteredSortedOptions?.length}{" "}
                 {filteredSortedOptions?.length === 1 ? "match" : "matches"} for
@@ -165,7 +169,10 @@ export const DashboardView = () => {
                 <CreateGroupView />
               </Flex>
               {showGroups ? (
-                <InterpolationsGroupsView sortOption={sortOption} />
+                <InterpolationsGroupsView
+                  query={filter}
+                  sortOption={sortOption}
+                />
               ) : (
                 <InterpolationsListView
                   configs={

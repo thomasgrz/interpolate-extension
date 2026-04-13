@@ -33,7 +33,7 @@ export const GlobalInterpolationOptions = ({
             onClick={resumeAll}
           >
             <Play />
-            Resume
+            resume interpolations
             <Count count={ruleCount} />
           </Button>
         ) : (
@@ -47,7 +47,7 @@ export const GlobalInterpolationOptions = ({
             onClick={pauseAll}
           >
             <Pause />
-            Pause
+            pause interpolations
             <Count count={ruleCount} />
           </Button>
         )}

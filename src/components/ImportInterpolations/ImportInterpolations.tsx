@@ -1,4 +1,4 @@
-import { Callout, Flex, TextArea, Text } from "@radix-ui/themes";
+import { Callout, Flex, TextArea, Text, Switch } from "@radix-ui/themes";
 
 import { ChangeEvent, useCallback, useState } from "react";
 import { InterpolateStorage } from "../../utils/storage/InterpolateStorage/InterpolateStorage";
@@ -7,10 +7,9 @@ import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
 import { BrowseInterpolations } from "../BrowseInterpolations/BrowseInterpolations";
-import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
-import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
-import { createMockAPIInterpolation } from "#src/utils/factories/createMockAPIInterpolation/createMockAPIInterpolation.ts";
-import { createScriptInterpolation } from "#src/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
+import { Label } from "radix-ui";
+import { TextInput } from "../TextInput/TextInput";
+import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView";
 
 export interface ImportInterpolationsValue {
   json?: string;
@@ -28,27 +27,18 @@ export const ImportInterpolations = ({
   const [textareaInput, setTextAreaInput] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>();
   const [error, setError] = useState<string>();
+  const [showGroupNameInput, setShowGroupNameInput] = useState<boolean>(false);
+  const [groupNameValue, setGroupNameValue] = useState("");
+
   const preview = useCallback(() => {
     let parseValue;
     try {
       if (!textareaInput) throw Error("no value");
       parseValue = JSON.parse(textareaInput);
       const parsedArray = Array.isArray(parseValue) ? parseValue : [parseValue];
-      const interpolations = parsedArray.map((interp?: AnyInterpolation) => {
-        switch (interp?.type) {
-          case "headers":
-            return <InterpolationCard hideRuleToggle info={interp} />;
-          case "redirect":
-            return <InterpolationCard hideRuleToggle info={interp} />;
-          case "mockAPI":
-            return <InterpolationCard hideRuleToggle info={interp} />;
-          case "script":
-            return <InterpolationCard hideRuleToggle info={interp} />;
-          default:
-            return null;
-        }
-      });
-      return interpolations?.length ? interpolations : <Text>None</Text>;
+
+      if (!parsedArray.length) return <Text>None</Text>;
+      return <InterpolationsListView configs={parsedArray} hideRuleToggle />;
     } catch (e) {
       return null;
     }
@@ -70,48 +60,22 @@ export const ImportInterpolations = ({
     setIsLoading(true);
     try {
       const parsedConfig = JSON.parse(textareaInput ?? "");
-      const hydrateInterpolation = (interp: AnyInterpolation) => {
-        switch (interp.type) {
-          case "headers":
-            return createHeaderInterpolation({
-              headerKey: interp.details.headerKey,
-              headerValue: interp.details?.headerValue,
-              name: interp.name,
-            });
-          case "redirect":
-            return createRedirectInterpolation({
-              source: interp?.details?.regexFilter,
-              destination: interp?.details?.destination,
-              name: interp.name,
-            });
-          case "mockAPI":
-            return createMockAPIInterpolation({
-              body: interp?.details?.body,
-              name: interp.name,
-              httpCode: interp?.details?.httpCode,
-              isJson: interp?.details?.isJson,
-              matcher: interp?.details?.matcher,
-            });
-          case "script":
-            return createScriptInterpolation({
-              script: interp?.details?.js?.[0]?.code ?? "",
-              name: interp.name,
-            });
-          default:
-            return interp;
-        }
-      };
-
-      const hydratedConfigs = Array.isArray(parsedConfig)
-        ? parsedConfig?.map(hydrateInterpolation)
-        : hydrateInterpolation(parsedConfig);
-
-      await InterpolateStorage.create(hydratedConfigs);
+      await InterpolateStorage.create(parsedConfig);
+      if (showGroupNameInput) {
+        await InterpolateStorage.createGroup({
+          interpolations: parsedConfig,
+          name: groupNameValue,
+        });
+      }
       setIsLoading(false);
     } catch (e) {
       setIsLoading(false);
       setError(String((e as Error).message));
     }
+  };
+
+  const onChangeName = (value: string) => {
+    setGroupNameValue(value);
   };
 
   const form = useForm({
@@ -145,7 +109,25 @@ export const ImportInterpolations = ({
             placeholder="Define or Copy/Paste an interpolation config object or array of interpolation config objects."
             style={{ minHeight: "150px", width: "stretch" }}
           />
-          <Flex pt="1" gap="1" direction="column">
+          <Flex align={"center"} width="stretch" justify={"end"}>
+            <Label.Root>
+              <Flex align="center" gap="3">
+                <Text size="1">Create group?</Text>
+                <Switch
+                  radius="small"
+                  onCheckedChange={setShowGroupNameInput}
+                />
+              </Flex>
+            </Label.Root>
+          </Flex>
+          {showGroupNameInput && (
+            <TextInput
+              value={groupNameValue}
+              onChange={(e) => onChangeName(e.target.value)}
+              placeholder="My Cool Group Name"
+            />
+          )}
+          <Flex pt="1" gap="1" direction="column" width="stretch">
             {error && (
               <Callout.Root>
                 <Callout.Text size="1">{error}</Callout.Text>

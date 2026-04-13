@@ -8,11 +8,17 @@ import {
 } from "@/utils/factories/Interpolation";
 import { logger } from "@/utils/logger";
 import { INTERPOLATE_RECORD_PREFIX } from "../storage.constants";
-import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
+import {
+  GroupConfigInStorage,
+  InterpolationGroup,
+} from "#src/utils/factories/InterpolationGroup.ts";
 
 export const InterpolateStorage = {
   BROWSER_UI_TOGGLE_KEY: "displayBrowserUI",
   DEBUGGING_TABS_KEY: "debuggingTabs",
+  makeGroupId(name: string) {
+    return `group-config-${name?.trim?.()?.toLowerCase?.()}`;
+  },
   logInvocation(caller: string) {
     logger(`(invocation): ${caller}`);
   },
@@ -22,21 +28,50 @@ export const InterpolateStorage = {
   getTabActivityId(tabId: number) {
     return `${tabId}-active`;
   },
+  async addToGroup({
+    interps,
+    groupName,
+  }: {
+    groupName: string;
+    interps: AnyInterpolation[] | AnyInterpolation;
+  }) {
+    const storageRecordKey = this.makeGroupId(groupName);
+    const storageRecords = await chrome.storage.local.get([
+      this.makeGroupId(groupName),
+    ]);
+    const currentGroupFromRecord = storageRecords?.[storageRecordKey];
+    const updatedInterpolationIds = [
+      ...currentGroupFromRecord?.interpolationIds,
+      ...(Array.isArray(interps)
+        ? interps?.map?.((interp) => interp?.details?.id)
+        : [interps?.details?.id]),
+    ];
+
+    const updatedGroup = new InterpolationGroup({
+      name: currentGroupFromRecord?.name,
+      createdAt: currentGroupFromRecord?.createdAt,
+      interpolationIds: updatedInterpolationIds,
+    });
+
+    const groupStorageRecord = updatedGroup.createStorageRecord();
+
+    chrome.storage.local.set({ [storageRecordKey]: groupStorageRecord });
+  },
   async createGroup({
     interpolations,
     groupId,
     name,
   }: {
     interpolations: AnyInterpolation[];
-    groupId: string;
+    groupId?: string;
     name: string;
   }) {
     try {
       await chrome.storage.local.set({
-        [groupId]: {
+        [groupId ?? this.makeGroupId(name)]: {
           createdAt: new Date().getTime(),
           name,
-          groupId,
+          groupId: groupId ?? this.makeGroupId(name),
           isEnabledByUser: true,
           interpolationIds: interpolations.map((interp) => interp.details.id),
         },

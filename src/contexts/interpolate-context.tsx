@@ -21,6 +21,10 @@ const getIsEveryRulePaused = async () => {
 export const InterpolateContext = createContext({
   interpolations: [] as AnyInterpolation[] | [] | undefined,
   add: async (_interps: AnyInterpolation[] | AnyInterpolation) => {},
+  addToGroup: (_value: {
+    interps: AnyInterpolation[] | AnyInterpolation;
+    groupName: string;
+  }) => {},
   allPaused: undefined as boolean | undefined,
   groups: [] as GroupConfigInStorage[],
   pause: (_id: string) => {},
@@ -199,21 +203,44 @@ export const InterpolateProvider = ({
     setInterpolations(initialInterps);
   };
 
+  const addToGroup = ({
+    interps,
+    groupName,
+  }: {
+    groupName: string;
+    interps: AnyInterpolation[] | AnyInterpolation;
+  }) => {
+    return InterpolateStorage?.addToGroup({ groupName, interps });
+  };
+
   useEffect(() => {
     InterpolateStorage.getAllGroups().then((initialGroups) =>
       setGroups(initialGroups),
     );
   }, []);
 
+  const callbackRefs = useRef<{
+    handleTabActive?: boolean;
+    handleTabChanges?: boolean;
+    handleGroupChanges?: boolean;
+    initRecentlyActive?: boolean;
+  }>({});
+
   useEffect(() => {
     // Update recentlyActive when a user switches tabs
     chrome.tabs?.onActivated?.addListener(async ({ tabId }) => {
+      if (callbackRefs.current["handleTabActive"])
+        callbackRefs.current["handleTabActive"] = true;
+
       const currentActivity = await InterpolateStorage.getTabActivity(tabId);
       setRecentlyActive(currentActivity);
     });
 
     // Update recentlyActive when an active tab invokes interpolation
     chrome?.storage?.local?.onChanged?.addListener(async (changes) => {
+      if (callbackRefs.current["handleTabChanges"]) return;
+      callbackRefs.current["handleTabChanges"] = true;
+
       const currentTabActivityKey = await InterpolateStorage.getActiveTab();
       const currentTabChanges =
         changes[InterpolateStorage.getTabActivityId(currentTabActivityKey)]
@@ -226,6 +253,9 @@ export const InterpolateProvider = ({
     });
 
     chrome?.storage?.local?.onChanged?.addListener(async (changes) => {
+      if (callbackRefs.current["handleGroupChanges"]) return;
+      callbackRefs.current["handleGroupChanges"] = true;
+
       InterpolateStorage.handleGroupChanges(changes, (updates) => {
         setGroups((prevState) => {
           return prevState
@@ -248,6 +278,9 @@ export const InterpolateProvider = ({
     });
 
     const initRecentlyActive = async () => {
+      if (callbackRefs.current["initRecentlyActive"]) return;
+      callbackRefs.current["initRecentlyActive"] = true;
+
       let queryOptions = { active: true, lastFocusedWindow: true };
       // `tab` will either be a `tabs.Tab` instance or `undefined`.
       let [tab] = (await chrome.tabs?.query?.(queryOptions)) ?? [{ id: null }];
@@ -276,6 +309,7 @@ export const InterpolateProvider = ({
     <InterpolateContext
       value={{
         add,
+        addToGroup,
         allPaused,
         interpolations,
         pause,

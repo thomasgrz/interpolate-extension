@@ -19,6 +19,7 @@ import { Label } from "radix-ui";
 import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
+import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
 
 export enum CreateGroupLabel {
   NAME = "Group name:",
@@ -28,23 +29,34 @@ export enum CreateGroupFormError {
   NAME = "Please define a name for this group",
 }
 
-const makeGroupId = (name: string) => {
-  return `group-config-${name?.trim?.()?.toLowerCase?.()}`;
-};
 export const CreateGroupView = ({
   hideTrigger,
   forceOpen,
   onSuccess,
+  onOpenChange,
+  config,
 }: {
+  config?: { groupName: string; interpolations: AnyInterpolation[] } | null;
   forceOpen?: boolean;
   hideTrigger?: boolean;
   onSuccess?: () => void;
+  onOpenChange?: (isOpen: boolean) => void;
 }) => {
   const { interpolations } = useInterpolationsContext();
   const [isOpen, setIsOpen] = useState(false);
+  const allSelectedFromConfig =
+    config?.interpolations.reduce((acc, current) => {
+      return {
+        ...acc,
+        [current.details.id]: {
+          isChecked: true,
+          ...current,
+        },
+      };
+    }, {}) ?? {};
   const [selectedStates, setSelectedStates] = useState<
     Record<string, { isChecked: boolean } & AnyInterpolation>
-  >({});
+  >(config ? allSelectedFromConfig : {});
   const numOfSelected = Object.values(selectedStates)?.filter(
     ({ isChecked }) => isChecked,
   ).length;
@@ -63,13 +75,13 @@ export const CreateGroupView = ({
 
   const form = useForm({
     defaultValues: {
-      groupName: "",
+      groupName: config?.groupName ?? "",
     },
     onSubmit: async ({ value, formApi }) => {
       await InterpolateStorage.createGroup({
         name: value?.groupName,
         interpolations: selectedInterpolations,
-        groupId: makeGroupId(value?.groupName),
+        groupId: InterpolateStorage.makeGroupId(value?.groupName),
       });
       onSuccess?.();
       setIsOpen(false);
@@ -123,7 +135,13 @@ export const CreateGroupView = ({
 
   return (
     <Box>
-      <Dialog.Root open={isOpen ?? forceOpen} onOpenChange={setIsOpen}>
+      <Dialog.Root
+        open={forceOpen ?? isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+          onOpenChange?.(open);
+        }}
+      >
         {hideTrigger ? null : (
           <Dialog.Trigger>
             <Button
@@ -133,13 +151,14 @@ export const CreateGroupView = ({
               variant="outline"
               size="1"
             >
-              <PlusIcon /> Create group
+              <PlusIcon />
+              Create group
             </Button>
           </Dialog.Trigger>
         )}
         <Dialog.Content>
           <Flex justify={"center"}>
-            <Heading size="3">Create group</Heading>
+            <Heading size="3">{config ? "Edit" : "Create"} group</Heading>
           </Flex>
           <form
             onSubmit={async (e) => {
@@ -178,7 +197,7 @@ export const CreateGroupView = ({
             <Flex align="end" justify="between">
               <Text size="2">{numOfSelected} selected</Text>
               <SubmitButton disabled={numOfSelected < 1}>
-                Create group
+                {config ? "Save" : "Create"} group
               </SubmitButton>
             </Flex>
           </form>
