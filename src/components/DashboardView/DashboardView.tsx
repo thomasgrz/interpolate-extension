@@ -4,15 +4,21 @@ import {
   Flex,
   Tabs,
   Text,
+  Separator,
   Strong,
   Switch,
+  Tooltip,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
 import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView.tsx";
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
-import { InfoCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import {
+  InfoCircledIcon,
+  MagnifyingGlassIcon,
+  QuestionMarkCircledIcon,
+} from "@radix-ui/react-icons";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { TextInput } from "../TextInput/TextInput.tsx";
 import {
@@ -154,7 +160,16 @@ export const DashboardView = () => {
                     />
                     <Label.Root>
                       <Flex gap="2" align={"center"}>
-                        <Text size="1">Show groups</Text>
+                        <Tooltip
+                          maxWidth={"200px"}
+                          content="optionally organize multiple configurations into groups"
+                        >
+                          <Flex>
+                            <Text size="1">Show groups </Text>
+                            <QuestionMarkCircledIcon />
+                          </Flex>
+                        </Tooltip>
+
                         <Switch
                           radius="small"
                           checked={showGroups}
@@ -174,21 +189,26 @@ export const DashboardView = () => {
               </Text>
             )}
             <Tabs.Content value="all">
-              <Flex align="center" width="stretch" justify="center" pt="2">
-                <CreateGroupView />
-              </Flex>
-              {showGroups ? (
-                <InterpolationsGroupsView
-                  query={filter}
-                  sortOption={sortOption}
-                />
-              ) : (
+              <Flex direction="column" gap="2">
+                <Flex align="center" width="stretch" justify="center" pt="2">
+                  <CreateGroupView />
+                </Flex>
+                {showGroups && (
+                  <>
+                    <InterpolationsGroupsView
+                      query={filter}
+                      sortOption={sortOption}
+                    />
+                    <Separator size="4" />
+                  </>
+                )}
+
                 <InterpolationsListView
                   configs={
                     filter ? filteredSortedOptions : sortedInterpolations
                   }
                 />
-              )}
+              </Flex>
             </Tabs.Content>
             <Tabs.Content value="enabled">
               <Callout.Root color="gray" m="1" variant="soft" size="1">

@@ -1,6 +1,7 @@
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import {
+  Badge,
   Box,
   Button,
   Card,
@@ -131,11 +132,11 @@ export const InterpolationsGroupsView = ({
               <Flex width="stretch" justify={"between"}>
                 <Flex direction="column">
                   <Strong>
-                    <Text size="2">{config.name}</Text>
+                    <Flex gap="2">
+                      <Badge>group</Badge>
+                      <Text size="2">{config.name}</Text>
+                    </Flex>
                   </Strong>
-                  <Text size="1">
-                    Created: {new Date(config.createdAt).toDateString()}
-                  </Text>
                 </Flex>
 
                 <InterpolationOptions
@@ -155,7 +156,10 @@ export const InterpolationsGroupsView = ({
                     onGroupOpenChange(config.name, isOpen)
                   }
                 >
-                  <Flex width="stretch" justify="end">
+                  <Flex width="stretch" justify="between">
+                    <Text size="1">
+                      Created: {new Date(config.createdAt).toDateString()}
+                    </Text>
                     <Tooltip
                       content={
                         expandedGroups[config.name]
@@ -197,7 +201,6 @@ export const InterpolationsGroupsView = ({
               </Flex>
             </Flex>
           </Card>
-          <Separator size="4" />
         </>
       ))}
       {noGroups && (

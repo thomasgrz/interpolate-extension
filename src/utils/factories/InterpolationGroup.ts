@@ -13,13 +13,14 @@ export class InterpolationGroup {
   interpolationIds: string[];
 
   createGroupId(name: string) {
-    return `group-${name?.trim()?.toLowerCase()}`;
+    return `group-config-${name?.trim()?.toLowerCase()}`;
   }
 
   createStorageRecord() {
     return {
       enabledByUser: this.enabledByUser,
       createdAt: this.createdAt,
+      name: this.name,
       groupId: this.groupId,
       interpolationIds: this.interpolationIds,
     };
