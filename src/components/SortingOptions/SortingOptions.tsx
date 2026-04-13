@@ -1,12 +1,11 @@
 import { Flex, Select, Text } from "@radix-ui/themes";
+import { useEffect } from "react";
 
 export enum SortOption {
   A_TO_Z = "atoz",
   Z_TO_A = "ztoa",
   OLDEST = "oldest",
   NEWEST = "newest",
-  GROUP_A_TO_Z = "groupAtoZ",
-  GROUP_Z_TO_A = "groupZtoA",
 }
 
 export interface SortingOptionsProps {
@@ -20,20 +19,19 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
     [SortOption.Z_TO_A]: "Z to A",
     [SortOption.NEWEST]: "Newest first",
     [SortOption.OLDEST]: "Oldest first",
-    [SortOption.GROUP_A_TO_Z]: "By Group -> A to Z",
-    [SortOption.GROUP_Z_TO_A]: "By Group -> Z to A",
   };
+
   return (
-    <Flex maxWidth="160px">
+    <Flex>
       <Select.Root
         onValueChange={onChange}
         size="1"
         defaultValue={value}
         value={value}
       >
-        <Select.Trigger variant="surface">
+        <Select.Trigger variant="surface" style={{ minWidth: 100 }}>
           <Flex as="span" align="center" gap="2">
-            <Text>{options[value]}</Text>
+            <Text>Sort by: {options[value]}</Text>
           </Flex>
         </Select.Trigger>
         <Select.Content>
@@ -55,14 +53,6 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
             </Select.Item>
           </Select.Group>
           <Select.Separator />
-          <Select.Group>
-            <Select.Item value={SortOption.GROUP_A_TO_Z}>
-              <Text size="1">{options[SortOption.GROUP_A_TO_Z]}</Text>
-            </Select.Item>
-            <Select.Item value={SortOption.GROUP_Z_TO_A}>
-              <Text size="1">{options[SortOption.GROUP_Z_TO_A]}</Text>
-            </Select.Item>
-          </Select.Group>
         </Select.Content>
       </Select.Root>
     </Flex>

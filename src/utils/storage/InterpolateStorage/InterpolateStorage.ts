@@ -34,7 +34,9 @@ export const InterpolateStorage = {
     try {
       await chrome.storage.local.set({
         [groupId]: {
+          createdAt: new Date().getTime(),
           name,
+          groupId,
           isEnabledByUser: true,
           interpolationIds: interpolations.map((interp) => interp.details.id),
         },
@@ -134,6 +136,9 @@ export const InterpolateStorage = {
     );
 
     onChanged({ newGroups, updatedGroups, removedGroups });
+  },
+  async removeGroup(groupId: string) {
+    return chrome.storage.local.remove(groupId);
   },
   async pushTabActivity({
     tabId,

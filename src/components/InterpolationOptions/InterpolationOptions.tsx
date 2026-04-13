@@ -13,7 +13,7 @@ export const InterpolationOptions = ({
   onEditSelected,
   onDeleteSelected,
 }: {
-  config: AnyInterpolation;
+  config: AnyInterpolation | AnyInterpolation[];
   onEditSelected: () => void;
   onDeleteSelected: () => void;
 }) => {

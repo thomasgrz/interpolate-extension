@@ -1,7 +1,6 @@
 import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
-import { Button } from "@radix-ui/themes";
 import {
   createContext,
   ReactNode,
@@ -32,6 +31,7 @@ export const InterpolateContext = createContext({
   remove: (_id: string) => {},
   removeAll: () => {},
   refresh: () => {},
+  removeGroup: (_id: string) => {},
   sortedInterpolations: [] as AnyInterpolation[],
 });
 
@@ -115,6 +115,10 @@ export const InterpolateProvider = ({
 
   const refresh = () => {
     alert("not implemented");
+  };
+
+  const removeGroup = (groupId: string) => {
+    InterpolateStorage.removeGroup(groupId);
   };
 
   const getInitAllPaused = async () => {
@@ -227,18 +231,18 @@ export const InterpolateProvider = ({
           return prevState
             ?.filter?.((group) => {
               // @ts-expect-error
-              const isNotRemoved = !reducedGroups.removedGroups[group?.groupId];
+              const isNotRemoved = !updates.removedGroups[group?.groupId];
 
               return isNotRemoved && !!group;
             })
             .map((group) => {
               // @ts-expect-error
-              const isUpdated = !!reducedGroups.updatedGroups[group?.groupId];
+              const isUpdated = !!updates.updatedGroups[group?.groupId];
               // @ts-expect-error
-              if (isUpdated) return reducedGroups.updatedGroups[group?.groupId];
+              if (isUpdated) return updates.updatedGroups[group?.groupId];
               return group;
             })
-            .concat([...Object.entries(updates.newGroups)]);
+            .concat([...Object.values(updates.newGroups)]);
         });
       });
     });
@@ -278,6 +282,7 @@ export const InterpolateProvider = ({
         pauseAll,
         refresh,
         remove,
+        removeGroup,
         removeAll,
         resume,
         resumeAll,

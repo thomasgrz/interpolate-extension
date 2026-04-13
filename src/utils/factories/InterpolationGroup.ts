@@ -1,5 +1,6 @@
 export interface GroupConfigInStorage {
   name: string;
+  createdAt: number;
   interpolationIds: (string | number)[];
   enabledByUser: boolean;
 }

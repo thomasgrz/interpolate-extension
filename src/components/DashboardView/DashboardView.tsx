@@ -1,11 +1,21 @@
-import { Callout, Container, Flex, Tabs, Text, Strong } from "@radix-ui/themes";
+import {
+  Callout,
+  Container,
+  Flex,
+  Tabs,
+  Text,
+  Strong,
+  Box,
+  Switch,
+  Checkbox,
+} from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
 import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView.tsx";
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 import { InfoCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { TextInput } from "../TextInput/TextInput.tsx";
 import {
   SortingOptions,
@@ -14,11 +24,10 @@ import {
 import { Label } from "radix-ui";
 import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
 import { CreateGroupView } from "../CreateGroupView/CreateGroupView.tsx";
-import { InnterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
+import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
 
 export const DashboardView = () => {
   const { interpolations, groups, recentlyActive } = useInterpolationsContext();
-  console.log({ interpolations, groups });
   const [sortOption, setSortOption] = useState<SortOption>(SortOption.NEWEST);
   const [selectedTab, setSelectedTab] = useState("all");
   const [filter, setFilter] = useState("");
@@ -26,6 +35,8 @@ export const DashboardView = () => {
     return sortInterpolations(interpolations!, sortOption);
   }, [sortOption, interpolations]);
   const [error, setError] = useState<null | string>(null);
+
+  const [showGroups, setShowGroups] = useState(false);
 
   const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value);
@@ -44,9 +55,18 @@ export const DashboardView = () => {
     [sortedInterpolations],
   );
 
-  const showGroups =
-    sortOption === SortOption.GROUP_A_TO_Z ||
-    sortOption === SortOption.GROUP_Z_TO_A;
+  useEffect(() => {
+    const getInitialSortOption = async () => {
+      const result = await chrome.storage.local.get("sortOption");
+      setSortOption(result.sortOption);
+    };
+    getInitialSortOption().catch();
+  }, []);
+
+  const onSortOptionSelected = (option: SortOption) => {
+    setSortOption(option);
+    chrome.storage.local.set({ sortOption: option });
+  };
   return (
     <ErrorBoundary
       onError={(error, errorInfo) => setError(error?.stack)}
@@ -99,7 +119,13 @@ export const DashboardView = () => {
                 </Flex>
               </Tabs.List>
               {selectedTab === "all" && (
-                <Flex width="stretch" p="1" align={"center"} justify={"start"}>
+                <Flex
+                  direction={"column"}
+                  width="stretch"
+                  p="1"
+                  align={"start"}
+                  justify={"start"}
+                >
                   <TextInput
                     size="1"
                     style={{ maxWidth: "300px" }}
@@ -108,14 +134,21 @@ export const DashboardView = () => {
                     onChange={handleFilterChange}
                     icon={<MagnifyingGlassIcon />}
                   />
-                  <Flex>
-                    <Label.Root>
-                      <Text size="1">Sort:</Text>
-                    </Label.Root>
+                  <Flex p="1" justify={"between"} width="stretch">
                     <SortingOptions
                       value={sortOption}
-                      onChange={setSortOption}
+                      onChange={onSortOptionSelected}
                     />
+                    <Label.Root>
+                      <Flex gap="2" align={"center"}>
+                        <Text size="1">Groups</Text>
+                        <Switch
+                          radius="small"
+                          checked={showGroups}
+                          onCheckedChange={setShowGroups}
+                        />
+                      </Flex>
+                    </Label.Root>
                   </Flex>
                 </Flex>
               )}
@@ -128,9 +161,11 @@ export const DashboardView = () => {
               </Text>
             )}
             <Tabs.Content value="all">
-              <CreateGroupView />
+              <Flex align="center" width="stretch" justify="center" pt="2">
+                <CreateGroupView />
+              </Flex>
               {showGroups ? (
-                <InnterpolationsGroupsView />
+                <InterpolationsGroupsView sortOption={sortOption} />
               ) : (
                 <InterpolationsListView
                   configs={

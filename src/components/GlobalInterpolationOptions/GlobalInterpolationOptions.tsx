@@ -27,7 +27,7 @@ export const GlobalInterpolationOptions = ({
             radius="full"
             type="button"
             disabled={!ruleCount}
-            size={"2"}
+            size={"1"}
             className={styles.ResumeAllRules}
             color="green"
             onClick={resumeAll}
@@ -41,7 +41,7 @@ export const GlobalInterpolationOptions = ({
             radius="full"
             type="button"
             disabled={!ruleCount}
-            size={"2"}
+            size={"1"}
             className={styles.PauseAllRules}
             color="blue"
             onClick={pauseAll}
@@ -56,7 +56,7 @@ export const GlobalInterpolationOptions = ({
             <AlertDialog.Trigger>
               <Button
                 disabled={!ruleCount}
-                size={"2"}
+                size={"1"}
                 className={styles.DeleteAllRules}
                 color="red"
                 radius="full"

@@ -12,7 +12,6 @@ export const InterpolationsListView = ({
   hideRuleToggle?: boolean;
   configs?: AnyInterpolation[];
 }) => {
-  console.log({ groups });
   return (
     <Flex className={styles.InterpolationsContainer}>
       {configs?.map?.((interpolation) => (

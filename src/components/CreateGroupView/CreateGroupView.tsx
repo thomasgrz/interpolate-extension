@@ -31,7 +31,15 @@ export enum CreateGroupFormError {
 const makeGroupId = (name: string) => {
   return `group-config-${name?.trim?.()?.toLowerCase?.()}`;
 };
-export const CreateGroupView = ({ onSuccess }: { onSuccess?: () => void }) => {
+export const CreateGroupView = ({
+  hideTrigger,
+  forceOpen,
+  onSuccess,
+}: {
+  forceOpen?: boolean;
+  hideTrigger?: boolean;
+  onSuccess?: () => void;
+}) => {
   const { interpolations } = useInterpolationsContext();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedStates, setSelectedStates] = useState<
@@ -114,18 +122,21 @@ export const CreateGroupView = ({ onSuccess }: { onSuccess?: () => void }) => {
   };
 
   return (
-    <Box p="2">
-      <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Dialog.Trigger>
-          <Button
-            onClick={() => setIsOpen(true)}
-            color="gray"
-            variant="outline"
-            size="1"
-          >
-            <PlusIcon /> Create group
-          </Button>
-        </Dialog.Trigger>
+    <Box>
+      <Dialog.Root open={isOpen ?? forceOpen} onOpenChange={setIsOpen}>
+        {hideTrigger ? null : (
+          <Dialog.Trigger>
+            <Button
+              radius="full"
+              onClick={() => setIsOpen(true)}
+              color="gray"
+              variant="outline"
+              size="1"
+            >
+              <PlusIcon /> Create group
+            </Button>
+          </Dialog.Trigger>
+        )}
         <Dialog.Content>
           <Flex justify={"center"}>
             <Heading size="3">Create group</Heading>
@@ -150,12 +161,7 @@ export const CreateGroupView = ({ onSuccess }: { onSuccess?: () => void }) => {
                 />
               )}
             />
-            <Label.Root>
-              <Strong>
-                <Text size="2">Interpolations:</Text>
-              </Strong>
-            </Label.Root>
-            <Flex gap="2" direction="column">
+            <Flex gap="2" direction="column" pt="3">
               {interpolations?.map?.((interp) => {
                 return (
                   <Flex width="stretch" flexGrow="1" gap="2" align="center">

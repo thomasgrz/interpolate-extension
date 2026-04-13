@@ -1,8 +1,9 @@
 import { SortOption } from "#src/components/SortingOptions/SortingOptions.tsx";
 import { AnyInterpolation } from "./factories/Interpolation";
+import { GroupConfigInStorage } from "./factories/InterpolationGroup";
 
 export const sortInterpolations = (
-  interpolations: AnyInterpolation[],
+  interpolations: AnyInterpolation[] | GroupConfigInStorage[],
   sortOption: SortOption,
 ) => {
   switch (sortOption) {
