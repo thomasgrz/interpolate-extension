@@ -1,8 +1,9 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { useInterpolations } from "./useInterpolations";
+import { useInterpolations } from "../useInterpolations/useInterpolations";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation";
+import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 
 describe("useInterpolations", () => {
   beforeEach(() => {
@@ -81,7 +82,7 @@ describe("useInterpolations", () => {
     await waitFor(() =>
       expect(
         result.current.interpolations.every(
-          (interp) => interp.enabledByUser === true,
+          (interp: AnyInterpolation) => interp.enabledByUser === true,
         ),
       ).toBe(true),
     );
@@ -140,7 +141,7 @@ describe("useInterpolations", () => {
 
     expect(
       result.current.interpolations.every(
-        (interp) => interp.enabledByUser === false,
+        (interp: AnyInterpolation) => interp.enabledByUser === false,
       ),
     ).toBe(true);
   });

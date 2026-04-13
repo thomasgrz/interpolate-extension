@@ -13,15 +13,19 @@ import {
 } from "../SortingOptions/SortingOptions.tsx";
 import { Label } from "radix-ui";
 import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
+import { CreateGroupView } from "../CreateGroupView/CreateGroupView.tsx";
+import { InnterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
 
 export const DashboardView = () => {
-  const { interpolations, recentlyActive } = useInterpolationsContext();
+  const { interpolations, groups, recentlyActive } = useInterpolationsContext();
+  console.log({ interpolations, groups });
   const [sortOption, setSortOption] = useState<SortOption>(SortOption.NEWEST);
   const [selectedTab, setSelectedTab] = useState("all");
   const [filter, setFilter] = useState("");
   const sortedInterpolations = useMemo(() => {
     return sortInterpolations(interpolations!, sortOption);
   }, [sortOption, interpolations]);
+  const [error, setError] = useState<null | string>(null);
 
   const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value);
@@ -40,12 +44,15 @@ export const DashboardView = () => {
     [sortedInterpolations],
   );
 
+  const showGroups =
+    sortOption === SortOption.GROUP_A_TO_Z ||
+    sortOption === SortOption.GROUP_Z_TO_A;
   return (
     <ErrorBoundary
-      onError={console.error}
+      onError={(error, errorInfo) => setError(error?.stack)}
       fallback={
         <Callout.Root style={{ height: "100%" }} color="red">
-          Something went wrong
+          {error}
         </Callout.Root>
       }
     >
@@ -92,13 +99,7 @@ export const DashboardView = () => {
                 </Flex>
               </Tabs.List>
               {selectedTab === "all" && (
-                <Flex
-                  width="stretch"
-                  direction={"column"}
-                  p="1"
-                  align={"start"}
-                  justify={"start"}
-                >
+                <Flex width="stretch" p="1" align={"center"} justify={"start"}>
                   <TextInput
                     size="1"
                     style={{ maxWidth: "300px" }}
@@ -127,9 +128,16 @@ export const DashboardView = () => {
               </Text>
             )}
             <Tabs.Content value="all">
-              <InterpolationsListView
-                configs={filter ? filteredSortedOptions : sortedInterpolations}
-              />
+              <CreateGroupView />
+              {showGroups ? (
+                <InnterpolationsGroupsView />
+              ) : (
+                <InterpolationsListView
+                  configs={
+                    filter ? filteredSortedOptions : sortedInterpolations
+                  }
+                />
+              )}
             </Tabs.Content>
             <Tabs.Content value="enabled">
               <Callout.Root color="gray" m="1" variant="soft" size="1">

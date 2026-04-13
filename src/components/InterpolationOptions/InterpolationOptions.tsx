@@ -46,6 +46,12 @@ export const InterpolationOptions = ({
         <DropdownMenu.Item onSelect={onDeleteSelected}>
           <TrashIcon /> Delete
         </DropdownMenu.Item>
+        <DropdownMenu.Sub>
+          <DropdownMenu.SubTrigger>Add to group</DropdownMenu.SubTrigger>
+          <DropdownMenu.SubContent>
+            <DropdownMenu.Item>test</DropdownMenu.Item>
+          </DropdownMenu.SubContent>
+        </DropdownMenu.Sub>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );

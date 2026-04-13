@@ -5,6 +5,8 @@ export enum SortOption {
   Z_TO_A = "ztoa",
   OLDEST = "oldest",
   NEWEST = "newest",
+  GROUP_A_TO_Z = "groupAtoZ",
+  GROUP_Z_TO_A = "groupZtoA",
 }
 
 export interface SortingOptionsProps {
@@ -18,6 +20,8 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
     [SortOption.Z_TO_A]: "Z to A",
     [SortOption.NEWEST]: "Newest first",
     [SortOption.OLDEST]: "Oldest first",
+    [SortOption.GROUP_A_TO_Z]: "By Group -> A to Z",
+    [SortOption.GROUP_Z_TO_A]: "By Group -> Z to A",
   };
   return (
     <Flex maxWidth="160px">
@@ -48,6 +52,15 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
             </Select.Item>
             <Select.Item value={SortOption.Z_TO_A}>
               <Text size="1">{options[SortOption.Z_TO_A]}</Text>
+            </Select.Item>
+          </Select.Group>
+          <Select.Separator />
+          <Select.Group>
+            <Select.Item value={SortOption.GROUP_A_TO_Z}>
+              <Text size="1">{options[SortOption.GROUP_A_TO_Z]}</Text>
+            </Select.Item>
+            <Select.Item value={SortOption.GROUP_Z_TO_A}>
+              <Text size="1">{options[SortOption.GROUP_Z_TO_A]}</Text>
             </Select.Item>
           </Select.Group>
         </Select.Content>

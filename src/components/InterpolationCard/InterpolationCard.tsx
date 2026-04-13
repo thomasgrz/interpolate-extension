@@ -42,10 +42,12 @@ export const InterpolationCard = ({
   hideRuleToggle,
   hideOptions,
   noShadow,
+  compact,
 }: {
   hideRuleToggle?: boolean;
   hideOptions?: boolean;
   noShadow?: boolean;
+  compact?: boolean;
 } & InterpolationCardProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { error, type, details, name } = info;
@@ -246,6 +248,7 @@ export const InterpolationCard = ({
   };
   return (
     <Card
+      size={"4"}
       ref={ref}
       data-ui-error={!!info.error}
       data-ui-no-shadow={noShadow}

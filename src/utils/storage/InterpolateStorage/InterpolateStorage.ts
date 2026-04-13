@@ -8,6 +8,7 @@ import {
 } from "@/utils/factories/Interpolation";
 import { logger } from "@/utils/logger";
 import { INTERPOLATE_RECORD_PREFIX } from "../storage.constants";
+import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
 
 export const InterpolateStorage = {
   BROWSER_UI_TOGGLE_KEY: "displayBrowserUI",
@@ -21,9 +22,39 @@ export const InterpolateStorage = {
   getTabActivityId(tabId: number) {
     return `${tabId}-active`;
   },
+  async createGroup({
+    interpolations,
+    groupId,
+    name,
+  }: {
+    interpolations: AnyInterpolation[];
+    groupId: string;
+    name: string;
+  }) {
+    try {
+      await chrome.storage.local.set({
+        [groupId]: {
+          name,
+          isEnabledByUser: true,
+          interpolationIds: interpolations.map((interp) => interp.details.id),
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  },
   async getActiveTab() {
     const { activeTab } = await chrome.storage.local.get("activeTab");
     return activeTab;
+  },
+  async getAllGroups() {
+    const result = await chrome.storage.local.get(null);
+    const groupConfigs = Object.entries(result)
+      ?.filter?.(([key]) => {
+        return key?.startsWith("group-config");
+      })
+      .map((configTuple) => configTuple[1]);
+    return groupConfigs;
   },
   async getTabActivity(tabId: number) {
     try {
@@ -39,6 +70,70 @@ export const InterpolateStorage = {
   },
   async setActiveTab(tabId: number) {
     await chrome.storage.local.set({ activeTab: tabId });
+  },
+  async handleGroupChanges(
+    changes: Record<
+      string,
+      { oldValue?: unknown; newValue?: Record<string, unknown> }
+    >,
+    onChanged: (updates: {
+      newGroups: GroupConfigInStorage[];
+      updatedGroups: GroupConfigInStorage[];
+      removedGroups: GroupConfigInStorage[];
+    }) => void,
+  ) {
+    const groupChanges = Object.entries(changes).filter(([key, value]) =>
+      key.startsWith("group-"),
+    );
+    const noGroupChanges = !groupChanges?.length;
+
+    if (noGroupChanges) return;
+
+    const { newGroups, updatedGroups, removedGroups } = groupChanges.reduce(
+      (accumulatedValue, currentValue) => {
+        const [key, change] = currentValue;
+        const isNew = !change?.oldValue;
+        if (isNew) {
+          return {
+            ...accumulatedValue,
+            newGroups: {
+              ...(accumulatedValue?.newGroups ?? {}),
+              [key]: {
+                ...change.newValue,
+              },
+            },
+          };
+        }
+
+        const isUpdated = change.oldValue && change.newValue;
+        if (isUpdated) {
+          return {
+            ...accumulatedValue,
+            updatedGroups: {
+              ...(accumulatedValue?.updatedGroups ?? []),
+              [key]: change.newValue,
+            },
+          };
+        }
+
+        const isRemoved = change?.oldValue && !change.newValue;
+
+        if (isRemoved) {
+          return {
+            ...accumulatedValue,
+            removedGroups: {
+              ...(accumulatedValue?.removedGroups ?? []),
+              [key]: change.oldValue,
+            },
+          };
+        }
+
+        return accumulatedValue;
+      },
+      { newGroups: [], updatedGroups: [], removedGroups: [] },
+    );
+
+    onChanged({ newGroups, updatedGroups, removedGroups });
   },
   async pushTabActivity({
     tabId,
