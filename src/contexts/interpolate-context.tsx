@@ -227,6 +227,10 @@ export const InterpolateProvider = ({
   }>({});
 
   useEffect(() => {
+    InterpolateStorage.syncWithUserScripts();
+  }, []);
+
+  useEffect(() => {
     // USE THIS EFFECT TO HANDLE GROUP CHANGES
     if (callbackRefs.current.handleGroupChanges) return;
     callbackRefs.current.handleGroupChanges = true;

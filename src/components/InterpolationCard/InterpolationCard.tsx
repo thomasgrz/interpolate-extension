@@ -32,6 +32,7 @@ import { AddHeaderForm } from "../AddHeaderForm/AddHeaderForm.tsx";
 import { MockPreview } from "../MockPreview/MockPreview.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm.tsx";
 import styles from "./InterpolationCard.module.scss";
+import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 
 type InterpolationCardProps = {
   info: AnyInterpolation;
@@ -55,7 +56,7 @@ export const InterpolationCard = ({
   const [enabledByUser, setIsEnabledByUser] = useState(info?.enabledByUser);
   const [editModeEnabled, setEditModeEnabled] = useState<boolean>();
   const [deleteSelected, setDeleteSelected] = useState<boolean>();
-
+  const { groups } = useInterpolationsContext();
   useEffect(() => {
     chrome.storage?.local?.onChanged?.addListener?.((changes) => {
       const isUnrelatedToGlobalPause = !changes?.allPaused;
@@ -296,6 +297,7 @@ export const InterpolationCard = ({
                   <InterpolationOptions
                     onEditSelected={onEditSelected}
                     onDeleteSelected={onDeleteSelected}
+                    disableAddToGroup={!groups.length}
                     config={info}
                   />
                 )}

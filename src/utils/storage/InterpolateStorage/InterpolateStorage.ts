@@ -216,16 +216,31 @@ export const InterpolateStorage = {
       const formatInterp = (interp: AnyInterpolation) => {
         switch (interp.type) {
           case "headers":
-            // @ts-expect-error TODO: FIXME: types
-            return createHeaderInterpolation(interp);
+            return createHeaderInterpolation({
+              name: interp.name,
+              headerKey: interp.details.headerKey,
+              headerValue: interp.details.headerValue,
+              id: interp.details.id,
+            });
           case "mockAPI":
-            return createMockAPIInterpolation(interp);
+            return createMockAPIInterpolation({
+              name: interp.name,
+              ...interp.details,
+            });
           case "redirect":
-            // @ts-expect-error TODO: FIXME: types
-            return createRedirectInterpolation(interp);
+            return createRedirectInterpolation({
+              destination: interp.details.destination,
+              source: interp.details.regexFilter,
+              id: interp.details.id,
+              name: interp.name,
+            });
           case "script":
-            // @ts-expect-error TODO: FIXME: types
-            return createScriptInterpolation(interp);
+            return createScriptInterpolation({
+              script: interp.details.js?.[0].code!,
+              matches: interp.details.matches![0],
+              name: interp.name,
+              id: interp?.details?.id,
+            });
         }
       };
 
@@ -259,6 +274,11 @@ export const InterpolateStorage = {
     const caller = "deleteAll";
     try {
       return chrome.storage?.local?.clear();
+    } catch (e) {
+      this.logError(caller, e as string);
+    }
+    try {
+      return chrome.userScripts.unregister();
     } catch (e) {
       this.logError(caller, e as string);
     }
