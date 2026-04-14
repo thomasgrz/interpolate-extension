@@ -11,7 +11,6 @@ import {
 import { ClipboardCopyIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard.tsx";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
-import { useInterpolations } from "#src/hooks/useInterpolations/useInterpolations.ts";
 import {
   SortingOptions,
   SortOption,
@@ -19,6 +18,7 @@ import {
 import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
 import { Label } from "radix-ui";
 import { TextInput } from "../TextInput/TextInput.tsx";
+import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 
 export const ExportInterpolations = () => {
   const [selectedStates, setSelectedStates] = useState<
@@ -66,14 +66,16 @@ export const ExportInterpolations = () => {
       setCopied(false);
     }, 3000);
   };
-  const { interpolations } = useInterpolations();
+  const { interpolations } = useInterpolationsContext();
   const [sortOption, setSortOption] = useState<SortOption>(SortOption.NEWEST);
   const sortedOptions = useMemo(() => {
+    const noInterps = !interpolations?.length;
+    if (noInterps) return [];
     return sortInterpolations(interpolations, sortOption);
   }, [sortOption, interpolations]);
   const filteredSorted = sortedOptions?.filter((interp) =>
     interp?.name?.toLowerCase()?.includes(query),
-  );
+  ) as AnyInterpolation[];
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };

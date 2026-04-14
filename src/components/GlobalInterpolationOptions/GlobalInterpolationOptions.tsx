@@ -3,8 +3,8 @@ import { AlertDialog, Box, Button, Flex } from "@radix-ui/themes";
 import Pause from "../../assets/pause.svg";
 import Play from "../../assets/play.svg";
 import styles from "./GlobalInterpolationOptions.module.scss";
-import { useInterpolations } from "#src/hooks/useInterpolations/useInterpolations.ts";
 import { useMemo } from "react";
+import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 
 const Count = (props: { count?: number }) =>
   props.count ? <span>({props.count})</span> : null;
@@ -15,9 +15,9 @@ export const GlobalInterpolationOptions = ({
   allowDelete?: boolean;
 }) => {
   const { interpolations, allPaused, removeAll, pauseAll, resumeAll } =
-    useInterpolations();
+    useInterpolationsContext();
 
-  const ruleCount = useMemo(() => interpolations.length, [interpolations]);
+  const ruleCount = useMemo(() => interpolations?.length, [interpolations]);
 
   return (
     <Box p="1">
@@ -27,27 +27,26 @@ export const GlobalInterpolationOptions = ({
             radius="full"
             type="button"
             disabled={!ruleCount}
-            size={"2"}
+            size={"1"}
             className={styles.ResumeAllRules}
             color="green"
             onClick={resumeAll}
           >
             <Play />
-            Resume
-            <Count count={ruleCount} />
+            Resume interpolations <Count count={ruleCount} />
           </Button>
         ) : (
           <Button
             radius="full"
             type="button"
             disabled={!ruleCount}
-            size={"2"}
+            size={"1"}
             className={styles.PauseAllRules}
             color="blue"
             onClick={pauseAll}
           >
             <Pause />
-            Pause
+            Pause interpolations
             <Count count={ruleCount} />
           </Button>
         )}
@@ -56,13 +55,13 @@ export const GlobalInterpolationOptions = ({
             <AlertDialog.Trigger>
               <Button
                 disabled={!ruleCount}
-                size={"2"}
+                size={"1"}
                 className={styles.DeleteAllRules}
                 color="red"
                 radius="full"
               >
                 <TrashIcon />
-                Delete
+                Delete all
                 <Count count={ruleCount} />
               </Button>
             </AlertDialog.Trigger>

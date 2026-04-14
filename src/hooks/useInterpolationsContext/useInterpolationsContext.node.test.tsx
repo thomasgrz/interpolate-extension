@@ -1,28 +1,32 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { useInterpolations } from "./useInterpolations";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation";
+import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
+import { useInterpolationsContext } from "./useInterpolationsContext";
+import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
 
 describe("useInterpolations", () => {
   beforeEach(() => {
     chrome.storage?.local?.clear();
-    chrome.storage?.local?.clear();
   });
-  it.skip("should return current interpolations", async () => {
+
+  it("should return current interpolations", async () => {
     const interpolation = createHeaderInterpolation({
       headerKey: "X-Test",
       headerValue: "test.domain",
       name: "Test Interpolation",
     });
     await InterpolateStorage.create([interpolation]);
-    const { result } = renderHook(() => useInterpolations());
+    const { result } = renderHook(() => useInterpolationsContext(), {
+      wrapper: InterpolateProvider,
+    });
 
-    await waitFor(() => expect(chrome.storage?.local?.get).toBeCalledTimes(3));
     await waitFor(() =>
-      expect(result.current.interpolations[0]).toEqual(interpolation),
+      expect(result.current.interpolations?.[0]).toEqual(interpolation),
     );
   });
+
   it("should pause all interpolations", async () => {
     const interpolation1 = createHeaderInterpolation({
       headerKey: "X-Test-1",
@@ -35,16 +39,18 @@ describe("useInterpolations", () => {
       name: "Test Interpolation 2",
     });
     await InterpolateStorage.create([interpolation1, interpolation2]);
-    const { result } = renderHook(() => useInterpolations());
-
-    await waitFor(() => {
-      return expect(result.current.interpolations.length).toEqual(2);
+    const { result } = renderHook(() => useInterpolationsContext(), {
+      wrapper: InterpolateProvider,
     });
 
-    await result.current.pauseAll();
+    await waitFor(() => {
+      return expect(result.current.interpolations?.length).toEqual(2);
+    });
+
+    result.current.pauseAll();
     await waitFor(() =>
       expect(
-        result.current.interpolations.every(
+        result.current.interpolations?.every(
           (interp) => interp.enabledByUser === false,
         ),
       ).toBe(true),
@@ -62,26 +68,28 @@ describe("useInterpolations", () => {
       name: "Test Interpolation 2",
     });
     await InterpolateStorage.create([interpolation1, interpolation2]);
-    const { result } = renderHook(() => useInterpolations());
+    const { result } = renderHook(() => useInterpolationsContext(), {
+      wrapper: InterpolateProvider,
+    });
 
-    await result.current.pauseAll();
+    result.current.pauseAll();
     await waitFor(() =>
       expect(
-        result.current.interpolations.every(
+        result.current.interpolations?.every(
           (interp) => interp.enabledByUser === false,
         ),
       ).toBe(true),
     );
 
     await waitFor(() => {
-      return expect(result.current.interpolations.length).toEqual(2);
+      return expect(result.current.interpolations?.length).toEqual(2);
     });
 
-    await result.current.resumeAll();
+    result.current.resumeAll();
     await waitFor(() =>
       expect(
-        result.current.interpolations.every(
-          (interp) => interp.enabledByUser === true,
+        result.current.interpolations?.every(
+          (interp: AnyInterpolation) => interp.enabledByUser === true,
         ),
       ).toBe(true),
     );
@@ -101,15 +109,17 @@ describe("useInterpolations", () => {
     ];
 
     await InterpolateStorage.create(interpolations);
-    const { result } = renderHook(() => useInterpolations());
-
-    await waitFor(() => {
-      return expect(result.current.interpolations.length).toEqual(2);
+    const { result } = renderHook(() => useInterpolationsContext(), {
+      wrapper: InterpolateProvider,
     });
 
-    await result.current.pause(result.current.interpolations[0].details.id);
     await waitFor(() => {
-      expect(result.current.interpolations[0].enabledByUser).toBeFalsy();
+      return expect(result.current.interpolations?.length).toEqual(2);
+    });
+
+    result.current.pause(result.current.interpolations?.[0]?.details?.id ?? "");
+    await waitFor(() => {
+      expect(result.current.interpolations?.[0]?.enabledByUser).toBeFalsy();
     });
   });
   it("should indicate when all interpolations are paused", async () => {
@@ -127,20 +137,22 @@ describe("useInterpolations", () => {
     ];
 
     await InterpolateStorage.create(interpolations);
-    const { result } = renderHook(() => useInterpolations());
+    const { result } = renderHook(() => useInterpolationsContext(), {
+      wrapper: InterpolateProvider,
+    });
     await waitFor(() => {
-      return expect(result.current.interpolations.length).toEqual(2);
+      return expect(result.current.interpolations?.length).toEqual(2);
     });
 
     expect(result.current.allPaused).toBe(false);
 
-    await result.current.pauseAll();
+    result.current.pauseAll();
 
     await waitFor(() => expect(result.current.allPaused).toBe(true));
 
     expect(
-      result.current.interpolations.every(
-        (interp) => interp.enabledByUser === false,
+      result.current.interpolations?.every(
+        (interp: AnyInterpolation) => interp.enabledByUser === false,
       ),
     ).toBe(true);
   });
@@ -159,17 +171,19 @@ describe("useInterpolations", () => {
     ];
 
     await InterpolateStorage.create(interpolations);
-    const { result, rerender } = renderHook(() => useInterpolations());
+    const { result, rerender } = renderHook(() => useInterpolationsContext(), {
+      wrapper: InterpolateProvider,
+    });
     await waitFor(() => {
-      return expect(result.current.interpolations.length).toEqual(2);
+      return expect(result.current.interpolations?.length).toEqual(2);
     });
 
-    await result.current.remove(interpolations[0].details.id);
+    result.current.remove(interpolations?.[0]?.details.id);
     rerender();
     await waitFor(() => {
-      return expect(result.current.interpolations.length).toEqual(1);
+      return expect(result.current.interpolations?.length).toEqual(1);
     });
-    expect(result.current.interpolations[0].details.id).toEqual(
+    expect(result.current.interpolations?.[0].details.id).toEqual(
       interpolations[1].details.id,
     );
   });
@@ -188,16 +202,18 @@ describe("useInterpolations", () => {
     ];
 
     await InterpolateStorage.create(interpolations);
-    const { result, rerender } = renderHook(() => useInterpolations());
+    const { result, rerender } = renderHook(() => useInterpolationsContext(), {
+      wrapper: InterpolateProvider,
+    });
     await waitFor(() => {
-      return expect(result.current.interpolations.length).toEqual(2);
+      return expect(result.current.interpolations?.length).toEqual(2);
     });
 
-    await result.current.removeAll();
+    result.current.removeAll();
 
     rerender();
     await waitFor(() => {
-      return expect(result.current.interpolations.length).toEqual(0);
+      return expect(result.current.interpolations?.length).toEqual(0);
     });
   });
 });

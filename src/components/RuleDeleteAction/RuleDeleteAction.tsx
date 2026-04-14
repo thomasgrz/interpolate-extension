@@ -1,21 +1,40 @@
 import { TrashIcon } from "@radix-ui/react-icons";
-import { AlertDialog, Button, Flex, IconButton } from "@radix-ui/themes";
+import { AlertDialog, Button, Flex, Heading, Text } from "@radix-ui/themes";
 
-export const RuleDeleteAction = ({ onDelete }: { onDelete: () => void }) => {
+export const RuleDeleteAction = ({
+  onDelete,
+  title = "Delete this rule forever?",
+  info = "You can also just pause this rule",
+  open,
+  hideTrigger,
+  onCancel,
+}: {
+  onCancel?: () => void;
+  onDelete: () => void;
+  onOpenChange?: (value: boolean) => void;
+  open?: boolean;
+  title?: string;
+  info?: string;
+  hideTrigger?: boolean;
+}) => {
   return (
-    <AlertDialog.Root>
-      <AlertDialog.Trigger>
-        <IconButton variant="outline" color="red">
-          <TrashIcon />
-        </IconButton>
-      </AlertDialog.Trigger>
+    <AlertDialog.Root open={open}>
+      {hideTrigger ? null : (
+        <AlertDialog.Trigger>
+          <Button variant="outline" color="red">
+            <TrashIcon /> Delete
+          </Button>
+        </AlertDialog.Trigger>
+      )}
       <AlertDialog.Content>
-        <AlertDialog.Title>Delete this rule forever?</AlertDialog.Title>
+        <AlertDialog.Title>
+          <Heading size="3">{title}</Heading>
+        </AlertDialog.Title>
         <AlertDialog.Description>
-          You can also just pause this rule.
+          <Text size="1">{info}</Text>
         </AlertDialog.Description>
         <Flex p="3" justify={"between"}>
-          <AlertDialog.Cancel>
+          <AlertDialog.Cancel onClick={onCancel}>
             <Button radius="small" variant="soft" color="gray">
               Exit
             </Button>

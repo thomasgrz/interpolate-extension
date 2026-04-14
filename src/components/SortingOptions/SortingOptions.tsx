@@ -19,17 +19,18 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
     [SortOption.NEWEST]: "Newest first",
     [SortOption.OLDEST]: "Oldest first",
   };
+
   return (
-    <Flex maxWidth="160px">
+    <Flex>
       <Select.Root
         onValueChange={onChange}
         size="1"
         defaultValue={value}
         value={value}
       >
-        <Select.Trigger variant="surface">
+        <Select.Trigger variant="surface" style={{ minWidth: 100 }}>
           <Flex as="span" align="center" gap="2">
-            <Text>{options[value]}</Text>
+            <Text>Sort by: {options[value]}</Text>
           </Flex>
         </Select.Trigger>
         <Select.Content>
@@ -50,6 +51,7 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
               <Text size="1">{options[SortOption.Z_TO_A]}</Text>
             </Select.Item>
           </Select.Group>
+          <Select.Separator />
         </Select.Content>
       </Select.Root>
     </Flex>

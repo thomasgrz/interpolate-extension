@@ -32,6 +32,7 @@ import { AddHeaderForm } from "../AddHeaderForm/AddHeaderForm.tsx";
 import { MockPreview } from "../MockPreview/MockPreview.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm.tsx";
 import styles from "./InterpolationCard.module.scss";
+import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 
 type InterpolationCardProps = {
   info: AnyInterpolation;
@@ -46,6 +47,7 @@ export const InterpolationCard = ({
   hideRuleToggle?: boolean;
   hideOptions?: boolean;
   noShadow?: boolean;
+  compact?: boolean;
 } & InterpolationCardProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { error, type, details, name } = info;
@@ -54,7 +56,7 @@ export const InterpolationCard = ({
   const [enabledByUser, setIsEnabledByUser] = useState(info?.enabledByUser);
   const [editModeEnabled, setEditModeEnabled] = useState<boolean>();
   const [deleteSelected, setDeleteSelected] = useState<boolean>();
-
+  const { groups } = useInterpolationsContext();
   useEffect(() => {
     chrome.storage?.local?.onChanged?.addListener?.((changes) => {
       const isUnrelatedToGlobalPause = !changes?.allPaused;
@@ -246,6 +248,7 @@ export const InterpolationCard = ({
   };
   return (
     <Card
+      size={"4"}
       ref={ref}
       data-ui-error={!!info.error}
       data-ui-no-shadow={noShadow}
@@ -276,7 +279,7 @@ export const InterpolationCard = ({
           )}
           <Flex width="100%" direction="column">
             <Flex width="100%" justify="between" align="center" pl="2">
-              <Text weight="medium" size="2">
+              <Text weight="medium" size="1">
                 {name}
               </Text>
               <Flex gap="2" p="2" align="center">
@@ -294,6 +297,7 @@ export const InterpolationCard = ({
                   <InterpolationOptions
                     onEditSelected={onEditSelected}
                     onDeleteSelected={onDeleteSelected}
+                    disableAddToGroup={!groups.length}
                     config={info}
                   />
                 )}

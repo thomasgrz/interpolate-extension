@@ -20,9 +20,12 @@ try {
   // and all other related targets from that tab (iframes, service workers, third party sources etc)
   // NOTE: onUpdated can happen in the background too so we shouldnt
   chrome.tabs.onUpdated.addListener(async (tabId, _, tab) => {
-    handleDebugTabUpdates(tabId, tab);
-    if (chrome.runtime.lastError) {
-      logger("*ahem* RAHHHHHHHHHHHHHH!" + chrome.runtime.lastError);
+    try {
+      handleDebugTabUpdates(tabId, tab);
+    } catch (e) {
+      if (chrome.runtime.lastError) {
+        logger("*ahem* RAHHHHHHHHHHHHHH!" + chrome.runtime.lastError);
+      }
     }
   });
 

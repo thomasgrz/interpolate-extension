@@ -102,6 +102,8 @@ export const CreateInterpolationsView = ({
   };
   const title = useMemo(() => {
     switch (step) {
+      case InterpolationOptionSelection.OPTIONS_VIEW:
+        return null;
       case InterpolationOptionSelection.ADD_HEADERS:
         return "Add headers";
       case InterpolationOptionSelection.CREATE_USER_SCRIPT:

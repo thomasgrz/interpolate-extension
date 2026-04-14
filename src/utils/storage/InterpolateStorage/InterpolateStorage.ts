@@ -8,6 +8,13 @@ import {
 } from "@/utils/factories/Interpolation";
 import { logger } from "@/utils/logger";
 import { INTERPOLATE_RECORD_PREFIX } from "../storage.constants";
+import {
+  GroupConfigInStorage,
+  InterpolationGroup,
+} from "#src/utils/factories/InterpolationGroup.ts";
+import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
+import { createMockAPIInterpolation } from "#src/utils/factories/createMockAPIInterpolation/createMockAPIInterpolation.ts";
+import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
 
 export const InterpolateStorage = {
   BROWSER_UI_TOGGLE_KEY: "displayBrowserUI",
@@ -21,9 +28,66 @@ export const InterpolateStorage = {
   getTabActivityId(tabId: number) {
     return `${tabId}-active`;
   },
+  async addToGroup({
+    interps,
+    groupId,
+  }: {
+    groupId: string;
+    interps: AnyInterpolation[] | AnyInterpolation;
+  }) {
+    const storageRecords = await chrome.storage.local.get([groupId]);
+    const currentGroupFromRecord = storageRecords?.[groupId];
+    const updatedInterpolationIds = [
+      ...currentGroupFromRecord?.interpolationIds,
+      ...(Array.isArray(interps)
+        ? interps?.map?.((interp) => interp?.details?.id)
+        : [interps?.details?.id]),
+    ];
+
+    const updatedGroup = new InterpolationGroup({
+      name: currentGroupFromRecord?.name,
+      createdAt: currentGroupFromRecord?.createdAt,
+      interpolationIds: updatedInterpolationIds,
+    });
+
+    const groupStorageRecord = updatedGroup.createStorageRecord();
+
+    chrome.storage.local.set({ [groupId]: groupStorageRecord });
+  },
+  async createGroup({
+    interpolations,
+    groupId,
+    name,
+  }: {
+    interpolations: AnyInterpolation[];
+    groupId?: string;
+    name: string;
+  }) {
+    try {
+      const group = new InterpolationGroup({
+        groupId,
+        name,
+        interpolationIds: interpolations?.map((interp) => interp.details?.id),
+      });
+      await chrome.storage.local.set({
+        [groupId ?? group.groupId]: group.createStorageRecord(),
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  },
   async getActiveTab() {
     const { activeTab } = await chrome.storage.local.get("activeTab");
     return activeTab;
+  },
+  async getAllGroups() {
+    const result = await chrome.storage.local.get(null);
+    const groupConfigs = Object.entries(result)
+      ?.filter?.(([key]) => {
+        return key?.startsWith("group-config");
+      })
+      .map((configTuple) => configTuple[1]);
+    return groupConfigs;
   },
   async getTabActivity(tabId: number) {
     try {
@@ -39,6 +103,73 @@ export const InterpolateStorage = {
   },
   async setActiveTab(tabId: number) {
     await chrome.storage.local.set({ activeTab: tabId });
+  },
+  async handleGroupChanges(
+    changes: Record<
+      string,
+      { oldValue?: unknown; newValue?: Record<string, unknown> }
+    >,
+    onChanged: (updates: {
+      newGroups: GroupConfigInStorage[];
+      updatedGroups: GroupConfigInStorage[];
+      removedGroups: GroupConfigInStorage[];
+    }) => void,
+  ) {
+    const groupChanges = Object.entries(changes).filter(([key]) =>
+      key.startsWith("group-"),
+    );
+    const noGroupChanges = !groupChanges?.length;
+
+    if (noGroupChanges) return;
+
+    const { newGroups, updatedGroups, removedGroups } = groupChanges.reduce(
+      (accumulatedValue, currentValue) => {
+        const [key, change] = currentValue;
+        const isNew = !change?.oldValue;
+        if (isNew) {
+          return {
+            ...accumulatedValue,
+            newGroups: {
+              ...(accumulatedValue?.newGroups ?? {}),
+              [key]: {
+                ...change.newValue,
+              },
+            },
+          };
+        }
+
+        const isUpdated = change.oldValue && change.newValue;
+        if (isUpdated) {
+          return {
+            ...accumulatedValue,
+            updatedGroups: {
+              ...(accumulatedValue?.updatedGroups ?? []),
+              [key]: change.newValue,
+            },
+          };
+        }
+
+        const isRemoved = change?.oldValue && !change.newValue;
+
+        if (isRemoved) {
+          return {
+            ...accumulatedValue,
+            removedGroups: {
+              ...(accumulatedValue?.removedGroups ?? []),
+              [key]: change.oldValue,
+            },
+          };
+        }
+
+        return accumulatedValue;
+      },
+      { newGroups: [], updatedGroups: [], removedGroups: [] },
+    );
+
+    onChanged({ newGroups, updatedGroups, removedGroups });
+  },
+  async removeGroup(groupId: string) {
+    return chrome.storage.local.remove(groupId);
   },
   async pushTabActivity({
     tabId,
@@ -82,10 +213,41 @@ export const InterpolateStorage = {
   async create(interpolationsToCreate: AnyInterpolation | AnyInterpolation[]) {
     const caller = "create";
     try {
+      const formatInterp = (interp: AnyInterpolation) => {
+        switch (interp.type) {
+          case "headers":
+            return createHeaderInterpolation({
+              name: interp.name,
+              headerKey: interp.details.headerKey,
+              headerValue: interp.details.headerValue,
+              id: interp.details.id,
+            });
+          case "mockAPI":
+            return createMockAPIInterpolation({
+              name: interp.name,
+              ...interp.details,
+            });
+          case "redirect":
+            return createRedirectInterpolation({
+              destination: interp.details.destination,
+              source: interp.details.regexFilter,
+              id: interp.details.id,
+              name: interp.name,
+            });
+          case "script":
+            return createScriptInterpolation({
+              script: interp.details.js?.[0].code!,
+              matches: interp.details.matches![0],
+              name: interp.name,
+              id: interp?.details?.id,
+            });
+        }
+      };
+
       await this.setInterpolations(
         Array.isArray(interpolationsToCreate)
-          ? interpolationsToCreate
-          : [interpolationsToCreate],
+          ? interpolationsToCreate.map(formatInterp)
+          : [formatInterp(interpolationsToCreate)],
       );
     } catch (e) {
       this.logError(caller, e);
@@ -112,6 +274,11 @@ export const InterpolateStorage = {
     const caller = "deleteAll";
     try {
       return chrome.storage?.local?.clear();
+    } catch (e) {
+      this.logError(caller, e as string);
+    }
+    try {
+      return chrome.userScripts.unregister();
     } catch (e) {
       this.logError(caller, e as string);
     }
