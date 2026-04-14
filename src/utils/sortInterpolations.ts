@@ -3,7 +3,7 @@ import { AnyInterpolation } from "./factories/Interpolation";
 import { GroupConfigInStorage } from "./factories/InterpolationGroup";
 
 export const sortInterpolations = (
-  interpolations: AnyInterpolation[] | GroupConfigInStorage[],
+  interpolations: (AnyInterpolation | GroupConfigInStorage)[],
   sortOption: SortOption,
 ) => {
   switch (sortOption) {

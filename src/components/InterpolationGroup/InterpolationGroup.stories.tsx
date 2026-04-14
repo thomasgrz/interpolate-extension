@@ -12,6 +12,7 @@ const meta = preview.meta({
 export default meta;
 
 export const Default = meta.story({
+  // @ts-expect-error TODO: FIXME: types issues
   args: {
     name: "test group",
     interpolations: [
@@ -25,11 +26,13 @@ export const Default = meta.story({
         headerValue: "asdfoijoij",
         name: "asdoiajsdifs",
       }),
+      // @ts-expect-error TODO: FIXME:
       createScriptInterpolation({
         script: "stringasdfas",
         runAt: "document_start",
         matches: "asdfasdf",
       }),
+      // @ts-expect-error TODO: FIXME:
       createMockAPIInterpolation({ isJson: true, body: "asdfoiaiosjdf" }),
     ],
   },

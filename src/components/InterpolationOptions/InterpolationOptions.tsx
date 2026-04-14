@@ -19,17 +19,47 @@ export const InterpolationOptions = ({
   config:
     | AnyInterpolation
     | AnyInterpolation[]
-    | {
-        groupName: string;
-        interpolations: AnyInterpolation[];
-      };
+    | (GroupConfigInStorage & { interpolations: AnyInterpolation[] });
   disableAddToGroup?: boolean;
-  onEditSelected: (config?: AnyInterpolation | GroupConfigInStorage) => void;
+  onEditSelected: (
+    config?: AnyInterpolation | AnyInterpolation[] | GroupConfigInStorage,
+  ) => void;
   onDeleteSelected: () => void;
 }) => {
   const { groups, addToGroup } = useInterpolationsContext();
   const handleCopyConfig = () => {
-    const json = JSON.stringify(config);
+    const isGroup = !Array.isArray(config) && config.type === "group";
+    let strippedConfig = {};
+    if (isGroup) {
+      strippedConfig = config.interpolations?.map((interp) => {
+        const { id, ...details } = interp.details;
+        const { enabledByUser, createdAt, error, isActive, ...rest } = interp;
+
+        return {
+          ...rest,
+          details,
+        };
+      });
+    } else if (Array.isArray(config)) {
+      strippedConfig = config.map((interp) => {
+        const { id, ...details } = interp.details;
+        const { enabledByUser, createdAt, error, isActive, ...rest } = interp;
+
+        return {
+          ...rest,
+          details,
+        };
+      });
+    } else if (config.type !== "group") {
+      const { id, ...details } = config.details;
+      const { enabledByUser, createdAt, error, isActive, ...rest } = config;
+
+      return {
+        ...rest,
+        details,
+      };
+    }
+    const json = JSON.stringify(strippedConfig);
     const data = [new ClipboardItem({ "text/plain": json })];
 
     navigator.clipboard.write(data);

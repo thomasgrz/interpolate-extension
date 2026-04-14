@@ -29,14 +29,19 @@ import { Label } from "radix-ui";
 import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
 import { CreateGroupView } from "../CreateGroupView/CreateGroupView.tsx";
 import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
+import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 
 export const DashboardView = () => {
-  const { interpolations, groups, recentlyActive } = useInterpolationsContext();
+  const { interpolations, recentlyActive } = useInterpolationsContext();
   const [sortOption, setSortOption] = useState<SortOption>(SortOption.NEWEST);
   const [selectedTab, setSelectedTab] = useState("all");
   const [filter, setFilter] = useState("");
   const sortedInterpolations = useMemo(() => {
-    return sortInterpolations(interpolations!, sortOption);
+    const noInterps = !interpolations?.length;
+    if (noInterps) return;
+    return sortInterpolations(interpolations, sortOption).filter((interp) =>
+      interp?.name?.toLowerCase()?.includes(filter?.toLowerCase()),
+    );
   }, [sortOption, interpolations]);
   const [error, setError] = useState<null | string>(null);
 
@@ -47,13 +52,6 @@ export const DashboardView = () => {
   };
 
   const parsedFilterValue = useMemo(() => filter?.trim(), [filter]);
-  const filteredSortedOptions = useMemo(
-    () =>
-      sortedInterpolations?.filter((interp) =>
-        interp?.name?.toLowerCase()?.includes(filter?.toLowerCase()),
-      ),
-    [filter],
-  );
   const enabledInterpolations = useMemo(
     () => interpolations?.filter((interp) => interp?.enabledByUser),
     [sortedInterpolations],
@@ -88,7 +86,7 @@ export const DashboardView = () => {
 
   return (
     <ErrorBoundary
-      onError={(error, errorInfo) => setError(error?.stack)}
+      onError={(error) => setError(JSON.stringify(error?.stack))}
       fallback={
         <Callout.Root style={{ height: "100%" }} color="red">
           {error}
@@ -183,9 +181,7 @@ export const DashboardView = () => {
             </Flex>
             {showFilterMatchText && (
               <Text size="1">
-                {filteredSortedOptions?.length}{" "}
-                {filteredSortedOptions?.length === 1 ? "match" : "matches"} for
-                "{filter}"
+                {`showing ${sortedInterpolations?.length} match${sortedInterpolations?.length === 1 ? "" : "es"} for "${filter}"`}
               </Text>
             )}
             <Tabs.Content value="all">
@@ -204,9 +200,7 @@ export const DashboardView = () => {
                 )}
 
                 <InterpolationsListView
-                  configs={
-                    filter ? filteredSortedOptions : sortedInterpolations
-                  }
+                  configs={sortedInterpolations as AnyInterpolation[]}
                 />
               </Flex>
             </Tabs.Content>

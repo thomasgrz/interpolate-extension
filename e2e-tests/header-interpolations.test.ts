@@ -1,7 +1,7 @@
 import { expect, test } from "./fixtures/expect";
 import { createTestHeaderInterpolation } from "./fixtures/createTestHeaderInterpolation";
 
-test("should apply header rule", async ({ page, extensionId, network }) => {
+test("should apply header rule", async ({ page, extensionId }) => {
   // Create a header modification rule
   await createTestHeaderInterpolation({
     page,

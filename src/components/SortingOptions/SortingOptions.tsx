@@ -1,5 +1,4 @@
 import { Flex, Select, Text } from "@radix-ui/themes";
-import { useEffect } from "react";
 
 export enum SortOption {
   A_TO_Z = "atoz",

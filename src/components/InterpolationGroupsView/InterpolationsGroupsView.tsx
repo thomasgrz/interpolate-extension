@@ -6,9 +6,6 @@ import {
   Button,
   Card,
   Flex,
-  Heading,
-  IconButton,
-  Separator,
   Strong,
   Text,
   Tooltip,
@@ -37,15 +34,16 @@ export const InterpolationsGroupsView = ({
   const [deleteModalConfig, setDeleteModalConfig] =
     useState<GroupConfigInStorage | null>(null);
   const [hydratedGroups, setHydratedGroups] = useState<
-    | { createdAt: number; name: string; interpolations: AnyInterpolation[] }[]
-    | []
+    (GroupConfigInStorage & { interpolations: AnyInterpolation[] })[] | []
   >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [expandedGroups, setEpxandedGroups] = useState<Record<string, boolean>>(
     {},
   );
   const [showGroupEditModal, setShowGroupEditModal] = useState(false);
-  const [editGroup, setEditGroup] = useState(null);
+  const [editGroup, setEditGroup] = useState<
+    (GroupConfigInStorage & { interpolations: AnyInterpolation[] }) | null
+  >(null);
   useEffect(() => {
     const hydrateGroups = async () => {
       return Promise.all(
@@ -56,19 +54,22 @@ export const InterpolationsGroupsView = ({
           );
           return {
             ...rest,
-            interpolations: Object.values(interpolations),
+            interpolations: Object.values(interpolations) as AnyInterpolation[],
           };
         }),
       );
     };
 
     hydrateGroups().then((hydrated) => {
+      // @ts-expect-error TODO: FIXME: types
       setHydratedGroups(hydrated);
       setLoading(false);
     });
   }, [groups]);
 
-  const onEditSelected = (config: GroupConfigInStorage) => {
+  const onEditSelected = (
+    config: GroupConfigInStorage & { interpolations: AnyInterpolation[] },
+  ) => {
     setShowGroupEditModal(true);
     setEditGroup(config);
   };
@@ -80,7 +81,7 @@ export const InterpolationsGroupsView = ({
 
   const handleDeleteGroup = () => {
     setShowDeleteModal(false);
-    removeGroup(deleteModalConfig?.groupId);
+    removeGroup(deleteModalConfig!.groupId!);
     setDeleteModalConfig(null);
   };
 
@@ -90,21 +91,21 @@ export const InterpolationsGroupsView = ({
   };
 
   const sortedHydratedGroups = useMemo(() => {
+    // @ts-expect-error TODO: FIXME: types
     return sortInterpolations(hydratedGroups, sortOption).filter((group) =>
       group.name?.toLowerCase?.()?.includes(query ?? ""),
     ) as (GroupConfigInStorage & { interpolations: AnyInterpolation[] })[];
   }, [hydratedGroups, sortOption, query]);
-  const noGroups = !loading && !hydratedGroups.length;
+  const noGroups = !loading && !hydratedGroups?.length;
   const onGroupOpenChange = (groupName: string, isOpen: boolean) => {
     setEpxandedGroups((prevState) => ({ ...prevState, [groupName]: isOpen }));
   };
-
   return (
     <Flex direction="column" gap="2" p="2">
       {showGroupEditModal && (
         <CreateGroupView
           onSuccess={() => setShowGroupEditModal(false)}
-          onOpenChange={(isOpen) => setShowGroupEditModal(false)}
+          onOpenChange={() => setShowGroupEditModal(false)}
           forceOpen={true}
           hideTrigger
           config={editGroup}
@@ -125,7 +126,7 @@ export const InterpolationsGroupsView = ({
           Showing {sortedHydratedGroups?.length} groups matching "{query}"
         </Text>
       )}
-      {sortedHydratedGroups.map((config, index) => (
+      {sortedHydratedGroups.map((config) => (
         <>
           <Card variant="surface" key={config.groupId}>
             <Flex justify="center" gap="1" direction="column">
@@ -142,11 +143,9 @@ export const InterpolationsGroupsView = ({
                 <InterpolationOptions
                   disableAddToGroup
                   onDeleteSelected={() => onDeleteSelected(config)}
+                  // @ts-expect-error TODO: FIXME: types
                   onEditSelected={onEditSelected}
-                  config={{
-                    groupName: config.name,
-                    interpolations: config.interpolations,
-                  }}
+                  config={config}
                 />
               </Flex>
               <Flex width="stretch" direction="column">
@@ -157,8 +156,8 @@ export const InterpolationsGroupsView = ({
                   }
                 >
                   <Flex width="stretch" justify="between">
-                    <Text size="1">
-                      Created: {new Date(config.createdAt).toDateString()}
+                    <Text size="1" style={{ fontSize: "0.5em" }}>
+                      {new Date(config.createdAt).toDateString()}
                     </Text>
                     <Tooltip
                       content={
@@ -204,8 +203,8 @@ export const InterpolationsGroupsView = ({
         </>
       ))}
       {noGroups && (
-        <Box mt="30px">
-          <Text size="2">No groups yet</Text>
+        <Box>
+          <Text size="1">No groups yet</Text>
         </Box>
       )}
     </Flex>

@@ -3,8 +3,6 @@ import { Callout, Flex, TextArea, Text, Switch } from "@radix-ui/themes";
 import { ChangeEvent, useCallback, useState } from "react";
 import { InterpolateStorage } from "../../utils/storage/InterpolateStorage/InterpolateStorage";
 import { useForm } from "@tanstack/react-form";
-import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
-import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
 import { BrowseInterpolations } from "../BrowseInterpolations/BrowseInterpolations";
 import { Label } from "radix-ui";

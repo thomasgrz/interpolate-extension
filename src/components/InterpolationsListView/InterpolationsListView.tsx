@@ -5,10 +5,8 @@ import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 
 export const InterpolationsListView = ({
   configs,
-  groups,
   hideRuleToggle,
 }: {
-  groups?: [string, string[]];
   hideRuleToggle?: boolean;
   configs?: AnyInterpolation[];
 }) => {

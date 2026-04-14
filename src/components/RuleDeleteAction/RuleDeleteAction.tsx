@@ -1,19 +1,11 @@
 import { TrashIcon } from "@radix-ui/react-icons";
-import {
-  AlertDialog,
-  Button,
-  Flex,
-  Heading,
-  IconButton,
-  Text,
-} from "@radix-ui/themes";
+import { AlertDialog, Button, Flex, Heading, Text } from "@radix-ui/themes";
 
 export const RuleDeleteAction = ({
   onDelete,
   title = "Delete this rule forever?",
   info = "You can also just pause this rule",
   open,
-  onOpenChange,
   hideTrigger,
   onCancel,
 }: {

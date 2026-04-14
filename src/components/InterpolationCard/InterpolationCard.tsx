@@ -42,7 +42,6 @@ export const InterpolationCard = ({
   hideRuleToggle,
   hideOptions,
   noShadow,
-  compact,
 }: {
   hideRuleToggle?: boolean;
   hideOptions?: boolean;

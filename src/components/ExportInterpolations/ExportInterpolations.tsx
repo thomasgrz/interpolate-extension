@@ -69,11 +69,13 @@ export const ExportInterpolations = () => {
   const { interpolations } = useInterpolationsContext();
   const [sortOption, setSortOption] = useState<SortOption>(SortOption.NEWEST);
   const sortedOptions = useMemo(() => {
-    return sortInterpolations(interpolations ?? [], sortOption);
+    const noInterps = !interpolations?.length;
+    if (noInterps) return [];
+    return sortInterpolations(interpolations, sortOption);
   }, [sortOption, interpolations]);
   const filteredSorted = sortedOptions?.filter((interp) =>
     interp?.name?.toLowerCase()?.includes(query),
-  );
+  ) as AnyInterpolation[];
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };

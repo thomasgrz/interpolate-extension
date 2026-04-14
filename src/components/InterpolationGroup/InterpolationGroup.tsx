@@ -1,5 +1,5 @@
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
-import { Box, Card, Flex, Heading, Switch, Separator } from "@radix-ui/themes";
+import { Card, Flex, Heading, Switch } from "@radix-ui/themes";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
 
 export const InterpolationGroup = ({

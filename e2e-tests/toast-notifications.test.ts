@@ -11,11 +11,14 @@ test("should display toast notification for script interpolation", async ({
   await enableUserScriptsForExtension({ page });
 
   await createTestScriptInterpolation({
+    endOnOptionsPage: true,
     page,
     extensionId,
     script: "console.log(null);",
     name: "no op script",
   });
+
+  await page.getByText("Browser UI").click();
 
   const toast = page.getByTestId("script-preview-no op script");
 
@@ -53,6 +56,7 @@ test("should display toast notifications for redirect interpolations", async ({
     source: ".*google.com.*",
   });
 
+  await page.getByText("Browser UI").click();
   await page.goto("https://google.com");
   await page.reload();
   const content = page.getByText("Example domain");

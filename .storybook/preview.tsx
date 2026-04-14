@@ -21,7 +21,11 @@ export default definePreview({
       return (
         <ErrorBoundary fallback="something went horribly wrong~">
           <Theme radius="large">
-            <InterpolateProvider initialValue={initialValue}>
+            <InterpolateProvider
+              initialValue={{
+                interpolations: initialValue,
+              }}
+            >
               <Story />
             </InterpolateProvider>
           </Theme>

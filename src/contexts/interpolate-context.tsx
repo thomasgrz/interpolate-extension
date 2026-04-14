@@ -22,17 +22,17 @@ export const InterpolateContext = createContext({
   interpolations: [] as AnyInterpolation[] | [] | undefined,
   add: async (_interps: AnyInterpolation[] | AnyInterpolation) => {},
   addToGroup: (_value: {
-    interps: AnyInterpolation[] | AnyInterpolation;
+    interps: AnyInterpolation[] | AnyInterpolation | GroupConfigInStorage;
     groupName: string;
   }) => {},
   allPaused: undefined as boolean | undefined,
   groups: [] as GroupConfigInStorage[],
-  pause: (_id: string) => {},
+  pause: (_id: string | number) => {},
   pauseAll: () => {},
   recentlyActive: [] as AnyInterpolation[] | [] | undefined,
-  resume: (_id: string) => {},
+  resume: (_id: string | number) => {},
   resumeAll: () => {},
-  remove: (_id: string) => {},
+  remove: (_id: string | number) => {},
   removeAll: () => {},
   refresh: () => {},
   removeGroup: (_id: string) => {},
@@ -49,11 +49,11 @@ export const InterpolateProvider = ({
   children?: ReactNode;
   initialValue?: {
     interpolations: AnyInterpolation[];
-    groups: GroupConfigInStorage[];
+    groups?: GroupConfigInStorage[];
   };
 } = {}) => {
   const [groups, setGroups] = useState<GroupConfigInStorage[]>(
-    initialValue?.groups,
+    initialValue?.groups ?? [],
   );
   const isInitialized = useRef(false);
   const [interpolations, setInterpolations] = useState<AnyInterpolation[]>([]);
@@ -205,12 +205,12 @@ export const InterpolateProvider = ({
 
   const addToGroup = ({
     interps,
-    groupName,
+    groupId,
   }: {
-    groupName: string;
+    groupId: string;
     interps: AnyInterpolation[] | AnyInterpolation;
   }) => {
-    return InterpolateStorage?.addToGroup({ groupName, interps });
+    return InterpolateStorage?.addToGroup({ groupId, interps });
   };
 
   useEffect(() => {
@@ -319,6 +319,7 @@ export const InterpolateProvider = ({
     <InterpolateContext
       value={{
         add,
+        // @ts-expect-error TODO: FIXME: types
         addToGroup,
         allPaused,
         interpolations,

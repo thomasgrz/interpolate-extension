@@ -1,4 +1,4 @@
-import { PlusIcon } from "@radix-ui/react-icons";
+import { CrossCircledIcon, PlusIcon } from "@radix-ui/react-icons";
 import {
   Box,
   Button,
@@ -6,7 +6,6 @@ import {
   Dialog,
   Flex,
   Heading,
-  Strong,
   Text,
 } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
@@ -15,11 +14,13 @@ import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { useMemo, useState } from "react";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
-import { Label } from "radix-ui";
 import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
-import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
+import {
+  createGroupId,
+  GroupConfigInStorage,
+} from "#src/utils/factories/InterpolationGroup.ts";
 
 export enum CreateGroupLabel {
   NAME = "Group name:",
@@ -36,7 +37,9 @@ export const CreateGroupView = ({
   onOpenChange,
   config,
 }: {
-  config?: { groupName: string; interpolations: AnyInterpolation[] } | null;
+  config?:
+    | (GroupConfigInStorage & { interpolations: AnyInterpolation[] })
+    | null;
   forceOpen?: boolean;
   hideTrigger?: boolean;
   onSuccess?: () => void;
@@ -73,16 +76,15 @@ export const CreateGroupView = ({
     return selected;
   }, [selectedStates, config]);
 
-  console.log({ selectedStates, config, selectedInterpolations });
   const form = useForm({
     defaultValues: {
-      groupName: config?.groupName ?? "",
+      name: config?.name ?? "",
     },
     onSubmit: async ({ value, formApi }) => {
       await InterpolateStorage.createGroup({
-        name: value?.groupName,
+        name: value?.name,
         interpolations: selectedInterpolations,
-        groupId: InterpolateStorage.makeGroupId(value?.groupName),
+        groupId: config?.groupId ?? createGroupId(),
       });
       onSuccess?.();
       setIsOpen(false);
@@ -92,11 +94,11 @@ export const CreateGroupView = ({
       onSubmit({ value }) {
         const errors = new Map();
         const nameError = validateStringLength({
-          value: value.groupName,
+          value: value.name,
           error: CreateGroupFormError.NAME,
         });
         if (nameError) {
-          errors.set("groupName", nameError);
+          errors.set("name", nameError);
         }
 
         const interpsErrors =
@@ -113,7 +115,7 @@ export const CreateGroupView = ({
 
         return {
           fields: {
-            groupName: errors.get("groupName") ?? null,
+            name: errors.get("name") ?? null,
           },
         };
       },
@@ -134,15 +136,14 @@ export const CreateGroupView = ({
     });
   };
 
+  const handleOnOpenChange = (isOpen: boolean) => {
+    setIsOpen(isOpen);
+    onOpenChange?.(isOpen);
+    setSelectedStates({});
+  };
   return (
     <Box>
-      <Dialog.Root
-        open={forceOpen ?? isOpen}
-        onOpenChange={(open) => {
-          setIsOpen(open);
-          onOpenChange?.(open);
-        }}
-      >
+      <Dialog.Root open={forceOpen ?? isOpen} onOpenChange={handleOnOpenChange}>
         {hideTrigger ? null : (
           <Dialog.Trigger>
             <Button
@@ -169,7 +170,7 @@ export const CreateGroupView = ({
             }}
           >
             <form.Field
-              name="groupName"
+              name="name"
               children={(field) => (
                 <TextInput
                   onChange={(e) => field.handleChange(e.target.value)}
@@ -198,8 +199,14 @@ export const CreateGroupView = ({
                 );
               })}
             </Flex>
-            <Flex align="end" justify="between">
+            <Flex width="stretch" justify="start" pt="3">
               <Text size="2">{numOfSelected} selected</Text>
+            </Flex>
+            <Flex align="end" justify="between">
+              <Button type="button" onClick={() => handleOnOpenChange(false)}>
+                <CrossCircledIcon />
+                Cancel
+              </Button>
               <SubmitButton disabled={numOfSelected < 1}>
                 {config ? "Save" : "Create"} group
               </SubmitButton>

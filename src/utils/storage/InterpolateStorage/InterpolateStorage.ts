@@ -12,13 +12,13 @@ import {
   GroupConfigInStorage,
   InterpolationGroup,
 } from "#src/utils/factories/InterpolationGroup.ts";
+import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
+import { createMockAPIInterpolation } from "#src/utils/factories/createMockAPIInterpolation/createMockAPIInterpolation.ts";
+import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
 
 export const InterpolateStorage = {
   BROWSER_UI_TOGGLE_KEY: "displayBrowserUI",
   DEBUGGING_TABS_KEY: "debuggingTabs",
-  makeGroupId(name: string) {
-    return `group-config-${name?.trim?.()?.toLowerCase?.()}`;
-  },
   logInvocation(caller: string) {
     logger(`(invocation): ${caller}`);
   },
@@ -30,16 +30,13 @@ export const InterpolateStorage = {
   },
   async addToGroup({
     interps,
-    groupName,
+    groupId,
   }: {
-    groupName: string;
+    groupId: string;
     interps: AnyInterpolation[] | AnyInterpolation;
   }) {
-    const storageRecordKey = this.makeGroupId(groupName);
-    const storageRecords = await chrome.storage.local.get([
-      this.makeGroupId(groupName),
-    ]);
-    const currentGroupFromRecord = storageRecords?.[storageRecordKey];
+    const storageRecords = await chrome.storage.local.get([groupId]);
+    const currentGroupFromRecord = storageRecords?.[groupId];
     const updatedInterpolationIds = [
       ...currentGroupFromRecord?.interpolationIds,
       ...(Array.isArray(interps)
@@ -55,7 +52,7 @@ export const InterpolateStorage = {
 
     const groupStorageRecord = updatedGroup.createStorageRecord();
 
-    chrome.storage.local.set({ [storageRecordKey]: groupStorageRecord });
+    chrome.storage.local.set({ [groupId]: groupStorageRecord });
   },
   async createGroup({
     interpolations,
@@ -67,14 +64,13 @@ export const InterpolateStorage = {
     name: string;
   }) {
     try {
+      const group = new InterpolationGroup({
+        groupId,
+        name,
+        interpolationIds: interpolations?.map((interp) => interp.details?.id),
+      });
       await chrome.storage.local.set({
-        [groupId ?? this.makeGroupId(name)]: {
-          createdAt: new Date().getTime(),
-          name,
-          groupId: groupId ?? this.makeGroupId(name),
-          isEnabledByUser: true,
-          interpolationIds: interpolations.map((interp) => interp.details.id),
-        },
+        [groupId ?? group.groupId]: group.createStorageRecord(),
       });
     } catch (e) {
       console.error(e);
@@ -119,7 +115,7 @@ export const InterpolateStorage = {
       removedGroups: GroupConfigInStorage[];
     }) => void,
   ) {
-    const groupChanges = Object.entries(changes).filter(([key, value]) =>
+    const groupChanges = Object.entries(changes).filter(([key]) =>
       key.startsWith("group-"),
     );
     const noGroupChanges = !groupChanges?.length;
@@ -217,10 +213,26 @@ export const InterpolateStorage = {
   async create(interpolationsToCreate: AnyInterpolation | AnyInterpolation[]) {
     const caller = "create";
     try {
+      const formatInterp = (interp: AnyInterpolation) => {
+        switch (interp.type) {
+          case "headers":
+            // @ts-expect-error TODO: FIXME: types
+            return createHeaderInterpolation(interp);
+          case "mockAPI":
+            return createMockAPIInterpolation(interp);
+          case "redirect":
+            // @ts-expect-error TODO: FIXME: types
+            return createRedirectInterpolation(interp);
+          case "script":
+            // @ts-expect-error TODO: FIXME: types
+            return createScriptInterpolation(interp);
+        }
+      };
+
       await this.setInterpolations(
         Array.isArray(interpolationsToCreate)
-          ? interpolationsToCreate
-          : [interpolationsToCreate],
+          ? interpolationsToCreate.map(formatInterp)
+          : [formatInterp(interpolationsToCreate)],
       );
     } catch (e) {
       this.logError(caller, e);
