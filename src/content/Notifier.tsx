@@ -1,6 +1,6 @@
 import { InterpolationCard } from "@/components/InterpolationCard/InterpolationCard";
 import styles from "./Notifier.module.scss";
-import { Flex } from "@radix-ui/themes";
+import { Card, Flex, Strong, Text } from "@radix-ui/themes";
 import { useToastCreationContext } from "#src/hooks/useToastCreationContext/useToastCreationContext.ts";
 import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
@@ -76,12 +76,18 @@ export const Notifier = () => {
 
   return isBrowserUIEnabled ? (
     <InterpolateProvider>
-      <Flex
-        align="center"
+      <Card
+        variant="classic"
         className={styles.GlobalInterpolationOptionsContainer}
+        m="3"
       >
-        <GlobalInterpolationOptions allowDelete={false} />
-      </Flex>
+        <Flex gap="2" align="start" justify="center">
+          <Text size="2">
+            <Strong>interpolate</Strong>
+          </Text>
+          <GlobalInterpolationOptions allowDelete={false} />
+        </Flex>
+      </Card>
     </InterpolateProvider>
   ) : null;
 };

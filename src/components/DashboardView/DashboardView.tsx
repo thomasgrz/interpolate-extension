@@ -42,7 +42,7 @@ export const DashboardView = () => {
     return sortInterpolations(interpolations, sortOption).filter((interp) =>
       interp?.name?.toLowerCase()?.includes(filter?.toLowerCase()),
     );
-  }, [sortOption, interpolations]);
+  }, [sortOption, interpolations, filter]);
   const [error, setError] = useState<null | string>(null);
 
   const [showGroups, setShowGroups] = useState(false);
@@ -81,8 +81,7 @@ export const DashboardView = () => {
     chrome.storage.local.set({ sortOption: option });
   };
 
-  const showFilterMatchText =
-    !!parsedFilterValue && selectedTab === "all" && !showGroups;
+  const showFilterMatchText = !!parsedFilterValue;
 
   return (
     <ErrorBoundary
@@ -179,11 +178,7 @@ export const DashboardView = () => {
                 </Flex>
               )}
             </Flex>
-            {showFilterMatchText && (
-              <Text size="1">
-                {`showing ${sortedInterpolations?.length} match${sortedInterpolations?.length === 1 ? "" : "es"} for "${filter}"`}
-              </Text>
-            )}
+
             <Tabs.Content value="all">
               <Flex direction="column" gap="2">
                 <Flex align="center" width="stretch" justify="center" pt="2">
@@ -198,10 +193,18 @@ export const DashboardView = () => {
                     <Separator size="4" />
                   </>
                 )}
-
-                <InterpolationsListView
-                  configs={sortedInterpolations as AnyInterpolation[]}
-                />
+                {showFilterMatchText && (
+                  <Text size="1">
+                    {`showing ${sortedInterpolations?.length} interpolation${sortedInterpolations?.length === 1 ? "" : "s"} match${sortedInterpolations?.length === 1 ? "" : "es"} for "${filter}"`}
+                  </Text>
+                )}
+                {interpolations?.length ? (
+                  <InterpolationsListView
+                    configs={sortedInterpolations as AnyInterpolation[]}
+                  />
+                ) : (
+                  <Text size="1">No interpolations yet</Text>
+                )}
               </Flex>
             </Tabs.Content>
             <Tabs.Content value="enabled">

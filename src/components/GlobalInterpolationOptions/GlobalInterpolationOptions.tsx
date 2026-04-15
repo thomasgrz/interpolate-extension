@@ -20,8 +20,8 @@ export const GlobalInterpolationOptions = ({
   const ruleCount = useMemo(() => interpolations?.length, [interpolations]);
 
   return (
-    <Box p="1">
-      <Flex justify={"between"} flexGrow={"1"} width="100%">
+    <Box>
+      <Flex flexGrow="1" wrap="wrap" justify={"between"} width="100%">
         {allPaused ? (
           <Button
             radius="full"
@@ -33,7 +33,8 @@ export const GlobalInterpolationOptions = ({
             onClick={resumeAll}
           >
             <Play />
-            Resume interpolations <Count count={ruleCount} />
+            Resume all
+            <Count count={ruleCount} />
           </Button>
         ) : (
           <Button
@@ -46,7 +47,7 @@ export const GlobalInterpolationOptions = ({
             onClick={pauseAll}
           >
             <Pause />
-            Pause interpolations
+            Pause all
             <Count count={ruleCount} />
           </Button>
         )}
