@@ -25,15 +25,11 @@
   "content_scripts": [
     {
       "js": [
-        "assets/main.tsx-loader-Dfh4rTfL.js"
+        "src/content/main.tsx-loader.js"
       ],
       "matches": [
         "https://*/*",
         "http://*/*"
-      ],
-      "css": [
-        "assets/GlobalInterpolationOptions-B0uGNpFw.css",
-        "assets/main-Besk3Caj.css"
       ]
     }
   ],
@@ -50,23 +46,23 @@
   },
   "web_accessible_resources": [
     {
-      "matches": [
-        "*://*/*"
-      ],
       "resources": [
         "public/logo.png"
       ],
-      "use_dynamic_url": false
+      "extension_ids": [
+        "*"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
     },
     {
       "matches": [
-        "http://*/*",
-        "https://*/*"
+        "<all_urls>"
       ],
       "resources": [
-        "assets/GlobalInterpolationOptions-BTCY2wb3.js",
-        "assets/InterpolateStorage-COm7ct_p.js",
-        "assets/main.tsx-B7D5IQTb.js"
+        "**/*",
+        "*"
       ],
       "use_dynamic_url": false
     }

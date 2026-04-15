@@ -54,7 +54,7 @@ export const InterpolationOptions = ({
       const { id, ...details } = config.details;
       const { enabledByUser, createdAt, error, isActive, ...rest } = config;
 
-      return {
+      strippedConfig = {
         ...rest,
         details,
       };
