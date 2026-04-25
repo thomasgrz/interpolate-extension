@@ -6,6 +6,7 @@ import {
   Dialog,
   Flex,
   Heading,
+  ScrollArea,
   Text,
 } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
@@ -21,6 +22,7 @@ import {
   createGroupId,
   GroupConfigInStorage,
 } from "#src/utils/factories/InterpolationGroup.ts";
+import styles from "./CreateGroupView.module.scss";
 
 export enum CreateGroupLabel {
   NAME = "Group name:",
@@ -101,12 +103,6 @@ export const CreateGroupView = ({
           errors.set("name", nameError);
         }
 
-        const interpsErrors =
-          numOfSelected < 1 ? "Please select 1 or more interpolations" : null;
-
-        if (interpsErrors) {
-          errors.set("interps", interpsErrors);
-        }
         const isValid = !errors?.size;
 
         if (isValid) {
@@ -158,60 +154,63 @@ export const CreateGroupView = ({
             </Button>
           </Dialog.Trigger>
         )}
-        <Dialog.Content>
-          <Flex justify={"center"}>
-            <Heading size="3">{config ? "Edit" : "Create"} group</Heading>
+        <Dialog.Content className={styles.CreateGroupView}>
+          <Flex direction="column" style={{ height: "100%" }}>
+            <form
+              style={{ height: "70%" }}
+              onSubmit={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                await form.handleSubmit();
+              }}
+            >
+              <Flex justify={"center"}>
+                <Heading size="3">{config ? "Edit" : "Create"} group</Heading>
+              </Flex>
+              <form.Field
+                name="name"
+                children={(field) => (
+                  <TextInput
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    errors={field.state.meta.errors}
+                    placeholder="My Favorite Interpolations"
+                    label={CreateGroupLabel.NAME}
+                    onBlur={field.handleBlur}
+                    value={field.state.value}
+                  />
+                )}
+              />
+              <ScrollArea type="always" scrollbars="vertical">
+                <Flex gap="2" direction="column">
+                  {interpolations?.map?.((interp) => {
+                    return (
+                      <Flex width="stretch" flexGrow="1" gap="2" align="center">
+                        <Checkbox
+                          key={interp?.details?.id}
+                          defaultChecked={
+                            selectedStates[interp?.details?.id]?.isChecked
+                          }
+                          // @ts-expect-error TODO: fix types
+                          onClick={(e) => handleChange(e, interp)}
+                        />
+                        <InterpolationCard hideRuleToggle info={interp} />
+                      </Flex>
+                    );
+                  })}
+                </Flex>
+              </ScrollArea>
+              <Flex width="stretch" justify="start" pt="3">
+                <Text size="2">{numOfSelected} selected</Text>
+              </Flex>
+              <Flex align="end" justify="between">
+                <Button type="button" onClick={() => handleOnOpenChange(false)}>
+                  <CrossCircledIcon />
+                  Cancel
+                </Button>
+                <SubmitButton>{config ? "Save" : "Create"} group</SubmitButton>
+              </Flex>
+            </form>
           </Flex>
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              await form.handleSubmit();
-            }}
-          >
-            <form.Field
-              name="name"
-              children={(field) => (
-                <TextInput
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  errors={field.state.meta.errors}
-                  placeholder="My Favorite Interpolations"
-                  label={CreateGroupLabel.NAME}
-                  onBlur={field.handleBlur}
-                  value={field.state.value}
-                />
-              )}
-            />
-            <Flex gap="2" direction="column" pt="3">
-              {interpolations?.map?.((interp) => {
-                return (
-                  <Flex width="stretch" flexGrow="1" gap="2" align="center">
-                    <Checkbox
-                      key={interp?.details?.id}
-                      defaultChecked={
-                        selectedStates[interp?.details?.id]?.isChecked
-                      }
-                      // @ts-expect-error TODO: fix types
-                      onClick={(e) => handleChange(e, interp)}
-                    />
-                    <InterpolationCard hideRuleToggle info={interp} />
-                  </Flex>
-                );
-              })}
-            </Flex>
-            <Flex width="stretch" justify="start" pt="3">
-              <Text size="2">{numOfSelected} selected</Text>
-            </Flex>
-            <Flex align="end" justify="between">
-              <Button type="button" onClick={() => handleOnOpenChange(false)}>
-                <CrossCircledIcon />
-                Cancel
-              </Button>
-              <SubmitButton disabled={numOfSelected < 1}>
-                {config ? "Save" : "Create"} group
-              </SubmitButton>
-            </Flex>
-          </form>
         </Dialog.Content>
       </Dialog.Root>
     </Box>

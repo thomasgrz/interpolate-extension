@@ -4,6 +4,7 @@ import {
   GearIcon,
   ClipboardCopyIcon,
   TrashIcon,
+  CheckCircledIcon,
 } from "@radix-ui/react-icons";
 import styles from "./InterpolationOptions.module.scss";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
@@ -26,7 +27,7 @@ export const InterpolationOptions = ({
   ) => void;
   onDeleteSelected: () => void;
 }) => {
-  const { groups, addToGroup } = useInterpolationsContext();
+  const { groups, addToGroup, setShowGroups } = useInterpolationsContext();
   const handleCopyConfig = () => {
     const isGroup = !Array.isArray(config) && config.type === "group";
     let strippedConfig = {};
@@ -69,6 +70,14 @@ export const InterpolationOptions = ({
     onEditSelected(config);
   };
 
+  const associatedGroupIds =
+    !Array.isArray(config) &&
+    groups
+      .filter((group) => group.interpolationIds.includes(config?.details?.id))
+      .map((group) => group.groupId);
+  const associatedGroupIdSet = associatedGroupIds
+    ? new Set(associatedGroupIds)
+    : new Set();
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
@@ -99,10 +108,25 @@ export const InterpolationOptions = ({
               {groups.map((group) => (
                 <DropdownMenu.Item
                   onClick={() => {
-                    addToGroup({ interps: config, groupName: group.name });
+                    addToGroup({
+                      interps: config,
+                      groupId: group.groupId,
+                      onSuccess: () => setShowGroups(true),
+                    });
                   }}
                 >
-                  <Flex wrap="wrap">{group.name}</Flex>
+                  <Flex
+                    width="stretch"
+                    wrap="wrap"
+                    align="center"
+                    justify={"between"}
+                    gap="3"
+                  >
+                    {group.name}
+                    {associatedGroupIdSet.has(group.groupId) && (
+                      <CheckCircledIcon />
+                    )}
+                  </Flex>
                 </DropdownMenu.Item>
               ))}
             </DropdownMenu.SubContent>

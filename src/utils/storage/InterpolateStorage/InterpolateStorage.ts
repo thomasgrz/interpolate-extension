@@ -36,23 +36,26 @@ export const InterpolateStorage = {
     interps: AnyInterpolation[] | AnyInterpolation;
   }) {
     const storageRecords = await chrome.storage.local.get([groupId]);
-    const currentGroupFromRecord = storageRecords?.[groupId];
-    const updatedInterpolationIds = [
-      ...currentGroupFromRecord?.interpolationIds,
-      ...(Array.isArray(interps)
-        ? interps?.map?.((interp) => interp?.details?.id)
-        : [interps?.details?.id]),
-    ];
+    const currentGroupFromRecord = storageRecords?.[groupId] ?? {};
+    const interpolationIds = currentGroupFromRecord?.interpolationIds ?? {};
+    const newInterpsIds = Array.isArray(interps)
+      ? interps?.map?.((interp) => interp?.details?.id)
+      : [interps?.details?.id];
+    const updatedInterpolationIds = [...interpolationIds, ...newInterpsIds];
 
     const updatedGroup = new InterpolationGroup({
       name: currentGroupFromRecord?.name,
+      groupId: currentGroupFromRecord?.groupId,
       createdAt: currentGroupFromRecord?.createdAt,
       interpolationIds: updatedInterpolationIds,
     });
 
     const groupStorageRecord = updatedGroup.createStorageRecord();
 
-    chrome.storage.local.set({ [groupId]: groupStorageRecord });
+    chrome.storage.local.set({
+      [groupId]: groupStorageRecord,
+      showGroups: true,
+    });
   },
   async createGroup({
     interpolations,
@@ -71,6 +74,7 @@ export const InterpolateStorage = {
       });
       await chrome.storage.local.set({
         [groupId ?? group.groupId]: group.createStorageRecord(),
+        showGroups: true,
       });
     } catch (e) {
       console.error(e);
