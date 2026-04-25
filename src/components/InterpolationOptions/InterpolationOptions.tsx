@@ -72,6 +72,7 @@ export const InterpolationOptions = ({
 
   const associatedGroupIds =
     !Array.isArray(config) &&
+    config.type !== "group" &&
     groups
       .filter((group) => group.interpolationIds.includes(config?.details?.id))
       .map((group) => group.groupId);
