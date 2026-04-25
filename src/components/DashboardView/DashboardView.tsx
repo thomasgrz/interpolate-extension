@@ -32,7 +32,8 @@ import { InterpolationsGroupsView } from "../InterpolationGroupsView/Interpolati
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 
 export const DashboardView = () => {
-  const { interpolations, recentlyActive } = useInterpolationsContext();
+  const { interpolations, recentlyActive, showGroups, setShowGroups } =
+    useInterpolationsContext();
   const [sortOption, setSortOption] = useState<SortOption>(SortOption.NEWEST);
   const [selectedTab, setSelectedTab] = useState("all");
   const [filter, setFilter] = useState("");
@@ -44,8 +45,6 @@ export const DashboardView = () => {
     );
   }, [sortOption, interpolations, filter]);
   const [error, setError] = useState<null | string>(null);
-
-  const [showGroups, setShowGroups] = useState(false);
 
   const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value);
@@ -83,6 +82,10 @@ export const DashboardView = () => {
 
   const showFilterMatchText = !!parsedFilterValue;
 
+  const onSuccessfulGroupCreation = () => {
+    setShowGroups(true);
+  };
+
   return (
     <ErrorBoundary
       onError={(error) => setError(JSON.stringify(error?.stack))}
@@ -112,7 +115,7 @@ export const DashboardView = () => {
               align={"center"}
               justify="center"
             >
-              <ControlCenter />
+              <ControlCenter onCreate={onSuccessfulGroupCreation} />
               <Tabs.List>
                 <Flex
                   className={styles.Tabs}
@@ -182,7 +185,7 @@ export const DashboardView = () => {
             <Tabs.Content value="all">
               <Flex direction="column" gap="2">
                 <Flex align="center" width="stretch" justify="center" pt="2">
-                  <CreateGroupView />
+                  <CreateGroupView onSuccess={onSuccessfulGroupCreation} />
                 </Flex>
                 {showGroups && (
                   <>

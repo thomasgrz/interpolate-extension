@@ -7,7 +7,7 @@ import { Label } from "radix-ui";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 
-export const ControlCenter = () => {
+export const ControlCenter = ({ onCreate }: { onCreate: () => void }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isBrowserUIEnabled, setIsBrowserUIEnabled] = useState(true);
   const handleOpenChange = (open: boolean) => {
@@ -40,6 +40,7 @@ export const ControlCenter = () => {
         className={styles.FormContainer}
       >
         <CreateInterpolationsView
+          onCreate={onCreate}
           onOpenChange={handleOpenChange}
           isOpen={isOpen}
         />

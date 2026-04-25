@@ -92,9 +92,11 @@ const FormSelectionStep = ({
 export const CreateInterpolationsView = ({
   onOpenChange,
   isOpen,
+  onCreate,
 }: {
   onOpenChange: (value: boolean) => void;
   isOpen: boolean;
+  onCreate: () => void;
 }) => {
   const [step, setStep] = useState(InterpolationOptionSelection.OPTIONS_VIEW);
   const handleChange = (value: InterpolationOptionSelection) => {
@@ -183,7 +185,10 @@ export const CreateInterpolationsView = ({
             <ExportInterpolations />
           )}
           {step === InterpolationOptionSelection.IMPORT && (
-            <ImportInterpolations onSubmit={handleFormSubmit} />
+            <ImportInterpolations
+              onCreate={onCreate}
+              onSubmit={handleFormSubmit}
+            />
           )}
           {step === InterpolationOptionSelection.MOCK_RESPONSE && (
             <MockResponseForm onSubmit={handleFormSubmit} />
