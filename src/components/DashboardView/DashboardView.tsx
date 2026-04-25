@@ -83,6 +83,10 @@ export const DashboardView = () => {
 
   const showFilterMatchText = !!parsedFilterValue;
 
+  const onSuccessfulGroupCreation = () => {
+    setShowGroups(true);
+  };
+
   return (
     <ErrorBoundary
       onError={(error) => setError(JSON.stringify(error?.stack))}
@@ -112,7 +116,7 @@ export const DashboardView = () => {
               align={"center"}
               justify="center"
             >
-              <ControlCenter />
+              <ControlCenter onCreate={onSuccessfulGroupCreation} />
               <Tabs.List>
                 <Flex
                   className={styles.Tabs}
@@ -182,7 +186,7 @@ export const DashboardView = () => {
             <Tabs.Content value="all">
               <Flex direction="column" gap="2">
                 <Flex align="center" width="stretch" justify="center" pt="2">
-                  <CreateGroupView />
+                  <CreateGroupView onSuccess={onSuccessfulGroupCreation} />
                 </Flex>
                 {showGroups && (
                   <>

@@ -16,7 +16,9 @@ export interface ImportInterpolationsValue {
 export const ImportInterpolations = ({
   onSubmit,
   defaultValues,
+  onCreate,
 }: {
+  onCreate: () => void;
   defaultValues?: ImportInterpolationsValue;
   onSubmit?:
     | (({ value }: { value: ImportInterpolationsValue }) => void)
@@ -64,6 +66,7 @@ export const ImportInterpolations = ({
           interpolations: parsedConfig,
           name: groupNameValue,
         });
+        onCreate();
       }
       setIsLoading(false);
     } catch (e) {
