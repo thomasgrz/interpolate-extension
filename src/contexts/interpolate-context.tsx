@@ -23,7 +23,8 @@ export const InterpolateContext = createContext({
   add: async (_interps: AnyInterpolation[] | AnyInterpolation) => {},
   addToGroup: (_value: {
     interps: AnyInterpolation[] | AnyInterpolation | GroupConfigInStorage;
-    groupName: string;
+    groupId: string;
+    onSuccess?: () => void;
   }) => {},
   allPaused: undefined as boolean | undefined,
   groups: [] as GroupConfigInStorage[],
@@ -36,6 +37,8 @@ export const InterpolateContext = createContext({
   removeAll: () => {},
   refresh: () => {},
   removeGroup: (_id: string) => {},
+  showGroups: false,
+  setShowGroups: (_showGroups: boolean) => {},
   sortedInterpolations: [] as AnyInterpolation[],
 });
 
@@ -56,6 +59,7 @@ export const InterpolateProvider = ({
     initialValue?.groups ?? [],
   );
   const isInitialized = useRef(false);
+  const [showGroups, setShowGroups] = useState(false);
   const [interpolations, setInterpolations] = useState<AnyInterpolation[]>([]);
   const [recentlyActive, setRecentlyActive] = useState<
     AnyInterpolation[] | []
@@ -203,6 +207,11 @@ export const InterpolateProvider = ({
     setInterpolations(initialInterps);
   };
 
+  const handleShowGroups = (value: boolean) => {
+    setShowGroups(value);
+    chrome.storage.local.set({ showGroups: value });
+  };
+
   const addToGroup = ({
     interps,
     groupId,
@@ -210,13 +219,14 @@ export const InterpolateProvider = ({
     groupId: string;
     interps: AnyInterpolation[] | AnyInterpolation;
   }) => {
+    setShowGroups(true);
     return InterpolateStorage?.addToGroup({ groupId, interps });
   };
 
   useEffect(() => {
-    InterpolateStorage.getAllGroups().then((initialGroups) =>
-      setGroups(initialGroups),
-    );
+    InterpolateStorage.getAllGroups().then((initialGroups) => {
+      setGroups(initialGroups);
+    });
   }, []);
 
   const callbackRefs = useRef<{
@@ -268,6 +278,13 @@ export const InterpolateProvider = ({
     chrome.tabs?.onActivated?.addListener(async ({ tabId }) => {
       const currentActivity = await InterpolateStorage.getTabActivity(tabId);
       setRecentlyActive(currentActivity);
+    });
+  }, []);
+
+  useEffect(() => {
+    chrome.storage.local.get("showGroups", (records) => {
+      const { showGroups } = records ?? {};
+      setShowGroups(showGroups);
     });
   }, []);
 
@@ -335,6 +352,8 @@ export const InterpolateProvider = ({
         removeAll,
         resume,
         resumeAll,
+        showGroups,
+        setShowGroups: handleShowGroups,
         groups,
         recentlyActive,
         sortedInterpolations,
