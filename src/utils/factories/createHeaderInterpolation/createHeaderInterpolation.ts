@@ -5,7 +5,7 @@ export const createHeaderInterpolation = (rule: {
   headerKey: string;
   headerValue: string;
   name: string;
-  id?: number | null;
+  id?: string | null;
 }) => {
   return new HeaderInterpolation({
     name: rule.name,

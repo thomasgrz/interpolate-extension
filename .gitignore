@@ -37,3 +37,4 @@ dist.pem
 dist
 *storybook.log
 storybook-static
+release

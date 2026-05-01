@@ -8,7 +8,7 @@ export type RedirectInterpolationConfig = {
   details: {
     regexFilter: string;
     destination: string;
-    id: number;
+    id: string;
   };
   name: string;
 };
@@ -20,7 +20,7 @@ export type HeaderInterpolationConfig = {
   details: {
     headerKey: string;
     headerValue: string;
-    id: number;
+    id: string;
   };
   name: string;
 };

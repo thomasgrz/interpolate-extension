@@ -62,7 +62,7 @@ export const InterpolateStorage = {
     groupId,
     name,
   }: {
-    interpolations: AnyInterpolation[];
+    interpolations: AnyInterpolation | AnyInterpolation[];
     groupId?: string;
     name: string;
   }) {
@@ -70,7 +70,9 @@ export const InterpolateStorage = {
       const group = new InterpolationGroup({
         groupId,
         name,
-        interpolationIds: interpolations?.map((interp) => interp.details?.id),
+        interpolationIds: Array.isArray(interpolations)
+          ? interpolations?.map((interp) => interp.details?.id)
+          : [interpolations.details.id],
       });
       await chrome.storage.local.set({
         [groupId ?? group.groupId]: group.createStorageRecord(),

@@ -8,6 +8,7 @@ import { BrowseInterpolations } from "../BrowseInterpolations/BrowseInterpolatio
 import { Label } from "radix-ui";
 import { TextInput } from "../TextInput/TextInput";
 import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView";
+import { generateRuleId } from "#src/utils/id/generateRedirectRuleId.ts";
 
 export interface ImportInterpolationsValue {
   json?: string;
@@ -60,10 +61,23 @@ export const ImportInterpolations = ({
     setIsLoading(true);
     try {
       const parsedConfig = JSON.parse(textareaInput ?? "");
-      await InterpolateStorage.create(parsedConfig);
+      const configWithIds = Array.isArray(parsedConfig)
+        ? parsedConfig?.map((config) => ({
+            ...config,
+            details: {
+              ...config?.details,
+              id: generateRuleId(),
+            },
+          }))
+        : {
+            ...parsedConfig,
+            details: { ...parsedConfig?.details, id: generateRuleId() },
+          };
+      await InterpolateStorage.create(configWithIds);
+
       if (showGroupNameInput) {
         await InterpolateStorage.createGroup({
-          interpolations: parsedConfig,
+          interpolations: configWithIds,
           name: groupNameValue,
         });
         onCreate();
