@@ -116,7 +116,7 @@ export const MockResponseForm = ({
   };
   return (
     <form onSubmit={handleSubmit}>
-      <Card style={{ backgroundColor: "#FFDE21", width: "stretch" }}>
+      <Card style={{ width: "stretch" }}>
         <Flex direction="column">
           <form.Field
             name="name"

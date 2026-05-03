@@ -5,7 +5,7 @@ import "@radix-ui/themes/styles.css";
 import "./Sidepanel.css";
 
 import { DashboardView } from "@/components/DashboardView/DashboardView";
-import { Theme } from "@radix-ui/themes";
+import { Box, Flex, Theme, ThemePanel } from "@radix-ui/themes";
 import { InterpolateProvider } from "@/contexts/interpolate-context";
 import { AlertDialog } from "radix-ui";
 
@@ -13,7 +13,14 @@ const node = document.getElementById("root");
 if (node instanceof HTMLElement) {
   createRoot(node).render(
     <StrictMode>
-      <Theme style={{ backgroundColor: "#FFDE21" }} radius="large">
+      <Theme
+        style={{ height: "100%" }}
+        radius="large"
+        appearance="inherit"
+        hasBackground
+        panelBackground="solid"
+        scaling="90%"
+      >
         <AlertDialog.Root>
           <InterpolateProvider>
             <DashboardView />
