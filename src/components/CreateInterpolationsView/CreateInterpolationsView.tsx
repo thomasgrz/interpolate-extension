@@ -1,4 +1,4 @@
-import { Dialog, Button, Flex } from "@radix-ui/themes";
+import { Dialog, Button, Flex, IconButton } from "@radix-ui/themes";
 import {
   ChevronLeftIcon,
   CodeIcon,
@@ -45,7 +45,6 @@ const FormSelectionStep = ({
         onClick={() => {
           onChange(InterpolationOptionSelection.ADD_HEADERS);
         }}
-        color="#94CE9A"
       />
       <InterpolationOptionCard
         heading="Create user script"
@@ -54,34 +53,29 @@ const FormSelectionStep = ({
         onClick={() =>
           onChange(InterpolationOptionSelection.CREATE_USER_SCRIPT)
         }
-        color="#CF91D8"
       />
       <InterpolationOptionCard
         heading="Redirect requests"
         subHeading="Intercept & redirect outbound requests that match a specific regex pattern"
         icon={MoveIcon}
         onClick={() => onChange(InterpolationOptionSelection.REDIRECT_REQUEST)}
-        color="#8EC8F6"
       />
       <InterpolationOptionCard
         heading={"Mock API response"}
         subHeading="Provide a mocked response to requests whose URL matches an specific regular expression"
         icon={RocketIcon}
-        color="#FFDE21"
         onClick={() => onChange(InterpolationOptionSelection.MOCK_RESPONSE)}
       />
       <Flex gap="1" flexGrow={"1"} width="stretch">
         <InterpolationOptionCard
           heading="Import"
           icon={DownloadIcon}
-          color="white"
           onClick={() => onChange(InterpolationOptionSelection.IMPORT)}
         />
         <InterpolationOptionCard
           heading="Export"
           icon={UploadIcon}
           onClick={() => onChange(InterpolationOptionSelection.EXPORT)}
-          color="#0090FF"
         />
       </Flex>
       <BrowseInterpolations />
@@ -136,16 +130,14 @@ export const CreateInterpolationsView = ({
   return (
     <Dialog.Root open={isOpen} onOpenChange={handleOnOpenChange}>
       <Dialog.Trigger>
-        <Flex justify={"center"} width="stretch">
-          <Button
-            className={styles.CreateInterpolationsView}
-            radius="full"
-            style={{ width: "250px", backgroundColor: "black" }}
-          >
-            <PlusCircledIcon />
-            Create interpolation
-          </Button>
-        </Flex>
+        <Button
+          style={{ cursor: "pointer" }}
+          radius="full"
+          className={styles.CreateInterpolationsView}
+        >
+          <PlusCircledIcon />
+          Options
+        </Button>
       </Dialog.Trigger>
       <Dialog.Content className={styles.DialogContent}>
         <Flex

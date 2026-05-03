@@ -184,9 +184,6 @@ export const DashboardView = () => {
 
             <Tabs.Content value="all">
               <Flex direction="column" gap="2">
-                <Flex align="center" width="stretch" justify="center" pt="2">
-                  <CreateGroupView onSuccess={onSuccessfulGroupCreation} />
-                </Flex>
                 {showGroups && (
                   <>
                     <InterpolationsGroupsView

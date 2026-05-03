@@ -16,12 +16,7 @@ export const InterpolationOptionCard = ({
     IconProps & React.RefAttributes<SVGSVGElement>
   >;
 }) => (
-  <Card
-    onClick={onClick}
-    className={styles.Card}
-    style={{ backgroundColor: color }}
-    asChild
-  >
+  <Card onClick={onClick} className={styles.Card} asChild>
     <Flex direction="column">
       <Heading align={"center"} as="h6" size="2">
         {heading}
