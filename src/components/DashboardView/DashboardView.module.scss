@@ -1,16 +1,11 @@
 .Container {
   position: relative;
-}
-
-[data-ui="submit-button"] {
-  background-color: black;
+  height: 100vh;
 }
 
 .DashboardControls {
-  background-color: var(--background);
   z-index: 500;
   position: sticky;
   top: 0px;
   max-width: 1000px;
-  box-shadow: var(--shadow-3);
 }

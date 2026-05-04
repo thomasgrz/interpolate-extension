@@ -5,6 +5,10 @@ $switch-background: var(--switch-background, red);
   width: 100%;
 }
 
+.CollapsibleTrigger {
+  height: 3rem;
+}
+
 .ImportExportCTAs {
   @media (min-width: 500px) {
     right: 10px;

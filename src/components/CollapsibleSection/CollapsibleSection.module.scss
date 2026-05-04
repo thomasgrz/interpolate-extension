@@ -1,0 +1,25 @@
+.CollapsibleSection {
+  min-height: 3em;
+  max-height: calc(100% - 3em);
+  overflow: hidden;
+}
+
+.CollapsedContent {
+  overflow: scroll;
+  background-color: var(--gray-3);
+  &[data-state="open"] > div {
+    transition: height 3s ease-in;
+  }
+
+  &[data-state="open"] > div {
+    max-height: 100%;
+    overflow: scroll;
+  }
+}
+
+.IconOpen {
+  transition: transform 0.1s ease-in;
+  &[data-open="true"] {
+    transform: rotate(0.25turn);
+  }
+}

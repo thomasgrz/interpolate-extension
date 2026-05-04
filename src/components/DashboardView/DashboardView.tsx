@@ -2,86 +2,64 @@ import {
   Callout,
   Container,
   Flex,
-  Tabs,
   Text,
-  Separator,
   Strong,
-  Switch,
-  Tooltip,
+  ScrollArea,
+  Separator,
+  Card,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
 import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView.tsx";
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
-import {
-  InfoCircledIcon,
-  MagnifyingGlassIcon,
-  QuestionMarkCircledIcon,
-} from "@radix-ui/react-icons";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { ChangeEvent, ReactElement, useEffect, useMemo, useState } from "react";
 import { TextInput } from "../TextInput/TextInput.tsx";
 import {
   SortingOptions,
   SortOption,
 } from "../SortingOptions/SortingOptions.tsx";
-import { Label } from "radix-ui";
 import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
-import { CreateGroupView } from "../CreateGroupView/CreateGroupView.tsx";
-import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
-import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
+import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection.tsx";
+import { FilteredSortedList } from "../FilteredSortedList/FilteredSortedList.tsx";
+
+const CollapsibleTitle = ({
+  text,
+  icon,
+  callout,
+}: {
+  callout?: text;
+  text: string;
+  icon?: ReactElement;
+}) => (
+  <Flex
+    style={{ cursor: "pointer" }}
+    direction={"column"}
+    p="2"
+    justify={"center"}
+  >
+    <Strong>
+      <Flex gap="3" align="center">
+        {icon}
+        <Text>{text}</Text>
+      </Flex>
+    </Strong>
+  </Flex>
+);
 
 export const DashboardView = () => {
-  const { interpolations, recentlyActive, showGroups, setShowGroups } =
-    useInterpolationsContext();
-  const [sortOption, setSortOption] = useState<SortOption>(SortOption.NEWEST);
-  const [selectedTab, setSelectedTab] = useState("all");
-  const [filter, setFilter] = useState("");
-  const sortedInterpolations = useMemo(() => {
-    const noInterps = !interpolations?.length;
-    if (noInterps) return;
-    return sortInterpolations(interpolations, sortOption).filter((interp) =>
-      interp?.name?.toLowerCase()?.includes(filter?.toLowerCase()),
-    );
-  }, [sortOption, interpolations, filter]);
+  const {
+    enabledInterpolations,
+    onChangeFilter,
+    onChangeSort,
+    filter,
+    interpolations,
+    recentlyActive,
+    sortOption,
+    setShowGroups,
+  } = useInterpolationsContext();
   const [error, setError] = useState<null | string>(null);
-
-  const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFilter(e.target.value);
-  };
-
-  const parsedFilterValue = useMemo(() => filter?.trim(), [filter]);
-  const enabledInterpolations = useMemo(
-    () => interpolations?.filter((interp) => interp?.enabledByUser),
-    [sortedInterpolations],
-  );
-
-  const handleShowGroupsClick = (isOpen: boolean) => {
-    setShowGroups(isOpen);
-    chrome.storage.local.set({ showGroups: isOpen });
-  };
-
-  useEffect(() => {
-    const getInitialSortOption = async () => {
-      const result = await chrome.storage.local.get("sortOption");
-      setSortOption(result.sortOption);
-    };
-    getInitialSortOption().catch();
-
-    const getInitialGroupView = async () => {
-      const result = await chrome.storage.local.get("showGroups");
-      setShowGroups(result.showGroups);
-    };
-    getInitialGroupView();
-  }, []);
-
-  const onSortOptionSelected = (option: SortOption) => {
-    setSortOption(option);
-    chrome.storage.local.set({ sortOption: option });
-  };
-
-  const showFilterMatchText = !!parsedFilterValue;
-
   const onSuccessfulGroupCreation = () => {
     setShowGroups(true);
   };
@@ -95,148 +73,74 @@ export const DashboardView = () => {
         </Callout.Root>
       }
     >
-      <Container pb="50px" className={styles.Container} minHeight={"100dvh"}>
-        <Flex
-          p="0"
-          minHeight={"100dvh"}
-          flexGrow={"1"}
-          justify={"start"}
-          direction={"column"}
-        >
-          <Tabs.Root
-            value={selectedTab}
-            onValueChange={setSelectedTab}
-            className={styles.TabsRoot}
-            defaultValue="all"
-          >
-            <Flex
-              direction="column"
-              className={styles.DashboardControls}
-              align={"center"}
-              justify="center"
-            >
-              <ControlCenter onCreate={onSuccessfulGroupCreation} />
-              <Tabs.List>
-                <Flex
-                  className={styles.Tabs}
-                  justify={"between"}
-                  align={"center"}
-                >
-                  <Tabs.Trigger value="all">
-                    <Text size="1">All ({interpolations?.length})</Text>
-                  </Tabs.Trigger>
-                  <Tabs.Trigger value="enabled">
-                    <Text size="1">
-                      Enabled ({enabledInterpolations?.length})
-                    </Text>
-                  </Tabs.Trigger>
-                  <Tabs.Trigger value="active">
-                    <Text size="1">
-                      Invoked ({recentlyActive?.length ?? 0})
-                    </Text>
-                  </Tabs.Trigger>
-                </Flex>
-              </Tabs.List>
-              {selectedTab === "all" && (
-                <Flex
-                  direction={"column"}
-                  width="stretch"
-                  p="1"
-                  align={"start"}
-                  justify={"start"}
-                >
-                  <TextInput
-                    size="1"
-                    style={{ maxWidth: "300px" }}
-                    value={filter}
-                    placeholder="Filter by keyword..."
-                    onChange={handleFilterChange}
-                    icon={<MagnifyingGlassIcon />}
-                  />
-                  <Flex p="1" justify={"between"} width="stretch">
-                    <SortingOptions
-                      value={sortOption}
-                      onChange={onSortOptionSelected}
-                    />
-                    <Label.Root>
-                      <Flex gap="2" align={"center"}>
-                        <Tooltip
-                          maxWidth={"200px"}
-                          content="optionally organize multiple configurations into groups"
-                        >
-                          <Flex>
-                            <Text size="1">Show groups </Text>
-                            <QuestionMarkCircledIcon />
-                          </Flex>
-                        </Tooltip>
-
-                        <Switch
-                          radius="small"
-                          checked={showGroups}
-                          onCheckedChange={handleShowGroupsClick}
-                        />
-                      </Flex>
-                    </Label.Root>
-                  </Flex>
-                </Flex>
-              )}
-            </Flex>
-
-            <Tabs.Content value="all">
-              <Flex direction="column" gap="2">
-                {showGroups && (
-                  <>
-                    <InterpolationsGroupsView
-                      query={filter}
-                      sortOption={sortOption}
-                    />
-                    <Separator size="4" />
-                  </>
-                )}
-                {showFilterMatchText && (
-                  <Text size="1">
-                    {`showing ${sortedInterpolations?.length} interpolation${sortedInterpolations?.length === 1 ? "" : "s"} match${sortedInterpolations?.length === 1 ? "" : "es"} for "${filter}"`}
-                  </Text>
-                )}
-                {interpolations?.length ? (
-                  <InterpolationsListView
-                    configs={sortedInterpolations as AnyInterpolation[]}
-                  />
-                ) : (
-                  <Text size="1">No interpolations yet</Text>
-                )}
-              </Flex>
-            </Tabs.Content>
-            <Tabs.Content value="enabled">
-              <Callout.Root color="gray" m="1" variant="soft" size="1">
-                <Callout.Icon>
-                  <InfoCircledIcon />
-                </Callout.Icon>
-                <Callout.Text size="1">
-                  These are the interpolations you have <Strong>enabled</Strong>
-                </Callout.Text>
-              </Callout.Root>
-
-              <InterpolationsListView
-                hideRuleToggle
-                configs={enabledInterpolations}
-              />
-            </Tabs.Content>
-            <Tabs.Content value="active">
-              <Callout.Root color="gray" m="1" variant="soft" size="1">
-                <Callout.Icon>
-                  <InfoCircledIcon />
-                </Callout.Icon>
-                <Callout.Text size="1">
-                  These interpolations have been <Strong>invoked</Strong> within
-                  this tab <Strong>since the last page load.</Strong>
-                </Callout.Text>
-              </Callout.Root>
-              <InterpolationsListView hideRuleToggle configs={recentlyActive} />
-            </Tabs.Content>
-          </Tabs.Root>
+      <Flex direction="column" height="100%" maxHeight={"100%"}>
+        <Flex direction="column" p="3">
+          <ControlCenter onCreate={onSuccessfulGroupCreation} />
+          <TextInput
+            size="1"
+            style={{ maxWidth: "300px" }}
+            value={filter}
+            placeholder="Filter by keyword..."
+            onChange={(e) => onChangeFilter(e.target.value)}
+            icon={<MagnifyingGlassIcon />}
+          />
+          <SortingOptions value={sortOption} onChange={onChangeSort} />
         </Flex>
-      </Container>
+        <Flex
+          direction="column"
+          height="stretch"
+          flexGrow={"grow"}
+          overflow="hidden"
+        >
+          {filter && <FilteredSortedList filter={filter} />}
+          <CollapsibleSection
+            flexGrow="3"
+            title={
+              <CollapsibleTitle
+                text={`All interpolations (${interpolations?.length})`}
+              />
+            }
+          >
+            <InterpolationsListView configs={interpolations} />
+          </CollapsibleSection>
+          <CollapsibleSection
+            title={
+              <CollapsibleTitle
+                text={`Enabled (${enabledInterpolations?.length})`}
+                callout={
+                  <Text>
+                    These are the interpolations you have{" "}
+                    <Strong>enabled</Strong>
+                  </Text>
+                }
+              />
+            }
+          >
+            <InterpolationsListView
+              hideRuleToggle
+              configs={enabledInterpolations}
+            />
+          </CollapsibleSection>
+          <CollapsibleSection title={<CollapsibleTitle text="Groups" />}>
+            <InterpolationsListView />
+          </CollapsibleSection>
+          <CollapsibleSection
+            title={
+              <CollapsibleTitle
+                text={`Invoked (${recentlyActive?.length})`}
+                callout={
+                  <Text>
+                    These interpolations have been <Strong>invoked</Strong>{" "}
+                    within this tab <Strong>since the last page load.</Strong>
+                  </Text>
+                }
+              />
+            }
+          >
+            <InterpolationsListView hideRuleToggle configs={recentlyActive} />
+          </CollapsibleSection>
+        </Flex>
+      </Flex>
     </ErrorBoundary>
   );
 };

@@ -1,5 +1,3 @@
-import "@radix-ui/themes/styles.css";
-
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Notifier } from "./Notifier.tsx";
@@ -7,7 +5,6 @@ import styles from "./Notifier.module.scss";
 import { Theme } from "@radix-ui/themes";
 import { ToastNotificationsContainer } from "#src/components/ToastNotifications/ToastNotificationsContainer.component.tsx";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
-import "@radix-ui/themes/styles.css";
 
 const container = document.createElement("div");
 container.id = "crxjs-app";

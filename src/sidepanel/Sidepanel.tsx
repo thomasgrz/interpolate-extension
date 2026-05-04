@@ -1,11 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import "@radix-ui/themes/styles.css";
 import "./Sidepanel.css";
 
 import { DashboardView } from "@/components/DashboardView/DashboardView";
-import { Box, Flex, Theme, ThemePanel } from "@radix-ui/themes";
+import { Theme } from "@radix-ui/themes";
 import { InterpolateProvider } from "@/contexts/interpolate-context";
 import { AlertDialog } from "radix-ui";
 
@@ -14,7 +13,7 @@ if (node instanceof HTMLElement) {
   createRoot(node).render(
     <StrictMode>
       <Theme
-        style={{ height: "100%" }}
+        style={{ height: "100vh", maxHeight: "100vh", overflow: "hidden" }}
         radius="large"
         appearance="inherit"
         hasBackground
