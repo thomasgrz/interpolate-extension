@@ -366,6 +366,7 @@ export const InterpolateStorage = {
   },
   async getAllInterpolations() {
     const caller = "getAllInterpolations";
+    if (window?.__INTERPOLATIONS__) return window?.__INTERPOLATIONS__;
     try {
       const result = await chrome.storage?.local?.getKeys();
       const interpolations = result.filter((key) =>
