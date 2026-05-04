@@ -209,7 +209,7 @@ export const InterpolateProvider = ({
 
   const handleShowGroups = (value: boolean) => {
     setShowGroups(value);
-    chrome.storage.local.set({ showGroups: value });
+    chrome.storage?.local.set({ showGroups: value });
   };
 
   const addToGroup = ({
@@ -282,7 +282,7 @@ export const InterpolateProvider = ({
   }, []);
 
   useEffect(() => {
-    chrome.storage.local.get("showGroups", (records) => {
+    chrome.storage?.local.get("showGroups", (records) => {
       const { showGroups } = records ?? {};
       setShowGroups(showGroups);
     });

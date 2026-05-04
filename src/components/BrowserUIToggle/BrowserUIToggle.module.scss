@@ -1,0 +1,41 @@
+/* reset */
+button {
+  all: unset;
+}
+
+.SwitchRoot {
+  width: 60px;
+  height: 30px;
+  background-color: var(--switch-background);
+  border-radius: 9999px;
+  position: relative;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  &:focus {
+    box-shadow: 0 0 0 2px black;
+  }
+  &[data-state="checked"] {
+    background-color: black;
+  }
+}
+
+.SwitchThumb {
+  position: absolute;
+  display: block;
+  width: 25px;
+  height: 25px;
+  background-color: white;
+  border-radius: 9999px;
+  transition: transform 100ms;
+  transform: translateX(2px);
+  will-change: transform;
+  &[data-state="checked"] {
+    transform: translateX(33px);
+  }
+}
+
+.Label {
+  color: white;
+  font-size: 15px;
+  line-height: 1;
+  user-select: none;
+}

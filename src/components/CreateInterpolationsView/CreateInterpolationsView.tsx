@@ -136,7 +136,7 @@ export const CreateInterpolationsView = ({
           className={styles.CreateInterpolationsView}
         >
           <PlusCircledIcon />
-          Options
+          interpolations
         </Button>
       </Dialog.Trigger>
       <Dialog.Content className={styles.DialogContent}>

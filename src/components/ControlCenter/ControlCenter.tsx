@@ -1,64 +1,22 @@
-import {
-  Box,
-  Flex,
-  IconButton,
-  Strong,
-  Switch,
-  Text,
-  Tooltip,
-} from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { CreateInterpolationsView } from "../CreateInterpolationsView/CreateInterpolationsView.tsx";
 import { GlobalInterpolationOptions } from "../GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
 import styles from "./ControlCenter.module.scss";
 import { useEffect, useState } from "react";
-import { DropdownMenu, Label } from "radix-ui";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
-import {
-  EyeClosedIcon,
-  EyeOpenIcon,
-  MixerHorizontalIcon,
-  QuestionMarkCircledIcon,
-} from "@radix-ui/react-icons";
+import { BrowserUIToggle } from "../BrowserUIToggle/BrowserUIToggle.tsx";
 
-const BrowserUIToggle = ({
-  isEnabled,
-  onChange,
+export const ControlCenter = ({
+  onCreate,
+  defaultIsBrowserUIEnabled,
 }: {
-  onChange: (value: boolean) => void;
-  isEnabled: boolean;
+  defaultIsBrowserUIEnabled?: boolean;
+  onCreate: () => void;
 }) => {
-  return (
-    <Label.Root>
-      <Flex justify={"center"} align="center" gap="2">
-        <Tooltip
-          maxWidth={"250px"}
-          content={
-            <Flex direction="column">
-              <Text mb="3">
-                {isEnabled
-                  ? "Hide interpolations in viewport"
-                  : "Show interpolations in viewport"}
-              </Text>{" "}
-              You may need to reload the page the first time you enable the UI.
-            </Flex>
-          }
-        >
-          <IconButton
-            color={isEnabled ? "blue" : "gray"}
-            onClick={() => onChange(!isEnabled)}
-            style={{ cursor: "pointer" }}
-            radius="full"
-          >
-            {isEnabled ? <EyeOpenIcon /> : <EyeClosedIcon />}
-          </IconButton>
-        </Tooltip>
-      </Flex>
-    </Label.Root>
-  );
-};
-export const ControlCenter = ({ onCreate }: { onCreate: () => void }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isBrowserUIEnabled, setIsBrowserUIEnabled] = useState(true);
+  const [isBrowserUIEnabled, setIsBrowserUIEnabled] = useState(
+    defaultIsBrowserUIEnabled,
+  );
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
   };
@@ -94,15 +52,19 @@ export const ControlCenter = ({ onCreate }: { onCreate: () => void }) => {
           justify="between"
           flexGrow={"grow"}
         >
-          <GlobalInterpolationOptions />
+          <Flex gap="3">
+            <GlobalInterpolationOptions />
+
+            <BrowserUIToggle
+              onChange={handleBrowserUIToggle}
+              isEnabled={!!isBrowserUIEnabled}
+            />
+          </Flex>
+
           <CreateInterpolationsView
             onCreate={onCreate}
             onOpenChange={handleOpenChange}
             isOpen={isOpen}
-          />
-          <BrowserUIToggle
-            onChange={handleBrowserUIToggle}
-            isEnabled={isBrowserUIEnabled}
           />
         </Flex>
       </Flex>
