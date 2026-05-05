@@ -1,6 +1,7 @@
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { Card, Flex, Heading, Switch } from "@radix-ui/themes";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
+import styles from "./InterpolationGroup.module.scss";
 
 export const InterpolationGroup = ({
   interpolations,
@@ -11,7 +12,7 @@ export const InterpolationGroup = ({
   groupId: string;
 }) => {
   return (
-    <Card variant="ghost">
+    <Card className={styles.Card} variant="ghost">
       <Flex justify={"between"} align={"center"}>
         <Heading size="3" as="h6">
           {name}

@@ -77,11 +77,12 @@ export const Notifier = () => {
   return isBrowserUIEnabled ? (
     <InterpolateProvider>
       <Card
-        variant="classic"
+        data-radius="full"
+        variant="surface"
         className={styles.GlobalInterpolationOptionsContainer}
         m="3"
       >
-        <Flex gap="2" align="start" justify="center">
+        <Flex gap="2" align="center" justify="center">
           <Text size="2">
             <Strong>interpolate</Strong>
           </Text>

@@ -39,6 +39,7 @@ const FormSelectionStep = ({
   return (
     <Flex gap="1" direction="column">
       <InterpolationOptionCard
+        color="var(--green-6)"
         heading="Add headers"
         subHeading="Append a header key-value pair to all outbound requests."
         icon={FileTextIcon}

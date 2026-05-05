@@ -1,10 +1,11 @@
 import {
+  ChevronRightIcon,
   DoubleArrowDownIcon,
   DoubleArrowUpIcon,
   MinusIcon,
   PlusIcon,
 } from "@radix-ui/react-icons";
-import { Box, Flex, Separator } from "@radix-ui/themes";
+import { Box, Flex, Separator, Text } from "@radix-ui/themes";
 import { Collapsible, ScrollArea } from "radix-ui";
 import { useState } from "react";
 import * as styles from "./CollapsibleSection.module.scss";
@@ -14,7 +15,9 @@ export const CollapsibleSection = ({
   children,
   initialIsOpen,
   onOpenChange,
+  defaultIsOpen,
 }: {
+  defaultIsOpen?: boolean;
   title: React.ReactElement;
   children: React.ReactElement | React.ReactElement[];
   initialIsOpen?: boolean;
@@ -25,28 +28,36 @@ export const CollapsibleSection = ({
     setIsOpen(value);
     onOpenChange?.(value);
   };
+
+  const derivedIsOpen = defaultIsOpen ?? isOpen;
   return (
     <Flex width="stretch" className={styles.CollapsibleSection}>
       <Collapsible.Root
-        open={isOpen}
+        open={derivedIsOpen}
         onOpenChange={handleOpen}
         style={{ width: "stretch" }}
         asChild
       >
         <Flex direction="column">
-          <Separator size="4" />
           <Collapsible.Trigger asChild>
             <Flex
+              className={styles.Trigger}
               width="stretch"
               flexGrow="grow"
               justify={"between"}
               align={"center"}
+              minHeight="3em"
             >
-              {title} {isOpen ? <MinusIcon /> : <PlusIcon />}
+              <Text size="2">{title} </Text>
+              <ChevronRightIcon
+                width={"1.5em"}
+                height={"1.5em"}
+                data-open={derivedIsOpen}
+                className={styles.IconOpen}
+              />
             </Flex>
           </Collapsible.Trigger>
           <Collapsible.Content className={styles.CollapsedContent}>
-            <Separator size="4" />
             {children}
           </Collapsible.Content>
         </Flex>

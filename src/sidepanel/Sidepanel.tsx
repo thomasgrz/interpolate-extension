@@ -13,7 +13,11 @@ if (node instanceof HTMLElement) {
   createRoot(node).render(
     <StrictMode>
       <Theme
-        style={{ height: "100vh", maxHeight: "100vh", overflow: "hidden" }}
+        style={{
+          height: "100vh",
+          maxHeight: "100vh",
+          overflow: "hidden",
+        }}
         radius="large"
         appearance="inherit"
         hasBackground

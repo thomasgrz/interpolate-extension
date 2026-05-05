@@ -36,17 +36,22 @@ export const ControlCenter = ({
   }, []);
 
   return (
-    <Flex gap="1" direction="column" className={styles.ControlCenterContainer}>
+    <Flex
+      p="0"
+      gap="1"
+      direction="column"
+      className={styles.ControlCenterContainer}
+    >
       <Flex
         direction={"column"}
         flexGrow={"1"}
         data-testid={"dashboard"}
         align={"end"}
-        gap="3"
-        p="3"
+        pb="3"
         className={styles.FormContainer}
       >
         <Flex
+          p="0"
           width="stretch"
           align="center"
           justify="between"

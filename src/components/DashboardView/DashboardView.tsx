@@ -7,6 +7,7 @@ import {
   ScrollArea,
   Separator,
   Card,
+  Heading,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
@@ -23,6 +24,8 @@ import {
 import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
 import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection.tsx";
 import { FilteredSortedList } from "../FilteredSortedList/FilteredSortedList.tsx";
+import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
+import { CreateGroupView } from "../CreateGroupView/CreateGroupView.tsx";
 
 const CollapsibleTitle = ({
   text,
@@ -48,9 +51,12 @@ const CollapsibleTitle = ({
   </Flex>
 );
 
+type ExpandedSection = "all" | "enabled" | "invoked" | "groups" | "none";
+
 export const DashboardView = () => {
   const {
     enabledInterpolations,
+    groups,
     onChangeFilter,
     onChangeSort,
     filter,
@@ -63,7 +69,15 @@ export const DashboardView = () => {
   const onSuccessfulGroupCreation = () => {
     setShowGroups(true);
   };
+  const [expandedSection, setExpandedSection] =
+    useState<ExpandedSection>("all");
 
+  const handleMenuClick = (section: ExpandedSection) => {
+    return () => {
+      if (expandedSection === section) return setExpandedSection("none");
+      setExpandedSection(section);
+    };
+  };
   return (
     <ErrorBoundary
       onError={(error) => setError(JSON.stringify(error?.stack))}
@@ -73,28 +87,41 @@ export const DashboardView = () => {
         </Callout.Root>
       }
     >
-      <Flex direction="column" height="100%" maxHeight={"100%"}>
-        <Flex direction="column" p="3">
-          <ControlCenter onCreate={onSuccessfulGroupCreation} />
-          <TextInput
-            size="1"
-            style={{ maxWidth: "300px" }}
-            value={filter}
-            placeholder="Filter by keyword..."
-            onChange={(e) => onChangeFilter(e.target.value)}
-            icon={<MagnifyingGlassIcon />}
-          />
-          <SortingOptions value={sortOption} onChange={onChangeSort} />
-        </Flex>
+      <Flex
+        className={styles.Container}
+        direction="column"
+        height="100%"
+        maxHeight={"100%"}
+      >
+        <Card p="0" m="2">
+          <Flex direction="column" className={styles.TopArea}>
+            <ControlCenter onCreate={onSuccessfulGroupCreation} />
+            <TextInput
+              p="0"
+              pb="2"
+              size="1"
+              style={{ maxWidth: "300px" }}
+              value={filter}
+              placeholder="Filter by keyword..."
+              onChange={(e) => onChangeFilter(e.target.value)}
+              icon={<MagnifyingGlassIcon />}
+            />
+            <Flex p="1">
+              <SortingOptions value={sortOption} onChange={onChangeSort} />
+            </Flex>
+          </Flex>
+        </Card>
         <Flex
           direction="column"
           height="stretch"
           flexGrow={"grow"}
           overflow="hidden"
+          style={{ backgroundColor: "var(--yellow-10)" }}
         >
           {filter && <FilteredSortedList filter={filter} />}
           <CollapsibleSection
-            flexGrow="3"
+            onOpenChange={handleMenuClick("all")}
+            defaultIsOpen={expandedSection === "all"}
             title={
               <CollapsibleTitle
                 text={`All interpolations (${interpolations?.length})`}
@@ -104,6 +131,8 @@ export const DashboardView = () => {
             <InterpolationsListView configs={interpolations} />
           </CollapsibleSection>
           <CollapsibleSection
+            onOpenChange={handleMenuClick("enabled")}
+            defaultIsOpen={expandedSection === "enabled"}
             title={
               <CollapsibleTitle
                 text={`Enabled (${enabledInterpolations?.length})`}
@@ -121,10 +150,19 @@ export const DashboardView = () => {
               configs={enabledInterpolations}
             />
           </CollapsibleSection>
-          <CollapsibleSection title={<CollapsibleTitle text="Groups" />}>
-            <InterpolationsListView />
+          <CollapsibleSection
+            onOpenChange={handleMenuClick("groups")}
+            defaultIsOpen={expandedSection === "groups"}
+            title={<CollapsibleTitle text={`Groups (${groups.length})`} />}
+          >
+            <Flex direction="column" pt="2">
+              <CreateGroupView />
+              <InterpolationsGroupsView />
+            </Flex>
           </CollapsibleSection>
           <CollapsibleSection
+            onOpenChange={handleMenuClick("invoked")}
+            defaultIsOpen={expandedSection === "invoked"}
             title={
               <CollapsibleTitle
                 text={`Invoked (${recentlyActive?.length})`}

@@ -6,7 +6,6 @@
 
 .CollapsedContent {
   overflow: scroll;
-  background-color: var(--gray-3);
   &[data-state="open"] > div {
     transition: height 3s ease-in;
   }
@@ -21,5 +20,17 @@
   transition: transform 0.1s ease-in;
   &[data-open="true"] {
     transform: rotate(0.25turn);
+  }
+}
+
+.Trigger {
+  cursor: pointer;
+  background-color: var(--yellow-5);
+  padding-left: 0px;
+  transition: all 0.25s ease-in-out;
+  color: var(--gray-12);
+
+  &:hover {
+    padding-left: 10px;
   }
 }

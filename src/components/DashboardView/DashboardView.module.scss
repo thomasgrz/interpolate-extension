@@ -1,11 +1,9 @@
 .Container {
   position: relative;
   height: 100vh;
+  background-color: var(--yellow-10);
 }
 
-.DashboardControls {
-  z-index: 500;
-  position: sticky;
-  top: 0px;
-  max-width: 1000px;
+.TopArea {
+  min-height: 150px;
 }
