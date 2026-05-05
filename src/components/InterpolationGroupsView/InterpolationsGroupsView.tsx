@@ -207,12 +207,66 @@ export const InterpolationsGroupsView = ({
                     </Tooltip>
                   </Flex>
 
-                  <Collapsible.Content>
-                    <Flex width="stretch" justify="start">
-                      <InterpolationsListView configs={config.interpolations} />
+                  <InterpolationOptions
+                    disableAddToGroup
+                    onDeleteSelected={() => onDeleteSelected(config)}
+                    // @ts-expect-error TODO: FIXME: types
+                    onEditSelected={onEditSelected}
+                    config={config}
+                  />
+                </Flex>
+                <Flex width="stretch" direction="column">
+                  <Collapsible.Root
+                    open={expandedGroups[config.name]}
+                    onOpenChange={(isOpen) =>
+                      onGroupOpenChange(config.name, isOpen)
+                    }
+                  >
+                    <Flex width="stretch" justify="between">
+                      <Text size="1" style={{ fontSize: "0.5em" }}>
+                        {new Date(config.createdAt).toDateString()}
+                      </Text>
+                      <Tooltip
+                        content={
+                          expandedGroups[config.name]
+                            ? "hide configs in group"
+                            : "show configs in group"
+                        }
+                      >
+                        <Collapsible.Trigger asChild>
+                          <Button
+                            // className={styles.ToggleCollapse}
+                            size="1"
+                            radius="none"
+                            variant="outline"
+                            // TODO: rm inline styles when prod build doesnt break className styles
+                            style={{ height: "unset", boxShadow: "none" }}
+                          >
+                            {expandedGroups[config.name] ? (
+                              <>
+                                Collapse <DoubleArrowUpIcon />{" "}
+                              </>
+                            ) : (
+                              <>
+                                {config.interpolations?.length} config
+                                {config.interpolations.length > 1 ? "s" : ""}
+                                <DoubleArrowDownIcon />
+                              </>
+                            )}
+                          </Button>
+                        </Collapsible.Trigger>
+                      </Tooltip>
                     </Flex>
-                  </Collapsible.Content>
-                </Collapsible.Root>
+
+                    <Collapsible.Content>
+                      <Flex width="stretch" justify="start">
+                        <InterpolationsListView
+                          configs={config.interpolations}
+                        />
+                      </Flex>
+                    </Collapsible.Content>
+                  </Collapsible.Root>
+                </Flex>
               </Flex>
             </Flex>
           </Card>
