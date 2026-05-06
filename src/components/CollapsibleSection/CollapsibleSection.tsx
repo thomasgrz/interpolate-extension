@@ -1,5 +1,5 @@
 import { ChevronRightIcon } from "@radix-ui/react-icons";
-import { Flex, Text, ScrollArea } from "@radix-ui/themes";
+import { Flex, Text } from "@radix-ui/themes";
 import { Collapsible } from "radix-ui";
 import { useState } from "react";
 import * as styles from "./CollapsibleSection.module.scss";
@@ -56,8 +56,8 @@ export const CollapsibleSection = ({
             </Flex>
           </Collapsible.Trigger>
           {/** @ts-expect-error TODO: fix types */}
-          <Collapsible.Content className={styles.CollapsedContent} asChild>
-            <ScrollArea>{children}</ScrollArea>
+          <Collapsible.Content className={styles.CollapsedContent}>
+            {children}
           </Collapsible.Content>
         </Flex>
       </Collapsible.Root>

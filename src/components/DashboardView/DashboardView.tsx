@@ -6,22 +6,15 @@ import {
   Strong,
   Card,
   Theme,
-  IconButton,
   Button,
-  ScrollArea,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
 import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView.tsx";
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
-import {
-  CheckCircledIcon,
-  ChevronLeftIcon,
-  MagnifyingGlassIcon,
-  MixerHorizontalIcon,
-} from "@radix-ui/react-icons";
-import { ReactElement, useState } from "react";
+import { CheckCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { ReactElement, useEffect, useState } from "react";
 import { TextInput } from "../TextInput/TextInput.tsx";
 import { SortingOptions } from "../SortingOptions/SortingOptions.tsx";
 import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection.tsx";
@@ -51,6 +44,14 @@ const CollapsibleTitle = ({
   </Flex>
 );
 
+type ThemeColor =
+  | "grass"
+  | "iris"
+  | "blue"
+  | "mint"
+  | "ruby"
+  | "slate"
+  | "yellow";
 type ExpandedSection = "all" | "enabled" | "invoked" | "groups" | "none";
 
 export const DashboardView = () => {
@@ -69,9 +70,7 @@ export const DashboardView = () => {
   const onSuccessfulGroupCreation = () => {
     setShowGroups(true);
   };
-  const [themeColor, setThemeColor] = useState<
-    "mint" | "grass" | "iris" | "blue" | "yellow" | "ruby" | "slate"
-  >();
+  const [themeColor, setThemeColor] = useState<ThemeColor>("yellow");
   const [themeChoiceBackgroundColor, setThemeChoiceBackgroundColor] = useState<
     | "--mint-2"
     | "--grass-2"
@@ -80,7 +79,7 @@ export const DashboardView = () => {
     | "--yellow-2"
     | "--ruby-2"
     | "--slate-2"
-  >("--mint-2");
+  >("--yellow-2");
   const [themeChoiceActionColor, setThemeChoiceActionColor] = useState<
     | "--mint-5"
     | "--grass-5"
@@ -89,7 +88,7 @@ export const DashboardView = () => {
     | "--yellow-5"
     | "--ruby-5"
     | "--slate-5"
-  >("--mint-5");
+  >("--yellow-5");
   const [themeChoiceHighContrast, setThemeChoiceHighContrast] = useState<
     | "--mint-8"
     | "--grass-8"
@@ -98,7 +97,7 @@ export const DashboardView = () => {
     | "--yellow-8"
     | "--ruby-8"
     | "--slate-8"
-  >("--mint-8");
+  >("--yellow-8");
   const [expandedSection, setExpandedSection] =
     useState<ExpandedSection>("all");
 
@@ -108,20 +107,36 @@ export const DashboardView = () => {
       setExpandedSection(section);
     };
   };
-  const handleThemeSelect = (
-    value: "grass" | "iris" | "blue" | "mint" | "ruby" | "slate" | "yellow",
-  ) => {
+  const handleThemeSelect = (value: ThemeColor) => {
     setThemeChoiceBackgroundColor(`--${value}-2`);
     setThemeChoiceActionColor(`--${value}-5`);
     setThemeChoiceHighContrast(`--${value}-8`);
     setThemeColor(value);
+    chrome?.storage?.local?.set({ themeColor: value });
   };
+
+  useEffect(() => {
+    chrome?.storage?.local.get("themeColor", ({ themeColor }) => {
+      if (themeColor) {
+        setThemeColor(themeColor);
+        // @ts-expect-error TODO: fix types
+        setThemeChoiceBackgroundColor(`--${themeColor as string}-2`);
+        // @ts-expect-error TODO: fix types
+        setThemeChoiceActionColor(`--${themeColor as string}-5`);
+        // @ts-expect-error TODO: fix types
+        setThemeChoiceHighContrast(`--${themeColor as string}-8`);
+      }
+    });
+  }, []);
+
   return (
     <Theme
       style={{
         height: "100vh",
         maxHeight: "100vh",
         overflow: "hidden",
+        transition: "all 0.2s ease-in-out",
+        // @ts-expect-error TODO: fix types
         "--theme-choice-background": `var(${themeChoiceBackgroundColor})`,
         "--theme-choice-action": `var(${themeChoiceActionColor})`,
         "--theme-choice-high-contrast": `var(${themeChoiceHighContrast})`,
@@ -176,7 +191,9 @@ export const DashboardView = () => {
                     ].map((option) => {
                       return (
                         <DropdownMenu.Item
-                          onSelect={() => handleThemeSelect(option)}
+                          onSelect={() =>
+                            handleThemeSelect(option as ThemeColor)
+                          }
                         >
                           {option}{" "}
                           {themeColor === option && <CheckCircledIcon />}
@@ -226,27 +243,25 @@ export const DashboardView = () => {
               />
             </CollapsibleSection>
             <CollapsibleSection
+              onOpenChange={handleMenuClick("invoked")}
+              defaultIsOpen={expandedSection === "invoked"}
+              title={
+                <CollapsibleTitle
+                  text={`Invoked since last page load (${recentlyActive?.length ?? 0})`}
+                />
+              }
+            >
+              <InterpolationsListView hideRuleToggle configs={recentlyActive} />
+            </CollapsibleSection>
+            <CollapsibleSection
               onOpenChange={handleMenuClick("groups")}
               defaultIsOpen={expandedSection === "groups"}
               title={<CollapsibleTitle text={`Groups (${groups.length})`} />}
             >
               <Flex direction="column" pt="2">
-                <ScrollArea>
-                  <CreateGroupView />
-                  <InterpolationsGroupsView />
-                </ScrollArea>
+                <CreateGroupView />
+                <InterpolationsGroupsView />
               </Flex>
-            </CollapsibleSection>
-            <CollapsibleSection
-              onOpenChange={handleMenuClick("invoked")}
-              defaultIsOpen={expandedSection === "invoked"}
-              title={
-                <CollapsibleTitle
-                  text={`Invoked (${recentlyActive?.length ?? 0})`}
-                />
-              }
-            >
-              <InterpolationsListView hideRuleToggle configs={recentlyActive} />
             </CollapsibleSection>
           </Flex>
         </Flex>

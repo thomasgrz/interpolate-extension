@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import "./Sidepanel.css";
 
 import { DashboardView } from "@/components/DashboardView/DashboardView";
-import { Theme } from "@radix-ui/themes";
 import { InterpolateProvider } from "@/contexts/interpolate-context";
 import { AlertDialog } from "radix-ui";
 
