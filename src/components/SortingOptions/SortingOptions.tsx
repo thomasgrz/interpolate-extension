@@ -19,7 +19,7 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
     [SortOption.NEWEST]: "Newest first",
     [SortOption.OLDEST]: "Oldest first",
   };
-
+  console.log({ value });
   return (
     <Flex>
       <Select.Root

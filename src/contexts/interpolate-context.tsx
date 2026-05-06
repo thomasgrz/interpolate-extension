@@ -77,6 +77,7 @@ export const InterpolateProvider = ({
   const sortedInterpolations = useMemo(() => {
     const noInterps = !interpolations?.length;
     if (noInterps) return [];
+    debugger;
     return (
       sortInterpolations(interpolations, sortOption).filter((interp) =>
         interp?.name?.toLowerCase()?.includes(filter?.toLowerCase?.()),
@@ -256,6 +257,8 @@ export const InterpolateProvider = ({
   useEffect(() => {
     const getInitialSortOption = async () => {
       const result = await chrome.storage.local.get("sortOption");
+      const noDefault = !result.sortOption;
+      if (noDefault) return;
       setSortOption(result.sortOption);
     };
     getInitialSortOption().catch();
