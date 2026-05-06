@@ -6,6 +6,7 @@ import {
   Callout,
   Card,
   Flex,
+  ScrollArea,
   Strong,
   Text,
   Tooltip,
@@ -106,7 +107,7 @@ export const InterpolationsGroupsView = ({
     setEpxandedGroups((prevState) => ({ ...prevState, [groupName]: isOpen }));
   };
   return (
-    <Flex direction="column" gap="2" p="2" overflow={"scroll"}>
+    <ScrollArea>
       {noGroups && (
         <Flex justify={"center"}>
           <Callout.Root size="1" variant="surface">
@@ -142,7 +143,8 @@ export const InterpolationsGroupsView = ({
           Showing {sortedHydratedGroups?.length} groups matching "{query}"
         </Text>
       )}
-      <Flex direction={"column"} gap="2">
+      <Flex direction={"column"} gap="2" p="3">
+        <CreateGroupView />
         {sortedHydratedGroups.map((config) => (
           <Card className={styles.Card} variant="surface" key={config.groupId}>
             <Flex justify="center" gap="1" direction="column">
@@ -218,6 +220,6 @@ export const InterpolationsGroupsView = ({
           </Card>
         ))}
       </Flex>
-    </Flex>
+    </ScrollArea>
   );
 };

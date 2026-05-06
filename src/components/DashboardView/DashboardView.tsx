@@ -7,6 +7,8 @@ import {
   Card,
   Theme,
   Button,
+  ScrollArea,
+  Separator,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
@@ -20,7 +22,6 @@ import { SortingOptions } from "../SortingOptions/SortingOptions.tsx";
 import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection.tsx";
 import { FilteredSortedList } from "../FilteredSortedList/FilteredSortedList.tsx";
 import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
-import { CreateGroupView } from "../CreateGroupView/CreateGroupView.tsx";
 
 const CollapsibleTitle = ({
   text,
@@ -143,7 +144,6 @@ export const DashboardView = () => {
       }}
       radius="large"
       appearance="inherit"
-      panelBackground="solid"
       scaling="90%"
     >
       <ErrorBoundary
@@ -205,6 +205,7 @@ export const DashboardView = () => {
               </Flex>
             </Flex>
           </Card>
+          <Separator size="4" />
           <Flex
             className={styles.Nav}
             direction="column"
@@ -213,9 +214,9 @@ export const DashboardView = () => {
             overflow="hidden"
           >
             {filter && (
-              <Flex direction="column" minHeight={"100px"} overflow={"scroll"}>
+              <ScrollArea>
                 <FilteredSortedList filter={filter} />{" "}
-              </Flex>
+              </ScrollArea>
             )}
             <CollapsibleSection
               onOpenChange={handleMenuClick("all")}
@@ -258,10 +259,7 @@ export const DashboardView = () => {
               defaultIsOpen={expandedSection === "groups"}
               title={<CollapsibleTitle text={`Groups (${groups.length})`} />}
             >
-              <Flex direction="column" pt="2">
-                <CreateGroupView />
-                <InterpolationsGroupsView />
-              </Flex>
+              <InterpolationsGroupsView />
             </CollapsibleSection>
           </Flex>
         </Flex>

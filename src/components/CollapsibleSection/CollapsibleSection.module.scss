@@ -6,7 +6,6 @@
 
 .CollapsedContent {
   min-height: 150px;
-  overflow: scroll;
   &[data-state="open"] > div {
     transition: height 3s ease-in;
   }
