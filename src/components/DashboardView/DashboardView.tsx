@@ -1,27 +1,29 @@
 import {
   Callout,
-  Container,
+  DropdownMenu,
   Flex,
   Text,
   Strong,
-  ScrollArea,
-  Separator,
   Card,
-  Heading,
+  Theme,
+  IconButton,
+  Button,
+  ScrollArea,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
 import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView.tsx";
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { ChangeEvent, ReactElement, useEffect, useMemo, useState } from "react";
-import { TextInput } from "../TextInput/TextInput.tsx";
 import {
-  SortingOptions,
-  SortOption,
-} from "../SortingOptions/SortingOptions.tsx";
-import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
+  CheckCircledIcon,
+  ChevronLeftIcon,
+  MagnifyingGlassIcon,
+  MixerHorizontalIcon,
+} from "@radix-ui/react-icons";
+import { ReactElement, useState } from "react";
+import { TextInput } from "../TextInput/TextInput.tsx";
+import { SortingOptions } from "../SortingOptions/SortingOptions.tsx";
 import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection.tsx";
 import { FilteredSortedList } from "../FilteredSortedList/FilteredSortedList.tsx";
 import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
@@ -30,9 +32,7 @@ import { CreateGroupView } from "../CreateGroupView/CreateGroupView.tsx";
 const CollapsibleTitle = ({
   text,
   icon,
-  callout,
 }: {
-  callout?: text;
   text: string;
   icon?: ReactElement;
 }) => (
@@ -45,7 +45,7 @@ const CollapsibleTitle = ({
     <Strong>
       <Flex gap="3" align="center">
         {icon}
-        <Text>{text}</Text>
+        <Text size="2">{text}</Text>
       </Flex>
     </Strong>
   </Flex>
@@ -69,6 +69,36 @@ export const DashboardView = () => {
   const onSuccessfulGroupCreation = () => {
     setShowGroups(true);
   };
+  const [themeColor, setThemeColor] = useState<
+    "mint" | "grass" | "iris" | "blue" | "yellow" | "ruby" | "slate"
+  >();
+  const [themeChoiceBackgroundColor, setThemeChoiceBackgroundColor] = useState<
+    | "--mint-2"
+    | "--grass-2"
+    | "--iris-2"
+    | "--blue-2"
+    | "--yellow-2"
+    | "--ruby-2"
+    | "--slate-2"
+  >("--mint-2");
+  const [themeChoiceActionColor, setThemeChoiceActionColor] = useState<
+    | "--mint-5"
+    | "--grass-5"
+    | "--iris-5"
+    | "--blue-5"
+    | "--yellow-5"
+    | "--ruby-5"
+    | "--slate-5"
+  >("--mint-5");
+  const [themeChoiceHighContrast, setThemeChoiceHighContrast] = useState<
+    | "--mint-8"
+    | "--grass-8"
+    | "--iris-8"
+    | "--blue-8"
+    | "--yellow-8"
+    | "--ruby-8"
+    | "--slate-8"
+  >("--mint-8");
   const [expandedSection, setExpandedSection] =
     useState<ExpandedSection>("all");
 
@@ -78,107 +108,149 @@ export const DashboardView = () => {
       setExpandedSection(section);
     };
   };
+  const handleThemeSelect = (
+    value: "grass" | "iris" | "blue" | "mint" | "ruby" | "slate" | "yellow",
+  ) => {
+    setThemeChoiceBackgroundColor(`--${value}-2`);
+    setThemeChoiceActionColor(`--${value}-5`);
+    setThemeChoiceHighContrast(`--${value}-8`);
+    setThemeColor(value);
+  };
   return (
-    <ErrorBoundary
-      onError={(error) => setError(JSON.stringify(error?.stack))}
-      fallback={
-        <Callout.Root style={{ height: "100%" }} color="red">
-          {error}
-        </Callout.Root>
-      }
+    <Theme
+      style={{
+        height: "100vh",
+        maxHeight: "100vh",
+        overflow: "hidden",
+        "--theme-choice-background": `var(${themeChoiceBackgroundColor})`,
+        "--theme-choice-action": `var(${themeChoiceActionColor})`,
+        "--theme-choice-high-contrast": `var(${themeChoiceHighContrast})`,
+      }}
+      radius="large"
+      appearance="inherit"
+      panelBackground="solid"
+      scaling="90%"
     >
-      <Flex
-        className={styles.Container}
-        direction="column"
-        height="100%"
-        maxHeight={"100%"}
+      <ErrorBoundary
+        onError={(error) => setError(JSON.stringify(error?.stack))}
+        fallback={
+          <Callout.Root style={{ height: "100%" }} color="red">
+            {error}
+          </Callout.Root>
+        }
       >
-        <Card p="0" m="2">
-          <Flex direction="column" className={styles.TopArea}>
-            <ControlCenter onCreate={onSuccessfulGroupCreation} />
-            <TextInput
-              p="0"
-              pb="2"
-              size="1"
-              style={{ maxWidth: "300px" }}
-              value={filter}
-              placeholder="Filter by keyword..."
-              onChange={(e) => onChangeFilter(e.target.value)}
-              icon={<MagnifyingGlassIcon />}
-            />
-            <Flex p="1">
-              <SortingOptions value={sortOption} onChange={onChangeSort} />
-            </Flex>
-          </Flex>
-        </Card>
         <Flex
+          className={styles.Container}
           direction="column"
-          height="stretch"
-          flexGrow={"grow"}
-          overflow="hidden"
-          style={{ backgroundColor: "var(--yellow-10)" }}
+          height="100%"
+          maxHeight={"100%"}
         >
-          {filter && <FilteredSortedList filter={filter} />}
-          <CollapsibleSection
-            onOpenChange={handleMenuClick("all")}
-            defaultIsOpen={expandedSection === "all"}
-            title={
-              <CollapsibleTitle
-                text={`All interpolations (${interpolations?.length})`}
+          <Card m="2" className={styles.TopArea}>
+            <Flex direction="column">
+              <ControlCenter onCreate={onSuccessfulGroupCreation} />
+              <TextInput
+                size="1"
+                style={{ maxWidth: "300px" }}
+                value={filter}
+                placeholder="Filter by keyword..."
+                onChange={(e) => onChangeFilter(e.target.value)}
+                icon={<MagnifyingGlassIcon />}
               />
-            }
-          >
-            <InterpolationsListView configs={interpolations} />
-          </CollapsibleSection>
-          <CollapsibleSection
-            onOpenChange={handleMenuClick("enabled")}
-            defaultIsOpen={expandedSection === "enabled"}
-            title={
-              <CollapsibleTitle
-                text={`Enabled (${enabledInterpolations?.length})`}
-                callout={
-                  <Text>
-                    These are the interpolations you have{" "}
-                    <Strong>enabled</Strong>
-                  </Text>
-                }
-              />
-            }
-          >
-            <InterpolationsListView
-              hideRuleToggle
-              configs={enabledInterpolations}
-            />
-          </CollapsibleSection>
-          <CollapsibleSection
-            onOpenChange={handleMenuClick("groups")}
-            defaultIsOpen={expandedSection === "groups"}
-            title={<CollapsibleTitle text={`Groups (${groups.length})`} />}
-          >
-            <Flex direction="column" pt="2">
-              <CreateGroupView />
-              <InterpolationsGroupsView />
+              <Flex p="1" justify={"between"} align={"center"}>
+                <SortingOptions value={sortOption} onChange={onChangeSort} />
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger>
+                    <Button size="1" variant="ghost">
+                      <Text size="1">theme: {themeColor} </Text>
+                    </Button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content>
+                    {[
+                      "mint",
+                      "grass",
+                      "iris",
+                      "blue",
+                      "yellow",
+                      "ruby",
+                      "slate",
+                    ].map((option) => {
+                      return (
+                        <DropdownMenu.Item
+                          onSelect={() => handleThemeSelect(option)}
+                        >
+                          {option}{" "}
+                          {themeColor === option && <CheckCircledIcon />}
+                        </DropdownMenu.Item>
+                      );
+                    })}
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              </Flex>
             </Flex>
-          </CollapsibleSection>
-          <CollapsibleSection
-            onOpenChange={handleMenuClick("invoked")}
-            defaultIsOpen={expandedSection === "invoked"}
-            title={
-              <CollapsibleTitle
-                text={`Invoked (${recentlyActive?.length})`}
-                callout={
-                  <Text>
-                    These interpolations have been <Strong>invoked</Strong>{" "}
-                    within this tab <Strong>since the last page load.</Strong>
-                  </Text>
-                }
-              />
-            }
+          </Card>
+          <Flex
+            className={styles.Nav}
+            direction="column"
+            height="stretch"
+            flexGrow={"grow"}
+            overflow="hidden"
           >
-            <InterpolationsListView hideRuleToggle configs={recentlyActive} />
-          </CollapsibleSection>
+            {filter && (
+              <Flex direction="column" minHeight={"100px"} overflow={"scroll"}>
+                <FilteredSortedList filter={filter} />{" "}
+              </Flex>
+            )}
+            <CollapsibleSection
+              onOpenChange={handleMenuClick("all")}
+              defaultIsOpen={expandedSection === "all"}
+              title={
+                <CollapsibleTitle
+                  text={`All interpolations (${interpolations?.length})`}
+                />
+              }
+            >
+              <InterpolationsListView configs={interpolations} />
+            </CollapsibleSection>
+            <CollapsibleSection
+              onOpenChange={handleMenuClick("enabled")}
+              defaultIsOpen={expandedSection === "enabled"}
+              title={
+                <CollapsibleTitle
+                  text={`Enabled (${enabledInterpolations?.length})`}
+                />
+              }
+            >
+              <InterpolationsListView
+                hideRuleToggle
+                configs={enabledInterpolations}
+              />
+            </CollapsibleSection>
+            <CollapsibleSection
+              onOpenChange={handleMenuClick("groups")}
+              defaultIsOpen={expandedSection === "groups"}
+              title={<CollapsibleTitle text={`Groups (${groups.length})`} />}
+            >
+              <Flex direction="column" pt="2">
+                <ScrollArea>
+                  <CreateGroupView />
+                  <InterpolationsGroupsView />
+                </ScrollArea>
+              </Flex>
+            </CollapsibleSection>
+            <CollapsibleSection
+              onOpenChange={handleMenuClick("invoked")}
+              defaultIsOpen={expandedSection === "invoked"}
+              title={
+                <CollapsibleTitle
+                  text={`Invoked (${recentlyActive?.length ?? 0})`}
+                />
+              }
+            >
+              <InterpolationsListView hideRuleToggle configs={recentlyActive} />
+            </CollapsibleSection>
+          </Flex>
         </Flex>
-      </Flex>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </Theme>
   );
 };

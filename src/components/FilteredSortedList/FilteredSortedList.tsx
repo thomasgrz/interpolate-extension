@@ -6,7 +6,7 @@ import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 export const FilteredSortedList = ({ filter }: { filter?: string }) => {
   const { interpolations, sortedInterpolations } = useInterpolationsContext();
   return (
-    <Flex direction="column" gap="2">
+    <Flex direction="column" gap="2" p="1">
       <Text size="1">
         {`showing ${sortedInterpolations?.length} interpolation${sortedInterpolations?.length === 1 ? "" : "s"} match${sortedInterpolations?.length === 1 ? "" : "es"} for "${filter}"`}
       </Text>

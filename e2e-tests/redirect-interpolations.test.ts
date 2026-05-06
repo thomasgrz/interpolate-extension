@@ -88,7 +88,7 @@ test("should disable all interpolations when global pause is activated", async (
   });
 
   // Activate global pause
-  await page.getByText(/Pause/).click();
+  await page.getByTestId("pause-all").click();
   // validate that the rule has been paused (play icon is shown)
   // const resumeToggle = await page.("data-testid=play-rule-toggle");
   // await resumeToggle.waitFor({ state: "visible" });
@@ -120,9 +120,9 @@ test("should re-enable intperolations when global pause is deactivated", async (
   });
 
   // Activate global pause
-  await page.getByRole("button", { name: /Pause/ }).click();
+  await page.getByTestId("pause-all").click();
   // Deactivate global pause
-  await page.getByRole("button", { name: /Resume/ }).click();
+  await page.getByTestId("resume-all").click();
 
   await page.goto("https://something.com");
 

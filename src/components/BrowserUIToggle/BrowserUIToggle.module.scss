@@ -5,7 +5,7 @@ button {
 
 .SwitchRoot {
   width: 60px;
-  height: 30px;
+  height: 28px;
   background-color: var(--switch-background);
   border-radius: 9999px;
   position: relative;
@@ -21,15 +21,15 @@ button {
 .SwitchThumb {
   position: absolute;
   display: block;
-  width: 25px;
-  height: 25px;
+  width: 23px;
+  height: 23px;
   background-color: white;
   border-radius: 9999px;
   transition: transform 100ms;
-  transform: translateX(2px);
+  transform: translateX(3px);
   will-change: transform;
   &[data-state="checked"] {
-    transform: translateX(33px);
+    transform: translateX(34px);
   }
 }
 

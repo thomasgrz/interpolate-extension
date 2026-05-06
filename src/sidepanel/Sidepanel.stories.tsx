@@ -10,6 +10,7 @@ const meta = preview.meta({
 
 export default meta;
 
+// @ts-expect-error TODO: fix types
 global.__INTERPOLATIONS__ = [
   createHeaderInterpolation({
     headerValue: "test",

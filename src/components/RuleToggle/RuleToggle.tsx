@@ -19,9 +19,15 @@ export const RuleToggle = ({
       className={styles.RuleToggle}
       height="stretch"
       align="center"
+      p="2"
       data-testid={`${isPaused ? "play" : "pause"}-rule-toggle`}
     >
-      <IconButton radius="none" onClick={handleClick} color={buttonColor}>
+      <IconButton
+        size="3"
+        radius="large"
+        onClick={handleClick}
+        color={buttonColor}
+      >
         {isPaused ? <PlayIcon /> : <PauseIcon />}
       </IconButton>
     </Flex>

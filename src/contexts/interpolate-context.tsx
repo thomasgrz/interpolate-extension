@@ -33,8 +33,8 @@ export const InterpolateContext = createContext({
   filter: "",
   filteredInterpolations: [],
   groups: [] as GroupConfigInStorage[],
-  onChangeFilter: (filter: string) => {},
-  onChangeSort: (sortOption: SortOption) => {},
+  onChangeFilter: (_filter: string) => {},
+  onChangeSort: (_sortOption: SortOption) => {},
   pause: (_id: string | number) => {},
   pauseAll: () => {},
   recentlyActive: [] as AnyInterpolation[] | [] | undefined,
@@ -321,7 +321,7 @@ export const InterpolateProvider = ({
     // Update recentlyActive when a user switches tabs
     chrome.tabs?.onActivated?.addListener(async ({ tabId }) => {
       const currentActivity = await InterpolateStorage.getTabActivity(tabId);
-      setRecentlyActive(currentActivity);
+      setRecentlyActive(currentActivity ?? []);
     });
   }, []);
 
@@ -345,7 +345,7 @@ export const InterpolateProvider = ({
 
       if (noChangesForCurrentTab) return;
 
-      setRecentlyActive(currentTabChanges);
+      setRecentlyActive(currentTabChanges ?? []);
     });
   }, []);
 
@@ -387,6 +387,7 @@ export const InterpolateProvider = ({
         // @ts-expect-error TODO: FIXME: types
         addToGroup,
         allPaused,
+        // @ts-expect-error TODO: FIXME types
         enabledInterpolations,
         filter,
         interpolations,
@@ -405,7 +406,9 @@ export const InterpolateProvider = ({
         groups,
         recentlyActive,
         sortOption,
+        // @ts-expect-error TODO: fix types
         filteredInterpolations,
+        // @ts-expect-error TODO: fix types
         sortedInterpolations,
       }}
     >

@@ -1,9 +1,10 @@
 .Container {
   position: relative;
   height: 100vh;
-  background-color: var(--yellow-10);
+  background-color: var(--theme-choice-background);
 }
 
 .TopArea {
-  min-height: 150px;
+  min-height: 120px;
+  box-shadow: var(--shadow-3);
 }

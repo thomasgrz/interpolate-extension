@@ -2,8 +2,8 @@ import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/us
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import {
   Badge,
-  Box,
   Button,
+  Callout,
   Card,
   Flex,
   Strong,
@@ -19,7 +19,11 @@ import { CreateGroupView } from "../CreateGroupView/CreateGroupView";
 import { SortOption } from "../SortingOptions/SortingOptions";
 import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
 import { Collapsible } from "radix-ui";
-import { DoubleArrowDownIcon, DoubleArrowUpIcon } from "@radix-ui/react-icons";
+import {
+  DoubleArrowDownIcon,
+  DoubleArrowUpIcon,
+  InfoCircledIcon,
+} from "@radix-ui/react-icons";
 import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
 import styles from "./InterpolationGroupsView.module.scss";
 
@@ -103,6 +107,17 @@ export const InterpolationsGroupsView = ({
   };
   return (
     <Flex direction="column" gap="2" p="2" overflow={"scroll"}>
+      {noGroups && (
+        <Flex justify={"center"}>
+          <Callout.Root size="1" variant="surface">
+            <Flex align={"center"} gap="2">
+              <Callout.Icon>{<InfoCircledIcon />}</Callout.Icon>
+              <Callout.Text size="1">You have no groups yet</Callout.Text>
+            </Flex>
+          </Callout.Root>
+        </Flex>
+      )}
+
       {showGroupEditModal && (
         <CreateGroupView
           onSuccess={() => setShowGroupEditModal(false)}
@@ -129,94 +144,80 @@ export const InterpolationsGroupsView = ({
       )}
       <Flex direction={"column"} gap="2">
         {sortedHydratedGroups.map((config) => (
-          <>
-            <Card
-              className={styles.Card}
-              variant="surface"
-              key={config.groupId}
-            >
-              <Flex justify="center" gap="1" direction="column">
-                <Flex width="stretch" justify={"between"}>
-                  <Flex direction="column">
-                    <Strong>
-                      <Flex gap="2">
-                        <Badge>group</Badge>
-                        <Text size="2">{config.name}</Text>
-                      </Flex>
-                    </Strong>
+          <Card className={styles.Card} variant="surface" key={config.groupId}>
+            <Flex justify="center" gap="1" direction="column">
+              <Flex width="stretch" justify={"between"}>
+                <Flex direction="column">
+                  <Strong>
+                    <Flex gap="2">
+                      <Badge>group</Badge>
+                      <Text size="2">{config.name}</Text>
+                    </Flex>
+                  </Strong>
+                </Flex>
+
+                <InterpolationOptions
+                  disableAddToGroup
+                  onDeleteSelected={() => onDeleteSelected(config)}
+                  // @ts-expect-error TODO: FIXME: types
+                  onEditSelected={onEditSelected}
+                  config={config}
+                />
+              </Flex>
+              <Flex width="stretch" direction="column">
+                <Collapsible.Root
+                  open={expandedGroups[config.name]}
+                  onOpenChange={(isOpen) =>
+                    onGroupOpenChange(config.name, isOpen)
+                  }
+                >
+                  <Flex width="stretch" justify="between">
+                    <Text size="1" style={{ fontSize: "0.5em" }}>
+                      {new Date(config.createdAt).toDateString()}
+                    </Text>
+                    <Tooltip
+                      content={
+                        expandedGroups[config.name]
+                          ? "hide configs in group"
+                          : "show configs in group"
+                      }
+                    >
+                      <Collapsible.Trigger asChild>
+                        <Button
+                          // className={styles.ToggleCollapse}
+                          size="1"
+                          radius="none"
+                          variant="outline"
+                          // TODO: rm inline styles when prod build doesnt break className styles
+                          style={{ height: "unset", boxShadow: "none" }}
+                        >
+                          {expandedGroups[config.name] ? (
+                            <>
+                              Collapse <DoubleArrowUpIcon />{" "}
+                            </>
+                          ) : (
+                            <>
+                              {config.interpolations?.length} config
+                              {config.interpolations.length > 1 ? "s" : ""}
+                              <DoubleArrowDownIcon />
+                            </>
+                          )}
+                        </Button>
+                      </Collapsible.Trigger>
+                    </Tooltip>
                   </Flex>
 
-                  <InterpolationOptions
-                    disableAddToGroup
-                    onDeleteSelected={() => onDeleteSelected(config)}
-                    // @ts-expect-error TODO: FIXME: types
-                    onEditSelected={onEditSelected}
-                    config={config}
-                  />
-                </Flex>
-                <Flex width="stretch" direction="column">
-                  <Collapsible.Root
-                    open={expandedGroups[config.name]}
-                    onOpenChange={(isOpen) =>
-                      onGroupOpenChange(config.name, isOpen)
-                    }
-                  >
-                    <Flex width="stretch" justify="between">
-                      <Text size="1" style={{ fontSize: "0.5em" }}>
-                        {new Date(config.createdAt).toDateString()}
-                      </Text>
-                      <Tooltip
-                        content={
-                          expandedGroups[config.name]
-                            ? "hide configs in group"
-                            : "show configs in group"
-                        }
-                      >
-                        <Collapsible.Trigger asChild>
-                          <Button
-                            // className={styles.ToggleCollapse}
-                            size="1"
-                            radius="none"
-                            variant="outline"
-                            // TODO: rm inline styles when prod build doesnt break className styles
-                            style={{ height: "unset", boxShadow: "none" }}
-                          >
-                            {expandedGroups[config.name] ? (
-                              <>
-                                Collapse <DoubleArrowUpIcon />{" "}
-                              </>
-                            ) : (
-                              <>
-                                {config.interpolations?.length} config
-                                {config.interpolations.length > 1 ? "s" : ""}
-                                <DoubleArrowDownIcon />
-                              </>
-                            )}
-                          </Button>
-                        </Collapsible.Trigger>
-                      </Tooltip>
+                  <Collapsible.Content>
+                    <Flex width="stretch" justify="start">
+                      <InterpolationsListView configs={config.interpolations} />
                     </Flex>
-
-                    <Collapsible.Content>
-                      <Flex width="stretch" justify="start">
-                        <InterpolationsListView
-                          configs={config.interpolations}
-                        />
-                      </Flex>
-                    </Collapsible.Content>
-                  </Collapsible.Root>
-                </Flex>
+                  </Collapsible.Content>
+                </Collapsible.Root>
               </Flex>
-            </Card>
-          </>
+            </Flex>
+          </Card>
         ))}
       </Flex>
-
-      {noGroups && (
-        <Box>
-          <Text size="1">No groups yet</Text>
-        </Box>
-      )}
     </Flex>
   );
 };

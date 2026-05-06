@@ -86,7 +86,7 @@ export const Notifier = () => {
           <Text size="2">
             <Strong>interpolate</Strong>
           </Text>
-          <GlobalInterpolationOptions allowDelete={false} />
+          <GlobalInterpolationOptions />
         </Flex>
       </Card>
     </InterpolateProvider>

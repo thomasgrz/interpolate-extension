@@ -11,6 +11,7 @@ import {
   AddHeaderFormPlaceholder,
 } from "./AddHeaderForm.constants";
 import TextAreaInput from "../TextArea/TextArea";
+import styles from "./AddHeaderForm.module.scss";
 
 export interface AddHeaderFormValue {
   id?: string | number;
@@ -97,7 +98,7 @@ export const AddHeaderForm = ({
         form.handleSubmit();
       }}
     >
-      <Card style={{ backgroundColor: "#94CE9A" }}>
+      <Card className={styles.Card}>
         <Flex gap="1" direction={"column"}>
           <form.Field
             validators={{

@@ -1,12 +1,6 @@
-import {
-  ChevronRightIcon,
-  DoubleArrowDownIcon,
-  DoubleArrowUpIcon,
-  MinusIcon,
-  PlusIcon,
-} from "@radix-ui/react-icons";
-import { Box, Flex, Separator, Text } from "@radix-ui/themes";
-import { Collapsible, ScrollArea } from "radix-ui";
+import { ChevronRightIcon } from "@radix-ui/react-icons";
+import { Flex, Text, ScrollArea } from "@radix-ui/themes";
+import { Collapsible } from "radix-ui";
 import { useState } from "react";
 import * as styles from "./CollapsibleSection.module.scss";
 
@@ -31,6 +25,7 @@ export const CollapsibleSection = ({
 
   const derivedIsOpen = defaultIsOpen ?? isOpen;
   return (
+    // @ts-expect-error TODO: fix types
     <Flex width="stretch" className={styles.CollapsibleSection}>
       <Collapsible.Root
         open={derivedIsOpen}
@@ -41,24 +36,28 @@ export const CollapsibleSection = ({
         <Flex direction="column">
           <Collapsible.Trigger asChild>
             <Flex
+              // @ts-expect-error TODO: fix types
               className={styles.Trigger}
               width="stretch"
               flexGrow="grow"
               justify={"between"}
               align={"center"}
-              minHeight="3em"
+              minHeight="2em"
+              pr="3"
             >
               <Text size="2">{title} </Text>
               <ChevronRightIcon
                 width={"1.5em"}
                 height={"1.5em"}
                 data-open={derivedIsOpen}
+                // @ts-expect-error TODO fix types
                 className={styles.IconOpen}
               />
             </Flex>
           </Collapsible.Trigger>
-          <Collapsible.Content className={styles.CollapsedContent}>
-            {children}
+          {/** @ts-expect-error TODO: fix types */}
+          <Collapsible.Content className={styles.CollapsedContent} asChild>
+            <ScrollArea>{children}</ScrollArea>
           </Collapsible.Content>
         </Flex>
       </Collapsible.Root>

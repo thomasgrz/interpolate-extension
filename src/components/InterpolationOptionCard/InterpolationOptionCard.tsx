@@ -19,8 +19,10 @@ export const InterpolationOptionCard = ({
   <Card
     onClick={onClick}
     className={styles.Card}
-    style={{ backgroundColor: color }}
+    // @ts-expect-error TODO: fix me
+    style={{ "--card-background": color }}
     asChild
+    variant="classic"
   >
     <Flex direction="column">
       <Heading align={"center"} as="h6" size="2">
