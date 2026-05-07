@@ -16,13 +16,17 @@ export const sortInterpolations = (
         a?.name?.toLowerCase() > b?.name?.toLowerCase() ? -1 : 1,
       );
     case SortOption.NEWEST:
-      return interpolations?.sort?.((a, b) =>
-        b.createdAt > a.createdAt ? 1 : -1,
-      );
+      return interpolations?.sort?.((a, b) => {
+        if (b.createdAt === a.createdAt)
+          return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
+        return b.createdAt > a.createdAt ? 1 : -1;
+      });
     case SortOption.OLDEST:
     default:
-      return interpolations?.sort?.((a, b) =>
-        a.createdAt > b.createdAt ? 1 : -1,
-      );
+      return interpolations?.sort?.((a, b) => {
+        if (a.createdAt === b.createdAt)
+          a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
+        return a.createdAt > b.createdAt ? 1 : -1;
+      });
   }
 };
