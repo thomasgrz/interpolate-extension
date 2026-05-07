@@ -105,7 +105,7 @@ test("should disable all header rules when global pause is activated", async ({
   });
 
   // Activate global pause
-  await page.getByRole("button", { name: "Pause" }).click();
+  await page.getByTestId("pause-all").click();
 
   // Navigate to a test page
   await page.goto("https://httpbin.org/headers");
@@ -137,9 +137,9 @@ test("should re-enable header rules when global pause is deactivated", async ({
   });
 
   // Activate global pause
-  await page.getByRole("button", { name: /Pause/ }).click();
+  await page.getByTestId("pause-all").click();
   // Deactivate global pause
-  await page.getByRole("button", { name: /Resume/ }).click();
+  await page.getByTestId("resume-all").click();
 
   // Navigate to a test page
   await page.goto("https://httpbin.org/headers");

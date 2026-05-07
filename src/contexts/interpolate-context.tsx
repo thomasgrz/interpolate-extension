@@ -1,4 +1,6 @@
+import { SortOption } from "#src/components/SortingOptions/SortingOptions.tsx";
 import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
+import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import {
@@ -27,7 +29,12 @@ export const InterpolateContext = createContext({
     onSuccess?: () => void;
   }) => {},
   allPaused: undefined as boolean | undefined,
+  enabledInterpolations: [],
+  filter: "",
+  filteredInterpolations: [],
   groups: [] as GroupConfigInStorage[],
+  onChangeFilter: (_filter: string) => {},
+  onChangeSort: (_sortOption: SortOption) => {},
   pause: (_id: string | number) => {},
   pauseAll: () => {},
   recentlyActive: [] as AnyInterpolation[] | [] | undefined,
@@ -38,6 +45,7 @@ export const InterpolateContext = createContext({
   refresh: () => {},
   removeGroup: (_id: string) => {},
   showGroups: false,
+  sortOption: SortOption.NEWEST,
   setShowGroups: (_showGroups: boolean) => {},
   sortedInterpolations: [] as AnyInterpolation[],
 });
@@ -64,16 +72,35 @@ export const InterpolateProvider = ({
   const [recentlyActive, setRecentlyActive] = useState<
     AnyInterpolation[] | []
   >();
+  const [sortOption, setSortOption] = useState(SortOption.NEWEST);
+  const [filter, setFilter] = useState<string>("");
   const sortedInterpolations = useMemo(() => {
-    return interpolations
-      .sort(
-        (interp) =>
-          new Date(interp?.createdAt).getTime() -
-          new Date(interp?.createdAt).getTime(),
-      )
-      .toReversed();
-  }, [interpolations]);
+    const noInterps = !interpolations?.length;
+    if (noInterps) return [];
+    debugger;
+    return (
+      sortInterpolations(interpolations, sortOption).filter((interp) =>
+        interp?.name?.toLowerCase()?.includes(filter?.toLowerCase?.()),
+      ) ?? []
+    );
+  }, [sortOption, interpolations, filter]);
   const [allPaused, setAllPaused] = useState<boolean>();
+
+  const filteredInterpolations = useMemo(() => {
+    const nofilter = !filter;
+    if (nofilter) return [];
+    return sortedInterpolations.filter((interp) =>
+      interp.name?.includes(filter),
+    );
+  }, [sortedInterpolations, filter]);
+  const onChangeSort = (option: SortOption) => {
+    setSortOption(option);
+    chrome.storage.local.set({ sortOption: option });
+  };
+
+  const onChangeFilter = (value: string) => {
+    setFilter(value);
+  };
 
   const add = (interp: AnyInterpolation[] | AnyInterpolation) => {
     const result = InterpolateStorage.create(
@@ -223,6 +250,26 @@ export const InterpolateProvider = ({
     return InterpolateStorage?.addToGroup({ groupId, interps });
   };
 
+  const enabledInterpolations = useMemo(
+    () => interpolations?.filter?.((interp) => interp?.enabledByUser),
+    [interpolations],
+  );
+  useEffect(() => {
+    const getInitialSortOption = async () => {
+      const result = await chrome.storage.local.get("sortOption");
+      const noDefault = !result.sortOption;
+      if (noDefault) return;
+      setSortOption(result.sortOption);
+    };
+    getInitialSortOption().catch();
+
+    const getInitialGroupView = async () => {
+      const result = await chrome.storage.local.get("showGroups");
+      setShowGroups(result.showGroups);
+    };
+    getInitialGroupView();
+  }, []);
+
   useEffect(() => {
     InterpolateStorage.getAllGroups().then((initialGroups) => {
       setGroups(initialGroups);
@@ -277,7 +324,7 @@ export const InterpolateProvider = ({
     // Update recentlyActive when a user switches tabs
     chrome.tabs?.onActivated?.addListener(async ({ tabId }) => {
       const currentActivity = await InterpolateStorage.getTabActivity(tabId);
-      setRecentlyActive(currentActivity);
+      setRecentlyActive(currentActivity ?? []);
     });
   }, []);
 
@@ -301,7 +348,7 @@ export const InterpolateProvider = ({
 
       if (noChangesForCurrentTab) return;
 
-      setRecentlyActive(currentTabChanges);
+      setRecentlyActive(currentTabChanges ?? []);
     });
   }, []);
 
@@ -343,7 +390,12 @@ export const InterpolateProvider = ({
         // @ts-expect-error TODO: FIXME: types
         addToGroup,
         allPaused,
+        // @ts-expect-error TODO: FIXME types
+        enabledInterpolations,
+        filter,
         interpolations,
+        onChangeSort,
+        onChangeFilter,
         pause,
         pauseAll,
         refresh,
@@ -356,6 +408,10 @@ export const InterpolateProvider = ({
         setShowGroups: handleShowGroups,
         groups,
         recentlyActive,
+        sortOption,
+        // @ts-expect-error TODO: fix types
+        filteredInterpolations,
+        // @ts-expect-error TODO: fix types
         sortedInterpolations,
       }}
     >

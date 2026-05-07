@@ -13,6 +13,7 @@ import {
   MockResponseFormLabel,
   MockResponseFormPlaceholder,
 } from "./MockResponseForm.constants";
+import styles from "./MockResponseForm.module.scss";
 
 export interface MockResponseFormValue {
   id?: string | number;
@@ -116,7 +117,10 @@ export const MockResponseForm = ({
   };
   return (
     <form onSubmit={handleSubmit}>
-      <Card style={{ width: "stretch" }}>
+      <Card
+        style={{ backgroundColor: "var(--yellow-5)" }}
+        className={styles.Card}
+      >
         <Flex direction="column">
           <form.Field
             name="name"

@@ -4,7 +4,7 @@ import { generateRuleId } from "@/utils/id/generateRedirectRuleId";
 export const createScriptInterpolation = (scriptForm: {
   id?: string | null;
   script: string;
-  runAt?: string;
+  runAt?: "document_start" | "document_idle" | "document_end";
   matches?: string;
   name: string;
 }) => {
@@ -14,6 +14,7 @@ export const createScriptInterpolation = (scriptForm: {
       js: [{ code: `${scriptForm.script}` }],
       id: scriptForm?.id ?? generateRuleId().toString(),
       matches: [scriptForm.matches || "*://*/*"],
+      runAt: scriptForm?.runAt ?? "document_start",
     },
   });
 };

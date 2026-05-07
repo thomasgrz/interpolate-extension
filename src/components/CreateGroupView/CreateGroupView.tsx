@@ -6,7 +6,6 @@ import {
   Dialog,
   Flex,
   Heading,
-  ScrollArea,
   Text,
 } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
@@ -180,25 +179,23 @@ export const CreateGroupView = ({
                   />
                 )}
               />
-              <ScrollArea type="always" scrollbars="vertical">
-                <Flex gap="2" direction="column">
-                  {interpolations?.map?.((interp) => {
-                    return (
-                      <Flex width="stretch" flexGrow="1" gap="2" align="center">
-                        <Checkbox
-                          key={interp?.details?.id}
-                          defaultChecked={
-                            selectedStates[interp?.details?.id]?.isChecked
-                          }
-                          // @ts-expect-error TODO: fix types
-                          onClick={(e) => handleChange(e, interp)}
-                        />
-                        <InterpolationCard hideRuleToggle info={interp} />
-                      </Flex>
-                    );
-                  })}
-                </Flex>
-              </ScrollArea>
+              <Flex gap="2" direction="column">
+                {interpolations?.map?.((interp) => {
+                  return (
+                    <Flex width="stretch" flexGrow="1" gap="2" align="center">
+                      <Checkbox
+                        key={interp?.details?.id}
+                        defaultChecked={
+                          selectedStates[interp?.details?.id]?.isChecked
+                        }
+                        // @ts-expect-error TODO: fix types
+                        onClick={(e) => handleChange(e, interp)}
+                      />
+                      <InterpolationCard hideRuleToggle info={interp} />
+                    </Flex>
+                  );
+                })}
+              </Flex>
               <Flex width="stretch" justify="start" pt="3">
                 <Text size="2">{numOfSelected} selected</Text>
               </Flex>

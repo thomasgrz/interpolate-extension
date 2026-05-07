@@ -1,3 +1,8 @@
 .UserScriptForm {
   max-width: 100%;
 }
+
+.Card {
+  --card-background-color: unset;
+  background-color: var(--purple-5);
+}

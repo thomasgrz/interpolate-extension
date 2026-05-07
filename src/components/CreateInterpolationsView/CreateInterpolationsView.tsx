@@ -1,4 +1,4 @@
-import { Dialog, Button, Flex, IconButton } from "@radix-ui/themes";
+import { Dialog, Button, Flex, VisuallyHidden } from "@radix-ui/themes";
 import {
   ChevronLeftIcon,
   CodeIcon,
@@ -39,6 +39,7 @@ const FormSelectionStep = ({
   return (
     <Flex gap="1" direction="column">
       <InterpolationOptionCard
+        color="var(--green-5)"
         heading="Add headers"
         subHeading="Append a header key-value pair to all outbound requests."
         icon={FileTextIcon}
@@ -47,6 +48,7 @@ const FormSelectionStep = ({
         }}
       />
       <InterpolationOptionCard
+        color="var(--purple-5)"
         heading="Create user script"
         subHeading="Execute a script during a specific page lifecycle event"
         icon={CodeIcon}
@@ -55,12 +57,14 @@ const FormSelectionStep = ({
         }
       />
       <InterpolationOptionCard
+        color="var(--blue-5)"
         heading="Redirect requests"
         subHeading="Intercept & redirect outbound requests that match a specific regex pattern"
         icon={MoveIcon}
         onClick={() => onChange(InterpolationOptionSelection.REDIRECT_REQUEST)}
       />
       <InterpolationOptionCard
+        color="var(--yellow-5)"
         heading={"Mock API response"}
         subHeading="Provide a mocked response to requests whose URL matches an specific regular expression"
         icon={RocketIcon}
@@ -68,11 +72,13 @@ const FormSelectionStep = ({
       />
       <Flex gap="1" flexGrow={"1"} width="stretch">
         <InterpolationOptionCard
+          color="var(--mauve-6)"
           heading="Import"
           icon={DownloadIcon}
           onClick={() => onChange(InterpolationOptionSelection.IMPORT)}
         />
         <InterpolationOptionCard
+          color="var(--blue-8)"
           heading="Export"
           icon={UploadIcon}
           onClick={() => onChange(InterpolationOptionSelection.EXPORT)}
@@ -132,6 +138,7 @@ export const CreateInterpolationsView = ({
       <Dialog.Trigger>
         <Button
           style={{ cursor: "pointer" }}
+          data-testid="manage-interpolations"
           radius="full"
           className={styles.CreateInterpolationsView}
         >
@@ -146,6 +153,10 @@ export const CreateInterpolationsView = ({
           flexGrow="1"
           direction={"column"}
         >
+          <VisuallyHidden>
+            <Dialog.Title>interpolation options</Dialog.Title>
+            <Dialog.Description>interpolation options</Dialog.Description>
+          </VisuallyHidden>
           {step !== InterpolationOptionSelection.OPTIONS_VIEW && (
             <Dialog.Title align="center">
               <Flex align="center" gap="2" justify={"center"}>

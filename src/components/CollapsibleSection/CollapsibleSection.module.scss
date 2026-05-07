@@ -1,0 +1,38 @@
+.CollapsibleSection {
+  min-height: 2em;
+  max-height: calc(100% - 3em);
+  overflow: hidden;
+}
+
+.CollapsedContent {
+  min-height: 150px;
+  &[data-state="open"] > div {
+    transition: height 3s ease-in;
+  }
+
+  &[data-state="open"] > div {
+    max-height: 100%;
+  }
+}
+
+.IconOpen {
+  transition: transform 0.1s ease-in;
+  &[data-open="true"] {
+    transform: rotate(0.25turn);
+  }
+}
+
+.Trigger {
+  cursor: pointer;
+  background-color: var(--theme-choice-action);
+  box-shadow: var(--shadow-3);
+  padding-left: 0px;
+  transition: all 0.25s ease-in-out;
+  color: var(--gray-12);
+  border: 0px solid var(--theme-choice-background);
+
+  &:hover {
+    padding-left: 10px;
+    border-left: 5px solid var(--theme-choice-high-contrast);
+  }
+}

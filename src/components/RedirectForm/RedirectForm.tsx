@@ -12,6 +12,7 @@ import {
   RedirectFormPlaceholder,
   RedirectFormValue,
 } from "./RedirectForm.constants";
+import styles from "./RedirectRuleForm.module.scss";
 
 const handleCreateRedirectInterpolation = async ({
   value,
@@ -111,7 +112,10 @@ export const RedirectForm = ({
         await form.handleSubmit();
       }}
     >
-      <Card style={{ backgroundColor: "#0090FF" }}>
+      <Card
+        style={{ backgroundColor: "var(--blue-5)" }}
+        className={styles.Card}
+      >
         <Flex gap="1" direction={"column"}>
           <Flex gap="1" direction={"column"}>
             <form.Field

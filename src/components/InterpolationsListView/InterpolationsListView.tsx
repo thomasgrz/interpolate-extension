@@ -1,4 +1,4 @@
-import { Flex, Box } from "@radix-ui/themes";
+import { ScrollArea, Box } from "@radix-ui/themes";
 import { InterpolationCard } from "../InterpolationCard/InterpolationCard.tsx";
 import styles from "./InterpolationsListView.module.scss";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
@@ -11,7 +11,7 @@ export const InterpolationsListView = ({
   configs?: AnyInterpolation[];
 }) => {
   return (
-    <Flex className={styles.InterpolationsContainer} width="stretch">
+    <ScrollArea className={styles.InterpolationsContainer}>
       {configs?.map?.((interpolation) => (
         <Box
           key={interpolation.details?.id}
@@ -19,11 +19,12 @@ export const InterpolationsListView = ({
           className={styles.InterpolationsCardContainer}
         >
           <InterpolationCard
+            key={interpolation?.details?.id}
             hideRuleToggle={hideRuleToggle}
             info={interpolation}
           />
         </Box>
       ))}
-    </Flex>
+    </ScrollArea>
   );
 };

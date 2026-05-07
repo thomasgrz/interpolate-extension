@@ -5,12 +5,8 @@ import styles from "./GlobalInterpolationOptions.module.scss";
 import { useMemo } from "react";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 
-export const GlobalInterpolationOptions = ({
-  allowDelete = true,
-}: {
-  allowDelete?: boolean;
-}) => {
-  const { interpolations, allPaused, removeAll, pauseAll, resumeAll } =
+export const GlobalInterpolationOptions = ({}: {}) => {
+  const { interpolations, allPaused, pauseAll, resumeAll } =
     useInterpolationsContext();
 
   const ruleCount = useMemo(() => interpolations?.length, [interpolations]);
@@ -20,6 +16,7 @@ export const GlobalInterpolationOptions = ({
       variant="solid"
       radius="full"
       type="button"
+      data-testid="resume-all"
       disabled={!ruleCount}
       className={styles.ResumeAllRules}
       color="green"
@@ -32,6 +29,7 @@ export const GlobalInterpolationOptions = ({
       variant="solid"
       radius="full"
       type="button"
+      data-testid="pause-all"
       disabled={!ruleCount}
       className={styles.PauseAllRules}
       color="blue"
