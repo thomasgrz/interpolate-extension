@@ -1,15 +1,12 @@
-@import "tailwindcss";
-@import "tw-animate-css";
 @import "@radix-ui/themes/styles.css";
-
 @custom-variant dark (&:is(.dark *));
 
 .radix-themes {
   --default-font-family: "Google Sans Code", monospace;
+  --background: var(--mint-2);
 }
 
 :root {
-  --background: #fefce9;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;

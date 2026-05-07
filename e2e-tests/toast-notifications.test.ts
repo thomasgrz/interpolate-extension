@@ -18,7 +18,7 @@ test("should display toast notification for script interpolation", async ({
     name: "no op script",
   });
 
-  await page.getByText("Browser UI").click();
+  await page.getByTestId("browser-ui-toggle").click();
 
   const toast = page.getByTestId("script-preview-no op script");
 
@@ -56,7 +56,7 @@ test("should display toast notifications for redirect interpolations", async ({
     source: ".*google.com.*",
   });
 
-  await page.getByText("Browser UI").click();
+  await page.getByTestId("browser-ui-toggle").click();
   await page.goto("https://google.com");
   await page.reload();
   const content = page.getByText("Example domain");

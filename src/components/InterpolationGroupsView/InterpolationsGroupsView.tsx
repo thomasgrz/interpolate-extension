@@ -2,8 +2,8 @@ import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/us
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import {
   Badge,
-  Box,
   Button,
+  Callout,
   Card,
   Flex,
   Strong,
@@ -19,8 +19,13 @@ import { CreateGroupView } from "../CreateGroupView/CreateGroupView";
 import { SortOption } from "../SortingOptions/SortingOptions";
 import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
 import { Collapsible } from "radix-ui";
-import { DoubleArrowDownIcon, DoubleArrowUpIcon } from "@radix-ui/react-icons";
+import {
+  DoubleArrowDownIcon,
+  DoubleArrowUpIcon,
+  InfoCircledIcon,
+} from "@radix-ui/react-icons";
 import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
+import styles from "./InterpolationGroupsView.module.scss";
 
 export const InterpolationsGroupsView = ({
   sortOption,
@@ -101,7 +106,18 @@ export const InterpolationsGroupsView = ({
     setEpxandedGroups((prevState) => ({ ...prevState, [groupName]: isOpen }));
   };
   return (
-    <Flex direction="column" gap="2" p="2">
+    <Flex direction="column" gap="2" p="2" overflow={"scroll"}>
+      {noGroups && (
+        <Flex justify={"center"}>
+          <Callout.Root size="1" variant="surface">
+            <Flex align={"center"} gap="2">
+              <Callout.Icon>{<InfoCircledIcon />}</Callout.Icon>
+              <Callout.Text size="1">You have no groups yet</Callout.Text>
+            </Flex>
+          </Callout.Root>
+        </Flex>
+      )}
+
       {showGroupEditModal && (
         <CreateGroupView
           onSuccess={() => setShowGroupEditModal(false)}
@@ -126,9 +142,9 @@ export const InterpolationsGroupsView = ({
           Showing {sortedHydratedGroups?.length} groups matching "{query}"
         </Text>
       )}
-      {sortedHydratedGroups.map((config) => (
-        <>
-          <Card variant="surface" key={config.groupId}>
+      <Flex direction={"column"} gap="2">
+        {sortedHydratedGroups.map((config) => (
+          <Card className={styles.Card} variant="surface" key={config.groupId}>
             <Flex justify="center" gap="1" direction="column">
               <Flex width="stretch" justify={"between"}>
                 <Flex direction="column">
@@ -200,13 +216,8 @@ export const InterpolationsGroupsView = ({
               </Flex>
             </Flex>
           </Card>
-        </>
-      ))}
-      {noGroups && (
-        <Box>
-          <Text size="1">No groups yet</Text>
-        </Box>
-      )}
+        ))}
+      </Flex>
     </Flex>
   );
 };

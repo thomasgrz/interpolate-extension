@@ -10,6 +10,50 @@ const meta = preview.meta({
 
 export default meta;
 
+// @ts-expect-error TODO: fix types
+global.__INTERPOLATIONS__ = [
+  createHeaderInterpolation({
+    headerValue: "test",
+    headerKey: "test",
+    name: "test",
+  }),
+  createHeaderInterpolation({
+    headerValue: "test",
+    headerKey: "test",
+    name: "test",
+  }),
+  createHeaderInterpolation({
+    headerValue: "test",
+    headerKey: "test",
+    name: "test",
+  }),
+  createHeaderInterpolation({
+    headerValue: "test",
+    headerKey: "test",
+    name: "test",
+  }),
+  createHeaderInterpolation({
+    headerValue: "test",
+    headerKey: "test",
+    name: "test",
+  }),
+  createHeaderInterpolation({
+    headerValue: "test",
+    headerKey: "test",
+    name: "test",
+  }),
+  createHeaderInterpolation({
+    headerValue: "test",
+    headerKey: "test",
+    name: "test",
+  }),
+  createHeaderInterpolation({
+    headerValue: "test",
+    headerKey: "test",
+    name: "test",
+  }),
+];
+
 export const Default = meta.story({
   // @ts-expect-error TS says parameters should be undefined
   parameters: {

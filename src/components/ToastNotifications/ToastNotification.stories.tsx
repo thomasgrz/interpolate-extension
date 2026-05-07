@@ -28,7 +28,7 @@ const meta = preview.meta({
           createScriptInterpolation({
             script: "script body",
             name: "script test",
-            runAt: "idk",
+            runAt: "document_start",
           }),
         ].map((interp: AnyInterpolation) => {
           return (

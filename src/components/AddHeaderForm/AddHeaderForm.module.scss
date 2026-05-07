@@ -3,3 +3,8 @@
     display: block;
   }
 }
+
+.Card {
+  --card-background-color: unset;
+  background-color: var(--green-5);
+}

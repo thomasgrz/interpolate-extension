@@ -1,15 +1,22 @@
-import { Flex, Strong, Switch, Text, Tooltip } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { CreateInterpolationsView } from "../CreateInterpolationsView/CreateInterpolationsView.tsx";
 import { GlobalInterpolationOptions } from "../GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
 import styles from "./ControlCenter.module.scss";
 import { useEffect, useState } from "react";
-import { Label } from "radix-ui";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
-import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import { BrowserUIToggle } from "../BrowserUIToggle/BrowserUIToggle.tsx";
 
-export const ControlCenter = ({ onCreate }: { onCreate: () => void }) => {
+export const ControlCenter = ({
+  onCreate,
+  defaultIsBrowserUIEnabled,
+}: {
+  defaultIsBrowserUIEnabled?: boolean;
+  onCreate: () => void;
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isBrowserUIEnabled, setIsBrowserUIEnabled] = useState(true);
+  const [isBrowserUIEnabled, setIsBrowserUIEnabled] = useState(
+    defaultIsBrowserUIEnabled,
+  );
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
   };
@@ -29,57 +36,42 @@ export const ControlCenter = ({ onCreate }: { onCreate: () => void }) => {
   }, []);
 
   return (
-    <Flex gap="1" direction="column" className={styles.ControlCenterContainer}>
+    <Flex
+      p="0"
+      gap="1"
+      direction="column"
+      className={styles.ControlCenterContainer}
+    >
       <Flex
         direction={"column"}
         flexGrow={"1"}
         data-testid={"dashboard"}
-        justify={"start"}
-        gap="3"
-        p="3"
+        align={"end"}
+        pb="3"
         className={styles.FormContainer}
       >
-        <CreateInterpolationsView
-          onCreate={onCreate}
-          onOpenChange={handleOpenChange}
-          isOpen={isOpen}
-        />
-        <Label.Root>
-          <Flex justify={"center"} align="center" gap="2">
-            <Text size="1"> Browser UI</Text>
-            <Switch
-              checked={isBrowserUIEnabled}
-              onCheckedChange={handleBrowserUIToggle}
+        <Flex
+          p="0"
+          width="stretch"
+          align="center"
+          justify="between"
+          flexGrow={"grow"}
+        >
+          <Flex gap="3">
+            <GlobalInterpolationOptions />
+
+            <BrowserUIToggle
+              onChange={handleBrowserUIToggle}
+              isEnabled={!!isBrowserUIEnabled}
             />
-            <Tooltip
-              content={
-                <Flex direction="column">
-                  <Text mb="3">
-                    When enabled:
-                    <ol>
-                      <li>
-                        1. pin a global Pause/Resume button in bottom left
-                        corner of the viewport.
-                      </li>
-                      <li>
-                        2. display a toast notification anytime an interpolation
-                        is invoked on a page
-                      </li>
-                    </ol>
-                  </Text>
-                  <Strong>
-                    {" "}
-                    You may need to reload the page the first time you enable
-                    the UI.
-                  </Strong>
-                </Flex>
-              }
-            >
-              <QuestionMarkCircledIcon />
-            </Tooltip>
           </Flex>
-        </Label.Root>
-        <GlobalInterpolationOptions />
+
+          <CreateInterpolationsView
+            onCreate={onCreate}
+            onOpenChange={handleOpenChange}
+            isOpen={isOpen}
+          />
+        </Flex>
       </Flex>
     </Flex>
   );

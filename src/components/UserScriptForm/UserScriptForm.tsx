@@ -14,12 +14,14 @@ import {
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { createScriptInterpolation } from "#src/utils/factories/createScriptInterpolation/createScriptInterpolation.ts";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
+import styles from "./UserScriptForm.module.scss";
 
 const handleCreateScriptInterpolation = async ({
   value,
 }: {
   value: Required<UserScriptFormValue>;
 }) => {
+  // @ts-expect-error TODO: fix types
   await InterpolateStorage.create(createScriptInterpolation(value));
 };
 
@@ -106,7 +108,7 @@ export const UserScriptForm = ({
       setShowWarning(true);
     }
   }, []);
-
+  console.log("he");
   return (
     <form
       onSubmit={(e) => {
@@ -115,7 +117,7 @@ export const UserScriptForm = ({
         form.handleSubmit();
       }}
     >
-      <Card style={{ backgroundColor: "#E1D9FF" }}>
+      <Card className={styles.Card} variant="surface">
         <Flex gap="1" direction={"column"}>
           {showWarning && <ScriptsPermissionWarning />}
           <form.Field

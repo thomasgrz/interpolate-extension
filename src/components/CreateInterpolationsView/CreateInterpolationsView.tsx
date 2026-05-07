@@ -1,4 +1,4 @@
-import { Dialog, Button, Flex } from "@radix-ui/themes";
+import { Dialog, Button, Flex, VisuallyHidden } from "@radix-ui/themes";
 import {
   ChevronLeftIcon,
   CodeIcon,
@@ -39,49 +39,49 @@ const FormSelectionStep = ({
   return (
     <Flex gap="1" direction="column">
       <InterpolationOptionCard
+        color="var(--green-5)"
         heading="Add headers"
         subHeading="Append a header key-value pair to all outbound requests."
         icon={FileTextIcon}
         onClick={() => {
           onChange(InterpolationOptionSelection.ADD_HEADERS);
         }}
-        color="#94CE9A"
       />
       <InterpolationOptionCard
+        color="var(--purple-5)"
         heading="Create user script"
         subHeading="Execute a script during a specific page lifecycle event"
         icon={CodeIcon}
         onClick={() =>
           onChange(InterpolationOptionSelection.CREATE_USER_SCRIPT)
         }
-        color="#CF91D8"
       />
       <InterpolationOptionCard
+        color="var(--blue-5)"
         heading="Redirect requests"
         subHeading="Intercept & redirect outbound requests that match a specific regex pattern"
         icon={MoveIcon}
         onClick={() => onChange(InterpolationOptionSelection.REDIRECT_REQUEST)}
-        color="#8EC8F6"
       />
       <InterpolationOptionCard
+        color="var(--yellow-5)"
         heading={"Mock API response"}
         subHeading="Provide a mocked response to requests whose URL matches an specific regular expression"
         icon={RocketIcon}
-        color="#FFDE21"
         onClick={() => onChange(InterpolationOptionSelection.MOCK_RESPONSE)}
       />
       <Flex gap="1" flexGrow={"1"} width="stretch">
         <InterpolationOptionCard
+          color="var(--mauve-6)"
           heading="Import"
           icon={DownloadIcon}
-          color="white"
           onClick={() => onChange(InterpolationOptionSelection.IMPORT)}
         />
         <InterpolationOptionCard
+          color="var(--blue-8)"
           heading="Export"
           icon={UploadIcon}
           onClick={() => onChange(InterpolationOptionSelection.EXPORT)}
-          color="#0090FF"
         />
       </Flex>
       <BrowseInterpolations />
@@ -136,16 +136,15 @@ export const CreateInterpolationsView = ({
   return (
     <Dialog.Root open={isOpen} onOpenChange={handleOnOpenChange}>
       <Dialog.Trigger>
-        <Flex justify={"center"} width="stretch">
-          <Button
-            className={styles.CreateInterpolationsView}
-            radius="full"
-            style={{ width: "250px", backgroundColor: "black" }}
-          >
-            <PlusCircledIcon />
-            Create interpolation
-          </Button>
-        </Flex>
+        <Button
+          style={{ cursor: "pointer" }}
+          data-testid="manage-interpolations"
+          radius="full"
+          className={styles.CreateInterpolationsView}
+        >
+          <PlusCircledIcon />
+          interpolations
+        </Button>
       </Dialog.Trigger>
       <Dialog.Content className={styles.DialogContent}>
         <Flex
@@ -154,6 +153,10 @@ export const CreateInterpolationsView = ({
           flexGrow="1"
           direction={"column"}
         >
+          <VisuallyHidden>
+            <Dialog.Title>interpolation options</Dialog.Title>
+            <Dialog.Description>interpolation options</Dialog.Description>
+          </VisuallyHidden>
           {step !== InterpolationOptionSelection.OPTIONS_VIEW && (
             <Dialog.Title align="center">
               <Flex align="center" gap="2" justify={"center"}>

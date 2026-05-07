@@ -32,7 +32,7 @@ test("should pause a script", async ({ page, extensionId }) => {
     dialog.accept();
   });
   await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
-  await page.getByText("Browser UI").click();
+  await page.getByTestId("browser-ui-toggle").click();
   await createTestScriptInterpolation({
     page,
     extensionId,
@@ -41,7 +41,7 @@ test("should pause a script", async ({ page, extensionId }) => {
     name: "test script",
   });
 
-  const pauseAll = page.getByText(/Pause.*/);
+  const pauseAll = page.getByTestId("pause-all");
   await expect(pauseAll).toBeVisible();
   await pauseAll.scrollIntoViewIfNeeded();
   await pauseAll.click();
@@ -66,7 +66,7 @@ test("should resume a script", async ({ page, extensionId }) => {
   });
 
   await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
-  await page.getByText("Browser UI").click();
+  await page.getByTestId("browser-ui-toggle").click();
   await createTestScriptInterpolation({
     page,
     extensionId,
@@ -75,7 +75,7 @@ test("should resume a script", async ({ page, extensionId }) => {
     name: "test script",
   });
 
-  const globalPause = page.getByText(/Pause.*/);
+  const globalPause = page.getByTestId("pause-all");
   invokedWhilePaused = false;
 
   await globalPause.scrollIntoViewIfNeeded();
@@ -85,7 +85,7 @@ test("should resume a script", async ({ page, extensionId }) => {
 
   expect(invokedWhilePaused).toBe(false);
 
-  await page.getByText("Resume").click();
+  await page.getByTestId("resume-all").click();
 
   await page.reload();
 
