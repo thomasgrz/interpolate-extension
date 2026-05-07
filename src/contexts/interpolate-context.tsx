@@ -77,7 +77,6 @@ export const InterpolateProvider = ({
   const sortedInterpolations = useMemo(() => {
     const noInterps = !interpolations?.length;
     if (noInterps) return [];
-    debugger;
     return (
       sortInterpolations(interpolations, sortOption).filter((interp) =>
         interp?.name?.toLowerCase()?.includes(filter?.toLowerCase?.()),
