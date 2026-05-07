@@ -25,7 +25,7 @@ export const sortInterpolations = (
     default:
       return interpolations?.sort?.((a, b) => {
         if (a.createdAt === b.createdAt)
-          a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
+          return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
         return a.createdAt > b.createdAt ? 1 : -1;
       });
   }
