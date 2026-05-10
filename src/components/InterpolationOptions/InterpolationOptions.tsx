@@ -5,6 +5,7 @@ import {
   ClipboardCopyIcon,
   TrashIcon,
   CheckCircledIcon,
+  ButtonIcon,
 } from "@radix-ui/react-icons";
 import styles from "./InterpolationOptions.module.scss";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
@@ -79,16 +80,20 @@ export const InterpolationOptions = ({
   const associatedGroupIdSet = associatedGroupIds
     ? new Set(associatedGroupIds)
     : new Set();
+
+  const hideAddToGroupOption = disableAddToGroup || !groups.length;
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
         <IconButton
+          size="1"
           data-testid={"interpolation-options-trigger"}
           className={styles.Button}
           variant="outline"
+          radius="full"
         >
           <Tooltip content="Show options">
-            <DotsHorizontalIcon />
+            <ButtonIcon />
           </Tooltip>
         </IconButton>
       </DropdownMenu.Trigger>
@@ -102,7 +107,7 @@ export const InterpolationOptions = ({
         <DropdownMenu.Item onSelect={onDeleteSelected}>
           <TrashIcon /> Delete
         </DropdownMenu.Item>
-        {disableAddToGroup ? null : (
+        {hideAddToGroupOption ? null : (
           <DropdownMenu.Sub>
             <DropdownMenu.SubTrigger>Add to group</DropdownMenu.SubTrigger>
             <DropdownMenu.SubContent>

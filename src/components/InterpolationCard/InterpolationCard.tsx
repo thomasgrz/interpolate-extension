@@ -1,11 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import {
+  CardStackIcon,
+  CardStackPlusIcon,
   Cross1Icon,
+  DotsHorizontalIcon,
+  DotsVerticalIcon,
   DoubleArrowDownIcon,
   DoubleArrowUpIcon,
+  Link1Icon,
 } from "@radix-ui/react-icons";
 import {
   Badge,
@@ -19,6 +24,7 @@ import {
   Text,
   Tooltip,
   Strong,
+  Separator,
 } from "@radix-ui/themes";
 import { Collapsible } from "radix-ui";
 import { HeaderRulePreview } from "../HeaderPreview/HeaderPreview";
@@ -32,7 +38,7 @@ import { AddHeaderForm } from "../AddHeaderForm/AddHeaderForm.tsx";
 import { MockPreview } from "../MockPreview/MockPreview.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm.tsx";
 import styles from "./InterpolationCard.module.scss";
-import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
+import { TabManagerPreview } from "../TabManagerPreview/TabManagerPreview.tsx";
 
 type InterpolationCardProps = {
   info: AnyInterpolation;
@@ -42,21 +48,17 @@ export const InterpolationCard = ({
   info,
   hideRuleToggle,
   hideOptions,
-  noShadow,
 }: {
   hideRuleToggle?: boolean;
   hideOptions?: boolean;
-  noShadow?: boolean;
-  compact?: boolean;
 } & InterpolationCardProps) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const { error, type, details, name } = info;
   const { id } = details ?? {};
   const formattedError = error instanceof Error ? error.message : String(error);
   const [enabledByUser, setIsEnabledByUser] = useState(info?.enabledByUser);
   const [editModeEnabled, setEditModeEnabled] = useState<boolean>();
   const [deleteSelected, setDeleteSelected] = useState<boolean>();
-  const { groups } = useInterpolationsContext();
+
   useEffect(() => {
     chrome.storage?.local?.onChanged?.addListener?.((changes) => {
       const isUnrelatedToGlobalPause = !changes?.allPaused;
@@ -104,12 +106,10 @@ export const InterpolationCard = ({
     setIsEnabledByUser(false);
   };
 
-  const handleOpenChange = (value: boolean) => {
-    setIsOpen(value);
-  };
-
-  const badgeColor = () => {
+  const badgeColor = useMemo(() => {
     switch (type) {
+      case "tab-manager":
+        return "orange";
       case "mockAPI":
         return "yellow";
       case "headers":
@@ -119,7 +119,7 @@ export const InterpolationCard = ({
       case "redirect":
         return "blue";
     }
-  };
+  }, [type]);
 
   const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
     "horizontal",
@@ -167,6 +167,13 @@ export const InterpolationCard = ({
         );
       case "script":
         return <ScriptPreview name={name} rule={info} />;
+      case "tab-manager":
+        return (
+          <TabManagerPreview
+            regex={info.details.matcher}
+            tabGroupName={info.name}
+          />
+        );
     }
   };
 
@@ -175,7 +182,6 @@ export const InterpolationCard = ({
       case "redirect":
         return (
           <RedirectForm
-            mode="edit"
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               id,
@@ -188,7 +194,6 @@ export const InterpolationCard = ({
       case "headers":
         return (
           <AddHeaderForm
-            mode="edit"
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               id,
@@ -201,7 +206,6 @@ export const InterpolationCard = ({
       case "script":
         return (
           <UserScriptForm
-            mode="edit"
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               name: info.name,
@@ -211,10 +215,11 @@ export const InterpolationCard = ({
             }}
           />
         );
+      case "tab-manager":
+
       case "mockAPI":
         return (
           <MockResponseForm
-            mode="edit"
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               ...info.details,
@@ -246,85 +251,72 @@ export const InterpolationCard = ({
   const handleDelete = async () => {
     await InterpolateStorage.delete(info.details?.id);
   };
+  console.log({ info });
   return (
     <Card
-      size={"4"}
       ref={ref}
       data-ui-error={!!info.error}
-      data-ui-no-shadow={noShadow}
       data-testid={`${type}-preview-${info?.name}`}
       className={styles.InterpolationCard}
-      style={{ padding: 0 }}
       variant="surface"
     >
-      <Collapsible.Root
-        className={styles.CollapsibleRoot}
-        onOpenChange={handleOpenChange}
-      >
-        {error && (
-          <Callout.Root color="red">
-            <Callout.Text size={"1"}>{formattedError}</Callout.Text>
-          </Callout.Root>
-        )}
-        <Flex width="stretch">
-          {hideRuleToggle ? null : (
-            <Box width="50px">
-              <RuleToggle
-                disabled={!!info.error}
-                onResumeClick={handleResumeClick}
-                onPauseClick={handlePauseClick}
-                isPaused={!enabledByUser || !!info.error}
-              />
-            </Box>
-          )}
-          <Flex width="100%" direction="column">
-            <Flex width="100%" justify="between" align="center" pl="2">
-              <Text weight="medium" size="1">
-                {name}
-              </Text>
-              <Flex gap="2" p="2" align="center">
-                <Box p="1">
-                  <Badge
-                    radius="full"
-                    variant="solid"
-                    color={badgeColor()}
-                    size="1"
-                  >
-                    {type}
-                  </Badge>
-                </Box>
-                {hideOptions ? null : (
-                  <InterpolationOptions
-                    onEditSelected={onEditSelected}
-                    onDeleteSelected={onDeleteSelected}
-                    disableAddToGroup={!groups.length}
-                    config={info}
-                  />
-                )}
+      {error && (
+        <Callout.Root color="red">
+          <Callout.Text size={"1"}>{formattedError}</Callout.Text>
+        </Callout.Root>
+      )}
+      <Flex width="stretch" gap="2" direction="column" maxWidth="100%">
+        <Flex
+          style={{ backgroundColor: "var(--theme-choice-background)" }}
+          justify={"between"}
+          align="center"
+          flexGrow={"grow"}
+        >
+          <Flex direction="column" width="stretch">
+            <Flex width="stretch" justify={"between"} p="2">
+              <Flex justify={"center"} align="center" gap="2">
+                <Badge size="1" color={badgeColor}>
+                  <Strong>
+                    <Text align="center" weight="medium" size="2">
+                      {name}
+                    </Text>
+                  </Strong>
+                </Badge>
               </Flex>
+              {/* {hideOptions ? null : ( */}
+              {/*   <Box> */}
+              {/*     <InterpolationOptions */}
+              {/*       onEditSelected={onEditSelected} */}
+              {/*       onDeleteSelected={onDeleteSelected} */}
+              {/*       config={info} */}
+              {/*     /> */}
+              {/*   </Box> */}
+              {/* )} */}
+              {hideRuleToggle ? null : (
+                <Box width="50px">
+                  <RuleToggle
+                    disabled={!!info.error}
+                    onResumeClick={handleResumeClick}
+                    onPauseClick={handlePauseClick}
+                    isPaused={!enabledByUser || !!info.error}
+                  />
+                </Box>
+              )}{" "}
             </Flex>
-            <Tooltip content="Toggle info panel">
-              <Collapsible.Trigger asChild>
-                <Button
-                  className={styles.ToggleCollapse}
-                  size="1"
-                  radius="none"
-                  variant="outline"
-                  // TODO: rm inline styles when prod build doesnt break className styles
-                  style={{ height: "unset", boxShadow: "none" }}
-                >
-                  {isOpen ? <DoubleArrowUpIcon /> : <DoubleArrowDownIcon />}
-                </Button>
-              </Collapsible.Trigger>
-            </Tooltip>
+
+            <Separator size="4" />
           </Flex>
         </Flex>
-        <Collapsible.Content>
-          <Box>{getPreview()}</Box>
-        </Collapsible.Content>
-      </Collapsible.Root>
+
+        <Flex width="stretch" justify={"between"} px="2" pb="2">
+          <Flex maxWidth={"80%"} overflow={"hidden"}>
+            {getPreview()}
+          </Flex>
+        </Flex>
+      </Flex>
+
       <Dialog.Root open={editModeEnabled}>
-        <Dialog.Content>
+        <Dialog.Content asChild>
           <Flex direction={"column"} p="0">
             {getEditForm()}
             <Dialog.Close style={{ position: "absolute", right: 5, top: 5 }}>

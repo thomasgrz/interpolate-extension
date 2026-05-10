@@ -55,7 +55,7 @@ export const InterpolationsGroupsView = ({
       return Promise.all(
         groups?.map(async (group) => {
           const { interpolationIds, ...rest } = group;
-          const interpolations = await chrome.storage.local.get(
+          const interpolations = await chrome?.storage?.local.get(
             interpolationIds?.map(InterpolateStorage.getInterpolationRecordKey),
           );
           return {

@@ -94,7 +94,7 @@ export const InterpolateProvider = ({
   }, [sortedInterpolations, filter]);
   const onChangeSort = (option: SortOption) => {
     setSortOption(option);
-    chrome.storage.local.set({ sortOption: option });
+    chrome?.storage?.local.set({ sortOption: option });
   };
 
   const onChangeFilter = (value: string) => {
@@ -255,16 +255,16 @@ export const InterpolateProvider = ({
   );
   useEffect(() => {
     const getInitialSortOption = async () => {
-      const result = await chrome.storage.local.get("sortOption");
-      const noDefault = !result.sortOption;
+      const result = await chrome?.storage?.local.get("sortOption");
+      const noDefault = !result?.sortOption;
       if (noDefault) return;
-      setSortOption(result.sortOption);
+      setSortOption(result?.sortOption);
     };
     getInitialSortOption().catch();
 
     const getInitialGroupView = async () => {
-      const result = await chrome.storage.local.get("showGroups");
-      setShowGroups(result.showGroups);
+      const result = await chrome?.storage?.local.get("showGroups");
+      setShowGroups(result?.showGroups);
     };
     getInitialGroupView();
   }, []);

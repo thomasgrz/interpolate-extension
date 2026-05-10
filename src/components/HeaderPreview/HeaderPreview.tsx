@@ -1,33 +1,29 @@
 import { HeaderInterpolation } from "@/utils/factories/Interpolation";
-import { DataList } from "@radix-ui/themes";
+import { Code, DataList, Flex, ScrollArea, Text } from "@radix-ui/themes";
 
 export const HeaderRulePreview = ({
   details,
   name,
-  dataOrientation,
 }: {
   details: HeaderInterpolation["details"];
   name: string;
-  dataOrientation: "horizontal" | "vertical";
 }) => {
   return (
-    <DataList.Root orientation={dataOrientation} trim="end" size="1" m="1">
-      <DataList.Item>
-        <DataList.Label>Type:</DataList.Label>
-        <DataList.Value>Header</DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label>Name:</DataList.Label>
-        <DataList.Value>{name}</DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label>Key:</DataList.Label>
-        <DataList.Value>{details?.headerKey}</DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label>Value:</DataList.Label>
-        <DataList.Value>{details?.headerValue}</DataList.Value>
-      </DataList.Item>
-    </DataList.Root>
+    <Flex gap="2" direction={"column"}>
+      <Flex gap="2">
+        <Text size="2">key:</Text>
+        <Flex>
+          <Code size="2">{details.headerKey}</Code>
+        </Flex>
+      </Flex>
+      <Flex direction={"column"}>
+        <Text size="2">value:</Text>
+        <ScrollArea style={{ maxHeight: 80 }}>
+          <Flex>
+            <Code size="2">{details.headerValue}</Code>
+          </Flex>
+        </ScrollArea>
+      </Flex>
+    </Flex>
   );
 };

@@ -25,7 +25,7 @@ export const Notifier = () => {
   useEffect(() => {
     if (isInitialized.current) return;
 
-    chrome.storage.local
+    chrome?.storage?.local
       .get(InterpolateStorage.BROWSER_UI_TOGGLE_KEY)
       .then((value) => {
         setIsBrowserUIEnabled(

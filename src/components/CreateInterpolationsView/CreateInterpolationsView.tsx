@@ -1,5 +1,6 @@
 import { Dialog, Button, Flex, VisuallyHidden } from "@radix-ui/themes";
 import {
+  CardStackPlusIcon,
   ChevronLeftIcon,
   CodeIcon,
   DownloadIcon,
@@ -20,6 +21,7 @@ import { ExportInterpolations } from "../ExportInterpolations/ExportInterpolatio
 import { ImportInterpolations } from "../ImportInterpolations/ImportInterpolations.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm";
 import { BrowseInterpolations } from "../BrowseInterpolations/BrowseInterpolations.tsx";
+import { TabMgmtForm } from "../TabMgmtForm/TabMgmtForm.tsx";
 
 export enum InterpolationOptionSelection {
   OPTIONS_VIEW = "options-view",
@@ -29,6 +31,7 @@ export enum InterpolationOptionSelection {
   IMPORT = "import",
   EXPORT = "export",
   MOCK_RESPONSE = "mock-resposne",
+  TAB_MGMT = "tab-mgmt",
 }
 
 const FormSelectionStep = ({
@@ -70,6 +73,13 @@ const FormSelectionStep = ({
         icon={RocketIcon}
         onClick={() => onChange(InterpolationOptionSelection.MOCK_RESPONSE)}
       />
+      <InterpolationOptionCard
+        color="var(--orange-5"
+        heading="Tab Management"
+        subHeading="Automatically open links in a specified tab group when they match a regex"
+        icon={CardStackPlusIcon}
+        onClick={() => onChange(InterpolationOptionSelection.TAB_MGMT)}
+      />
       <Flex gap="1" flexGrow={"1"} width="stretch">
         <InterpolationOptionCard
           color="var(--mauve-6)"
@@ -81,7 +91,7 @@ const FormSelectionStep = ({
           color="var(--blue-8)"
           heading="Export"
           icon={UploadIcon}
-          onClick={() => onChange(InterpolationOptionSelection.EXPORT)}
+          onClick={() => onChange(InterpolationOptionSelection.TAB_MGMT)}
         />
       </Flex>
       <BrowseInterpolations />
@@ -118,6 +128,8 @@ export const CreateInterpolationsView = ({
         return "Redirect requests";
       case InterpolationOptionSelection.MOCK_RESPONSE:
         return "Mock response";
+      case InterpolationOptionSelection.TAB_MGMT:
+        return "Tab management";
       default:
         return "";
     }
@@ -195,6 +207,9 @@ export const CreateInterpolationsView = ({
           )}
           {step === InterpolationOptionSelection.MOCK_RESPONSE && (
             <MockResponseForm onSubmit={handleFormSubmit} />
+          )}
+          {step === InterpolationOptionSelection.TAB_MGMT && (
+            <TabMgmtForm mode="create" onSubmit={handleFormSubmit} />
           )}
         </Flex>
       </Dialog.Content>

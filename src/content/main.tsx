@@ -1,5 +1,3 @@
-import "@radix-ui/themes/styles.css";
-
 import { createRoot } from "react-dom/client";
 import { Notifier } from "./Notifier.tsx";
 import styles from "./Notifier.module.scss";
@@ -11,7 +9,7 @@ const container = document.createElement("div");
 container.id = "crxjs-app";
 container.className = styles.Root;
 document.body.prepend(container);
-await chrome.storage.local
+await chrome?.storage?.local
   .get(InterpolateStorage.BROWSER_UI_TOGGLE_KEY)
   .then(async (value) => {
     if (value?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY] !== true) return;

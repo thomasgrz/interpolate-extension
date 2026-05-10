@@ -1,5 +1,12 @@
 import { RedirectInterpolation } from "@/utils/factories/Interpolation";
-import { DataList, Text } from "@radix-ui/themes";
+import {
+  DotsHorizontalIcon,
+  DotsVerticalIcon,
+  ResetIcon,
+  SewingPinFilledIcon,
+  SewingPinIcon,
+} from "@radix-ui/react-icons";
+import { Code, DataList, Flex, Text } from "@radix-ui/themes";
 
 export const RedirectRulePreview = (props: {
   rule: RedirectInterpolation;
@@ -8,32 +15,16 @@ export const RedirectRulePreview = (props: {
   const { rule, name } = props;
 
   return (
-    <DataList.Root
-      data-test={`redirect-preview-${rule.details.id}`}
-      trim="end"
-      size="1"
-      m="1"
-    >
-      <DataList.Item align="center">
-        <DataList.Label>Name:</DataList.Label>
-        <DataList.Value>{name}</DataList.Value>
-      </DataList.Item>
-      <DataList.Item align="center">
-        <DataList.Label>Type:</DataList.Label>
-        <DataList.Value>
-          <Text>Redirect</Text>
-        </DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label>Redirect:</DataList.Label>
-        <DataList.Value>{rule?.details?.destination}</DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label>RegEx:</DataList.Label>
-        <DataList.Value>
-          <strong>{rule?.details?.regexFilter}</strong>
-        </DataList.Value>
-      </DataList.Item>
-    </DataList.Root>
+    <Flex direction="column" gap="1">
+      <Flex>
+        <SewingPinIcon />
+        <Code size="2">{rule.details.regexFilter}</Code>
+      </Flex>
+      <DotsVerticalIcon color="gray" />
+      <Flex>
+        <SewingPinFilledIcon />
+        <Code size="2">{rule.details.destination}</Code>
+      </Flex>
+    </Flex>
   );
 };
