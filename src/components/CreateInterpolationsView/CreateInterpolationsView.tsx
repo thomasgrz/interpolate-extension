@@ -1,5 +1,6 @@
 import { Dialog, Button, Flex, VisuallyHidden } from "@radix-ui/themes";
 import {
+  CardStackPlusIcon,
   ChevronLeftIcon,
   CodeIcon,
   DownloadIcon,
@@ -20,6 +21,7 @@ import { ExportInterpolations } from "../ExportInterpolations/ExportInterpolatio
 import { ImportInterpolations } from "../ImportInterpolations/ImportInterpolations.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm";
 import { BrowseInterpolations } from "../BrowseInterpolations/BrowseInterpolations.tsx";
+import { TabManagementForm } from "../TabManagementForm/TabManagementForm.tsx";
 
 export enum InterpolationOptionSelection {
   OPTIONS_VIEW = "options-view",
@@ -29,6 +31,7 @@ export enum InterpolationOptionSelection {
   IMPORT = "import",
   EXPORT = "export",
   MOCK_RESPONSE = "mock-resposne",
+  TAB_MGMT = "tab-mgmt",
 }
 
 const FormSelectionStep = ({
@@ -69,6 +72,13 @@ const FormSelectionStep = ({
         subHeading="Provide a mocked response to requests whose URL matches an specific regular expression"
         icon={RocketIcon}
         onClick={() => onChange(InterpolationOptionSelection.MOCK_RESPONSE)}
+      />
+      <InterpolationOptionCard
+        color="var(--orange-5"
+        heading="Tab Management"
+        subHeading="Automatically open links in a specified tab group when they match a regex"
+        icon={CardStackPlusIcon}
+        onClick={() => onChange(InterpolationOptionSelection.TAB_MGMT)}
       />
       <Flex gap="1" flexGrow={"1"} width="stretch">
         <InterpolationOptionCard
@@ -118,6 +128,8 @@ export const CreateInterpolationsView = ({
         return "Redirect requests";
       case InterpolationOptionSelection.MOCK_RESPONSE:
         return "Mock response";
+      case InterpolationOptionSelection.TAB_MGMT:
+        return "Tab management";
       default:
         return "";
     }
@@ -176,13 +188,13 @@ export const CreateInterpolationsView = ({
             <FormSelectionStep onChange={handleChange} />
           )}
           {step === InterpolationOptionSelection.ADD_HEADERS && (
-            <AddHeaderForm onSubmit={handleFormSubmit} />
+            <AddHeaderForm mode="create" onSubmit={handleFormSubmit} />
           )}
           {step === InterpolationOptionSelection.CREATE_USER_SCRIPT && (
-            <UserScriptForm onSubmit={handleFormSubmit} />
+            <UserScriptForm mode="create" onSubmit={handleFormSubmit} />
           )}
           {step === InterpolationOptionSelection.REDIRECT_REQUEST && (
-            <RedirectForm onSubmit={handleFormSubmit} />
+            <RedirectForm mode="create" onSubmit={handleFormSubmit} />
           )}
           {step === InterpolationOptionSelection.EXPORT && (
             <ExportInterpolations />
@@ -194,7 +206,10 @@ export const CreateInterpolationsView = ({
             />
           )}
           {step === InterpolationOptionSelection.MOCK_RESPONSE && (
-            <MockResponseForm onSubmit={handleFormSubmit} />
+            <MockResponseForm mode="create" onSubmit={handleFormSubmit} />
+          )}
+          {step === InterpolationOptionSelection.TAB_MGMT && (
+            <TabManagementForm mode="create" onSubmit={handleFormSubmit} />
           )}
         </Flex>
       </Dialog.Content>

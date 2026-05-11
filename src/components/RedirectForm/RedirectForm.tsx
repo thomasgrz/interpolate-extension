@@ -1,4 +1,4 @@
-import { Card, Flex } from "@radix-ui/themes";
+import { Button, Card, Flex } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
 import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
@@ -38,10 +38,12 @@ const handleCreateRedirectInterpolation = async ({
 
 export const RedirectForm = ({
   onSubmit,
+  onCancelEdit,
   defaultValues,
   mode = "create",
 }: {
   defaultValues?: RedirectFormValue;
+  onCancelEdit?: () => void;
   onSubmit?:
     | (({ value }: { value: RedirectFormValue }) => void)
     | (({ value }: { value: RedirectFormValue }) => Promise<void>);
@@ -183,7 +185,13 @@ export const RedirectForm = ({
           </Flex>
         </Flex>
       </Card>
-      <Flex justify={"center"}>
+      <Flex justify={mode === "create" ? "end" : "between"} align="end">
+        {mode === "edit" && (
+          <Button radius="full" variant="outline" onClick={onCancelEdit}>
+            Cancel
+          </Button>
+        )}
+        https://google.com
         <SubmitButton>
           {mode === "create" && "Create redirect"}
           {mode === "edit" && "Save redirect"}

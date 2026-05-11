@@ -25,7 +25,7 @@ export const Notifier = () => {
   useEffect(() => {
     if (isInitialized.current) return;
 
-    chrome.storage.local
+    chrome?.storage?.local
       .get(InterpolateStorage.BROWSER_UI_TOGGLE_KEY)
       .then((value) => {
         setIsBrowserUIEnabled(
@@ -58,7 +58,9 @@ export const Notifier = () => {
         // @ts-expect-error testing
         window.__INTERPOLATE_NOTIFICATION_CACHE__.add(interp?.details?.id);
         return createToast({
-          content: <InterpolationCard hideOptions info={interp} />,
+          content: (
+            <InterpolationCard info={interp} hideOptions hideRuleToggle />
+          ),
           duration: 10000,
           onOpenChange: (value: boolean) => {
             const open = !!value;

@@ -11,7 +11,7 @@ const container = document.createElement("div");
 container.id = "crxjs-app";
 container.className = styles.Root;
 document.body.prepend(container);
-await chrome.storage.local
+await chrome?.storage?.local
   .get(InterpolateStorage.BROWSER_UI_TOGGLE_KEY)
   .then(async (value) => {
     if (value?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY] !== true) return;

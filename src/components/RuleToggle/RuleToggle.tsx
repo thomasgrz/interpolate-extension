@@ -1,6 +1,7 @@
 import { PauseIcon, PlayIcon } from "@radix-ui/react-icons";
-import { Flex, IconButton } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import styles from "./RuleToggle.module.scss";
+import { Switch } from "radix-ui";
 
 export const RuleToggle = ({
   isPaused,
@@ -13,23 +14,39 @@ export const RuleToggle = ({
   onResumeClick: () => void;
 }) => {
   const handleClick = isPaused ? onResumeClick : onPauseClick;
-  const buttonColor = isPaused ? "green" : "blue";
   return (
     <Flex
-      className={styles.RuleToggle}
-      height="stretch"
+      style={{
+        // @ts-expect-error TODO: fix types
+        "--switch-background": !isPaused ? "var(--lime-9)" : "var(--gray-5)",
+      }}
+      justify={"center"}
       align="center"
-      p="2"
+      gap="2"
       data-testid={`${isPaused ? "play" : "pause"}-rule-toggle`}
     >
-      <IconButton
-        size="3"
-        radius="large"
-        onClick={handleClick}
-        color={buttonColor}
+      <Switch.Root
+        checked={!isPaused}
+        defaultChecked={!isPaused}
+        onCheckedChange={handleClick}
+        className={styles.SwitchRoot}
+        style={{
+          boxShadow: "var(--shadow-1)",
+        }}
       >
-        {isPaused ? <PlayIcon /> : <PauseIcon />}
-      </IconButton>
+        <Flex align={"center"} justify={"between"}>
+          <Flex px="1">
+            <PlayIcon />
+          </Flex>
+          <Switch.Thumb
+            defaultChecked={!isPaused}
+            className={styles.SwitchThumb}
+          />
+          <Flex px="1">
+            <PauseIcon />
+          </Flex>
+        </Flex>
+      </Switch.Root>
     </Flex>
   );
 };

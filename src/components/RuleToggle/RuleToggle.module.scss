@@ -1,6 +1,30 @@
-.RuleToggle {
-  button {
-    height: stretch;
-    width: 100%;
+.SwitchRoot {
+  width: 50px;
+  height: 25px;
+  background-color: var(--switch-background);
+  border-radius: 9999px;
+  position: relative;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  &:focus {
+    box-shadow: 0 0 0 2px black;
+  }
+  background-color: var(--switch-background);
+  &[data-state="checked"] {
+    background-color: var(--switch-background);
+  }
+}
+
+.SwitchThumb {
+  position: absolute;
+  display: block;
+  width: 19px;
+  height: 19px;
+  background-color: white;
+  border-radius: 9999px;
+  transition: transform 100ms;
+  transform: translateX(3px);
+  will-change: transform;
+  &[data-state="checked"] {
+    transform: translateX(28px);
   }
 }

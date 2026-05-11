@@ -1,7 +1,7 @@
 .InterpolationCard {
   box-shadow: var(--shadow-3);
-  padding: 5px;
   width: stretch;
+  padding: 0;
 }
 
 .CollapsibleRoot {
@@ -17,4 +17,11 @@
   box-shadow: none;
   width: 100%;
   height: unset;
+}
+
+.ExpansionTrigger {
+  transition: transform 0.1s ease-in;
+  &[data-open="true"] {
+    transform: rotate(0.5turn);
+  }
 }

@@ -15,6 +15,7 @@ import {
 import { createHeaderInterpolation } from "#src/utils/factories/createHeaderInterpolation/createHeaderInterpolation.ts";
 import { createMockAPIInterpolation } from "#src/utils/factories/createMockAPIInterpolation/createMockAPIInterpolation.ts";
 import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
+import { createTabManagermentInterpolation } from "#src/utils/factories/createTabManagerInterpolation/createTabManagerInterpolation.ts";
 
 export const InterpolateStorage = {
   BROWSER_UI_TOGGLE_KEY: "displayBrowserUI",
@@ -35,7 +36,7 @@ export const InterpolateStorage = {
     groupId: string;
     interps: AnyInterpolation[] | AnyInterpolation;
   }) {
-    const storageRecords = await chrome.storage.local.get([groupId]);
+    const storageRecords = await chrome?.storage?.local.get([groupId]);
     const currentGroupFromRecord = storageRecords?.[groupId] ?? {};
     const interpolationIds = currentGroupFromRecord?.interpolationIds ?? {};
     const newInterpsIds = Array.isArray(interps)
@@ -52,7 +53,7 @@ export const InterpolateStorage = {
 
     const groupStorageRecord = updatedGroup.createStorageRecord();
 
-    chrome.storage.local.set({
+    chrome?.storage?.local.set({
       [groupId]: groupStorageRecord,
       showGroups: true,
     });
@@ -74,7 +75,7 @@ export const InterpolateStorage = {
           ? interpolations?.map((interp) => interp.details?.id)
           : [interpolations.details.id],
       });
-      await chrome.storage.local.set({
+      await chrome?.storage?.local.set({
         [groupId ?? group.groupId]: group.createStorageRecord(),
         showGroups: true,
       });
@@ -83,12 +84,12 @@ export const InterpolateStorage = {
     }
   },
   async getActiveTab() {
-    const { activeTab } = await chrome.storage.local.get("activeTab");
+    const { activeTab } = await chrome?.storage?.local.get("activeTab");
     return activeTab;
   },
   async getAllGroups() {
-    const result = await chrome.storage.local.get(null);
-    const groupConfigs = Object.entries(result)
+    const result = await chrome?.storage?.local.get(null);
+    const groupConfigs = Object.entries(result ?? {})
       ?.filter?.(([key]) => {
         return key?.startsWith("group-config");
       })
@@ -98,7 +99,7 @@ export const InterpolateStorage = {
   async getTabActivity(tabId: number) {
     try {
       const key = this.getTabActivityId(tabId);
-      const activity = await chrome.storage.local.get([key]);
+      const activity = await chrome?.storage?.local.get([key]);
       const tabActivity = activity[key].newValue ?? activity[key];
       const isInvalidValueType = !Array.isArray(tabActivity);
       if (isInvalidValueType) return [];
@@ -108,7 +109,7 @@ export const InterpolateStorage = {
     }
   },
   async setActiveTab(tabId: number) {
-    await chrome.storage.local.set({ activeTab: tabId });
+    await chrome?.storage?.local.set({ activeTab: tabId });
   },
   async handleGroupChanges(
     changes: Record<
@@ -175,7 +176,7 @@ export const InterpolateStorage = {
     onChanged({ newGroups, updatedGroups, removedGroups });
   },
   async removeGroup(groupId: string) {
-    return chrome.storage.local.remove(groupId);
+    return chrome?.storage?.local.remove(groupId);
   },
   async pushTabActivity({
     tabId,
@@ -209,7 +210,7 @@ export const InterpolateStorage = {
     const key = this.getTabActivityId(tabId);
 
     try {
-      await chrome.storage.local.set({
+      await chrome?.storage?.local.set({
         [key]: interpolations,
       });
     } catch (e) {
@@ -221,6 +222,15 @@ export const InterpolateStorage = {
     try {
       const formatInterp = (interp: AnyInterpolation) => {
         switch (interp.type) {
+          case "tab-manager":
+            return createTabManagermentInterpolation({
+              name: interp.name,
+              groupId: String(interp.details.groupId),
+              groupName: interp.details.groupName,
+              matcher: interp.details.matcher,
+              id: interp.details.id,
+              createdAt: interp.createdAt,
+            });
           case "headers":
             return createHeaderInterpolation({
               name: interp.name,
@@ -264,7 +274,7 @@ export const InterpolateStorage = {
     try {
       const allCurrent = await this.getAllInterpolations();
       if (!allCurrent) return;
-      await chrome.storage.local.set({ allPaused: true });
+      await chrome?.storage?.local.set({ allPaused: true });
       const updatedInterpolations = allCurrent?.map((interpolation) => {
         return {
           ...interpolation,
@@ -308,7 +318,7 @@ export const InterpolateStorage = {
     try {
       const allCurrent = await this.getAllInterpolations();
       if (!allCurrent) return;
-      await chrome.storage.local.set({ allPaused: false });
+      await chrome?.storage?.local.set({ allPaused: false });
 
       const updatedInterpolations = allCurrent?.map((interpolation) => {
         return {
@@ -368,11 +378,11 @@ export const InterpolateStorage = {
     const caller = "getAllInterpolations";
     try {
       const result = await chrome.storage?.local?.getKeys();
-      const interpolations = result.filter((key) =>
+      const interpolations = result?.filter((key) =>
         key.startsWith(INTERPOLATE_RECORD_PREFIX),
       );
       const storageRecords = await chrome.storage?.local?.get(interpolations);
-      const interpolationConfigs = Object.values(storageRecords).reduce<
+      const interpolationConfigs = Object.values(storageRecords ?? {}).reduce<
         AnyInterpolation[]
       >((acc, curr) => {
         const isInterpolation =
@@ -591,26 +601,26 @@ export const InterpolateStorage = {
     return Promise.allSettled([this.syncWithUserScripts()]);
   },
   async getDebuggerTabs() {
-    const storageResult = await chrome.storage.local.get(
+    const storageResult = await chrome?.storage?.local.get(
       this.DEBUGGING_TABS_KEY,
     );
     const currentDebuggingTabs = storageResult?.[this.DEBUGGING_TABS_KEY];
     if (currentDebuggingTabs) return new Set<number>(currentDebuggingTabs);
 
-    await chrome.storage.local.set({ [this.DEBUGGING_TABS_KEY]: [] });
+    await chrome?.storage?.local.set({ [this.DEBUGGING_TABS_KEY]: [] });
     return new Set<number>();
   },
   async addTabDebugger(tabId: number) {
     const debuggingTabs = await this.getDebuggerTabs();
     debuggingTabs.add(tabId);
     const debuggingTabsAsArray = debuggingTabs.values().toArray();
-    await chrome.storage.local.set({
+    await chrome?.storage?.local.set({
       [this.DEBUGGING_TABS_KEY]: debuggingTabsAsArray,
     });
     return debuggingTabs;
   },
   async toggleBrowserUI(value: boolean) {
-    await chrome.storage.local.set({
+    await chrome?.storage?.local.set({
       [this.BROWSER_UI_TOGGLE_KEY]: value,
     });
   },
@@ -620,7 +630,7 @@ export const InterpolateStorage = {
     debuggingTabs.delete(tabId);
     const debuggingTabsAsArray = debuggingTabs.values().toArray();
 
-    await chrome.storage.local.set({
+    await chrome?.storage?.local.set({
       [this.DEBUGGING_TABS_KEY]: debuggingTabsAsArray,
     });
     return debuggingTabs;

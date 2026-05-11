@@ -1,4 +1,6 @@
 import "@radix-ui/themes/styles.css";
+import "../src/sidepanel/Sidepanel.css";
+
 import { definePreview } from "@storybook/react-vite";
 import { Theme } from "@radix-ui/themes";
 import { InterpolateProvider } from "../src/contexts/interpolate-context.tsx";

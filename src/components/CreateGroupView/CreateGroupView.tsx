@@ -7,6 +7,7 @@ import {
   Flex,
   Heading,
   Text,
+  ScrollArea,
 } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
@@ -154,7 +155,10 @@ export const CreateGroupView = ({
           </Dialog.Trigger>
         )}
         <Dialog.Content className={styles.CreateGroupView}>
-          <Flex direction="column" style={{ height: "100%" }}>
+          <Flex
+            direction="column"
+            style={{ maxHeight: "100%", height: "100%", overflow: "hidden" }}
+          >
             <form
               style={{ height: "70%" }}
               onSubmit={async (e) => {
@@ -179,23 +183,25 @@ export const CreateGroupView = ({
                   />
                 )}
               />
-              <Flex gap="2" direction="column">
-                {interpolations?.map?.((interp) => {
-                  return (
-                    <Flex width="stretch" flexGrow="1" gap="2" align="center">
-                      <Checkbox
-                        key={interp?.details?.id}
-                        defaultChecked={
-                          selectedStates[interp?.details?.id]?.isChecked
-                        }
-                        // @ts-expect-error TODO: fix types
-                        onClick={(e) => handleChange(e, interp)}
-                      />
-                      <InterpolationCard hideRuleToggle info={interp} />
-                    </Flex>
-                  );
-                })}
-              </Flex>
+              <ScrollArea style={{ height: "100%" }}>
+                <Flex gap="2" direction="column" maxHeight="100%">
+                  {interpolations?.map?.((interp) => {
+                    return (
+                      <Flex width="stretch" flexGrow="1" gap="2" align="center">
+                        <Checkbox
+                          key={interp?.details?.id}
+                          defaultChecked={
+                            selectedStates[interp?.details?.id]?.isChecked
+                          }
+                          // @ts-expect-error TODO: fix types
+                          onClick={(e) => handleChange(e, interp)}
+                        />
+                        <InterpolationCard hideRuleToggle info={interp} />
+                      </Flex>
+                    );
+                  })}
+                </Flex>
+              </ScrollArea>
               <Flex width="stretch" justify="start" pt="3">
                 <Text size="2">{numOfSelected} selected</Text>
               </Flex>

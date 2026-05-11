@@ -15,18 +15,51 @@ export const sortInterpolations = (
       return interpolations?.sort((a, b) =>
         a?.name?.toLowerCase() > b?.name?.toLowerCase() ? -1 : 1,
       );
-    case SortOption.NEWEST:
-      return interpolations?.sort?.((a, b) => {
-        if (b.createdAt === a.createdAt)
-          return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
-        return b.createdAt > a.createdAt ? 1 : -1;
-      });
     case SortOption.OLDEST:
+      return interpolations?.sort?.((a, b) => {
+        if (a.createdAt === b.createdAt)
+          return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
+        return a.createdAt < b.createdAt ? 1 : -1;
+      });
+    case SortOption.DISABLED:
+      return interpolations?.sort?.((a, b) => {
+        if (a.enabledByUser && !b.enabledByUser) return 1;
+        if (a.enabledByUser && b.enabledByUser) {
+          return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
+        }
+        return !a?.enabledByUser ? -1 : 1;
+      });
+
+    case SortOption.ENABLED:
+      return interpolations?.sort?.((a, b) => {
+        if (a.enabledByUser && !b.enabledByUser) return -1;
+        if (a.enabledByUser && b.enabledByUser) {
+          return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
+        }
+        return a?.enabledByUser ? -1 : 1;
+      });
+    case SortOption.INVOKED:
+      return interpolations?.sort?.((a, b) => {
+        if (a.isActive && !b.isActive) return -1;
+        if (a.isActive && b.isActive) {
+          return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
+        }
+        return a?.isActive ? -1 : 1;
+      });
+    case SortOption.NOT_INVOKED:
+      return interpolations?.sort?.((a, b) => {
+        if (a.isActive && !b.isActive) return 1;
+        if (!a.isActive && !b.isActive) {
+          return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
+        }
+        return a?.isActive ? 1 : -1;
+      });
+    case SortOption.NEWEST:
     default:
       return interpolations?.sort?.((a, b) => {
         if (a.createdAt === b.createdAt)
           return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
-        return a.createdAt > b.createdAt ? 1 : -1;
+        return a.createdAt < b.createdAt ? -1 : 1;
       });
   }
 };

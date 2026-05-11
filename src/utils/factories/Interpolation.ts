@@ -24,8 +24,21 @@ export type HeaderInterpolationConfig = {
   };
   name: string;
 };
-
-export type InterpolationType = "script" | "redirect" | "headers" | "mockAPI";
+export type TabManagerInterpolationConfig = {
+  details: {
+    matcher: string;
+    groupId: string;
+    groupName: string;
+    id: string;
+  };
+  name: string;
+};
+export type InterpolationType =
+  | "tab-manager"
+  | "script"
+  | "redirect"
+  | "headers"
+  | "mockAPI";
 
 class Interpolation {
   isActive: boolean;
@@ -34,8 +47,8 @@ class Interpolation {
   error?: Error | string | null;
   name: string;
 
-  constructor(config: { name: string }) {
-    this.createdAt = Date.now();
+  constructor(config: { createdAt?: number; name: string }) {
+    this.createdAt = config.createdAt ?? Date.now();
     this.enabledByUser = true;
     this.error = null;
     this.name = config.name;
@@ -87,10 +100,23 @@ export class HeaderInterpolation extends Interpolation {
   }
 }
 
+export class TabManagerInterpolation extends Interpolation {
+  details: TabManagerInterpolationConfig["details"];
+  type: "tab-manager";
+
+  constructor(config: TabManagerInterpolation) {
+    super(config);
+    this.type = "tab-manager";
+    this.details = config.details;
+    this.createdAt = config.createdAt ?? new Date().getTime();
+  }
+}
+
 export default Interpolation;
 
 export type AnyInterpolation =
   | HeaderInterpolation
   | MockAPIInterpolation
   | RedirectInterpolation
-  | ScriptInterpolation;
+  | ScriptInterpolation
+  | TabManagerInterpolation;

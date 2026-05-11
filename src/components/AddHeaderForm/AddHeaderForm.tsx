@@ -1,5 +1,5 @@
 import { validateStringLength } from "#src/utils/validators/validateStringLength.ts";
-import { Card, Flex } from "@radix-ui/themes";
+import { Button, Card, Flex } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
@@ -47,8 +47,10 @@ export const AddHeaderForm = ({
   defaultValues,
   onSubmit,
   mode = "create",
+  onCancelEdit,
 }: {
   defaultValues?: AddHeaderFormValue;
+  onCancelEdit?: () => void;
   onSubmit?:
     | (({ value }: { value: AddHeaderFormValue }) => void)
     | (({ value }: { value: AddHeaderFormValue }) => Promise<void>);
@@ -167,7 +169,12 @@ export const AddHeaderForm = ({
           />
         </Flex>
       </Card>
-      <Flex justify={"center"}>
+      <Flex justify={mode === "create" ? "end" : "between"} align="end">
+        {mode === "edit" && (
+          <Button radius="full" variant="outline" onClick={onCancelEdit}>
+            Cancel
+          </Button>
+        )}
         <SubmitButton>
           {mode === "create" && "Create header"}
           {mode === "edit" && "Save"}

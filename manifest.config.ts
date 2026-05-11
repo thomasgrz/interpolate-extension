@@ -23,6 +23,7 @@ export default defineManifest({
     "sidePanel",
     "storage",
     "tabs",
+    "tabGroups",
     "userScripts",
     "webNavigation",
   ],

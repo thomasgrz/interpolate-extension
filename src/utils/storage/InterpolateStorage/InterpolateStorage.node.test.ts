@@ -43,7 +43,7 @@ describe("InterpolateStorage", () => {
 
     await InterpolateStorage.deleteAll();
 
-    expect(chrome.storage.local.clear).toHaveBeenCalledOnce();
+    expect(chrome?.storage?.local.clear).toHaveBeenCalledOnce();
   });
   it("should retrieve all interpolations", async () => {
     const interpolation1 = createHeaderInterpolation({
