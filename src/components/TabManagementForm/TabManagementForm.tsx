@@ -71,12 +71,9 @@ export const TabManagementForm = ({
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
-      const isInvalid = [
-        value?.groupId,
-        value?.interpName,
-        value?.regex,
-        // @ts-expect-error TODO fix types
-      ].includes((value: string | undefined) => !value);
+      const isInvalid = [value?.groupId, value?.interpName, value?.regex].some(
+        (value) => !value,
+      );
       if (isInvalid) return;
       const groupName = tabGroups?.find?.(
         (group) => group && String(group?.id) === value.groupId,
@@ -130,9 +127,9 @@ export const TabManagementForm = ({
 
         return {
           fields: {
-            name: errors.get("interpName") ?? null,
+            interpName: errors.get("interpName") ?? null,
             regex: errors.get("regex") ?? null,
-            group: errors.get("groupId") ?? null,
+            groupId: errors.get("groupId") ?? null,
           },
         };
       },

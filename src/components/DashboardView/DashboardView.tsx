@@ -232,6 +232,13 @@ export const DashboardView = () => {
                         </Callout.Text>
                       </Callout.Root>
                     )}
+                    {!interpolations?.length && (
+                      <Callout.Root size="1" variant="surface">
+                        <Callout.Text size="1">
+                          You have not created any interpolations yet.
+                        </Callout.Text>
+                      </Callout.Root>
+                    )}
 
                     <InterpolationsListView configs={interpolations} />
                   </Flex>
