@@ -5,6 +5,7 @@ export interface GroupConfigInStorage {
   interpolationIds: (string | number)[];
   enabledByUser: boolean;
   type: "group";
+  isActive: boolean;
 }
 
 export const createGroupId = () => {
@@ -18,6 +19,7 @@ export class InterpolationGroup {
   groupId: string;
   interpolationIds: (string | number)[];
   type: string;
+  isActive: boolean | null;
 
   createStorageRecord() {
     return {
@@ -42,5 +44,6 @@ export class InterpolationGroup {
     this.groupId = config.groupId ?? createGroupId();
     this.interpolationIds = config.interpolationIds;
     this.type = "group";
+    this.isActive = null;
   }
 }

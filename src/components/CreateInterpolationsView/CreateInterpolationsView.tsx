@@ -21,7 +21,7 @@ import { ExportInterpolations } from "../ExportInterpolations/ExportInterpolatio
 import { ImportInterpolations } from "../ImportInterpolations/ImportInterpolations.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm";
 import { BrowseInterpolations } from "../BrowseInterpolations/BrowseInterpolations.tsx";
-import { TabMgmtForm } from "../TabMgmtForm/TabMgmtForm.tsx";
+import { TabManagementForm } from "../TabManagementForm/TabManagementForm.tsx";
 
 export enum InterpolationOptionSelection {
   OPTIONS_VIEW = "options-view",
@@ -91,7 +91,7 @@ const FormSelectionStep = ({
           color="var(--blue-8)"
           heading="Export"
           icon={UploadIcon}
-          onClick={() => onChange(InterpolationOptionSelection.TAB_MGMT)}
+          onClick={() => onChange(InterpolationOptionSelection.EXPORT)}
         />
       </Flex>
       <BrowseInterpolations />
@@ -209,7 +209,7 @@ export const CreateInterpolationsView = ({
             <MockResponseForm onSubmit={handleFormSubmit} />
           )}
           {step === InterpolationOptionSelection.TAB_MGMT && (
-            <TabMgmtForm mode="create" onSubmit={handleFormSubmit} />
+            <TabManagementForm mode="create" onSubmit={handleFormSubmit} />
           )}
         </Flex>
       </Dialog.Content>

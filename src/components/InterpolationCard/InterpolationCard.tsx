@@ -5,6 +5,7 @@ import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/Interpola
 import {
   CardStackIcon,
   CardStackPlusIcon,
+  ChevronUpIcon,
   Cross1Icon,
   DotsHorizontalIcon,
   DotsVerticalIcon,
@@ -26,7 +27,7 @@ import {
   Strong,
   Separator,
 } from "@radix-ui/themes";
-import { Collapsible } from "radix-ui";
+import { Collapsible, ContextMenu } from "radix-ui";
 import { HeaderRulePreview } from "../HeaderPreview/HeaderPreview";
 import { RedirectRulePreview } from "../RedirectPreview/RedirectPreview";
 import { RuleToggle } from "../RuleToggle/RuleToggle";
@@ -39,6 +40,7 @@ import { MockPreview } from "../MockPreview/MockPreview.tsx";
 import { MockResponseForm } from "../MockResponseForm/MockResponseForm.tsx";
 import styles from "./InterpolationCard.module.scss";
 import { TabManagerPreview } from "../TabManagerPreview/TabManagerPreview.tsx";
+import { TabManagementForm } from "../TabManagementForm/TabManagementForm.tsx";
 
 type InterpolationCardProps = {
   info: AnyInterpolation;
@@ -124,6 +126,7 @@ export const InterpolationCard = ({
   const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
     "horizontal",
   );
+  const [isExpanded, setIsExpanded] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -177,11 +180,16 @@ export const InterpolationCard = ({
     }
   };
 
+  const onCancelEdit = () => {
+    setEditModeEnabled(false);
+  };
   const getEditForm = () => {
     switch (type) {
       case "redirect":
         return (
           <RedirectForm
+            mode="edit"
+            onCancelEdit={onCancelEdit}
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               id,
@@ -194,6 +202,8 @@ export const InterpolationCard = ({
       case "headers":
         return (
           <AddHeaderForm
+            mode="edit"
+            onCancelEdit={onCancelEdit}
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               id,
@@ -206,6 +216,8 @@ export const InterpolationCard = ({
       case "script":
         return (
           <UserScriptForm
+            mode="edit"
+            onCancelEdit={onCancelEdit}
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               name: info.name,
@@ -216,6 +228,19 @@ export const InterpolationCard = ({
           />
         );
       case "tab-manager":
+        return (
+          <TabManagementForm
+            mode="edit"
+            onCancelEdit={onCancelEdit}
+            onSubmit={() => setEditModeEnabled(false)}
+            defaultValues={{
+              interpName: info?.name,
+              id: info.details?.id,
+              groupId: String(info.details?.groupId),
+              regex: info.details?.matcher,
+            }}
+          />
+        );
 
       case "mockAPI":
         return (
@@ -251,107 +276,123 @@ export const InterpolationCard = ({
   const handleDelete = async () => {
     await InterpolateStorage.delete(info.details?.id);
   };
-  console.log({ info });
+
   return (
-    <Card
-      ref={ref}
-      data-ui-error={!!info.error}
-      data-testid={`${type}-preview-${info?.name}`}
-      className={styles.InterpolationCard}
-      variant="surface"
-    >
-      {error && (
-        <Callout.Root color="red">
-          <Callout.Text size={"1"}>{formattedError}</Callout.Text>
-        </Callout.Root>
-      )}
-      <Flex width="stretch" gap="2" direction="column" maxWidth="100%">
-        <Flex
-          style={{ backgroundColor: "var(--theme-choice-background)" }}
-          justify={"between"}
-          align="center"
-          flexGrow={"grow"}
-        >
-          <Flex direction="column" width="stretch">
-            <Flex width="stretch" justify={"between"} p="2">
-              <Flex justify={"center"} align="center" gap="2">
-                <Badge size="1" color={badgeColor}>
-                  <Strong>
-                    <Text align="center" weight="medium" size="2">
-                      {name}
-                    </Text>
-                  </Strong>
-                </Badge>
+    <ContextMenu.Root>
+      <ContextMenu.Trigger>
+        <Collapsible.Root onOpenChange={setIsExpanded} open={isExpanded}>
+          <Card
+            ref={ref}
+            data-ui-error={!!info.error}
+            data-testid={`${type}-preview-${info?.name}`}
+            className={styles.InterpolationCard}
+            variant="surface"
+          >
+            {error && (
+              <Callout.Root color="red">
+                <Callout.Text size={"1"}>{formattedError}</Callout.Text>
+              </Callout.Root>
+            )}
+            <Flex width="stretch" gap="2" direction="column" maxWidth="100%">
+              <Flex justify={"between"} align="center" flexGrow={"grow"}>
+                <Flex
+                  direction="column"
+                  width="stretch"
+                  px="2"
+                  justify={"between"}
+                >
+                  <Flex
+                    width="stretch"
+                    justify={"between"}
+                    align="center"
+                    p="2"
+                  >
+                    <Flex justify={"center"} align="center" gap="2">
+                      <Badge size="1" color={badgeColor}>
+                        <Strong>
+                          <Text align="center" weight="medium" size="1">
+                            {info.type}
+                          </Text>
+                        </Strong>
+                      </Badge>
+
+                      <Text size="2">{info.name}</Text>
+                    </Flex>
+                    <Flex gap="3">
+                      {hideRuleToggle ? null : (
+                        <Box width="50px">
+                          <RuleToggle
+                            disabled={!!info.error}
+                            onResumeClick={handleResumeClick}
+                            onPauseClick={handlePauseClick}
+                            isPaused={!enabledByUser || !!info.error}
+                          />
+                        </Box>
+                      )}{" "}
+                      <Collapsible.Trigger>
+                        <Flex justify={"center"} gap="2">
+                          <IconButton
+                            data-open={isExpanded}
+                            className={styles.ExpansionTrigger}
+                            radius="full"
+                            size="1"
+                            variant="ghost"
+                          >
+                            <ChevronUpIcon />
+                          </IconButton>
+                        </Flex>
+                      </Collapsible.Trigger>
+                    </Flex>
+                  </Flex>
+
+                  {isExpanded && <Separator size="4" />}
+                </Flex>
               </Flex>
-              {/* {hideOptions ? null : ( */}
-              {/*   <Box> */}
-              {/*     <InterpolationOptions */}
-              {/*       onEditSelected={onEditSelected} */}
-              {/*       onDeleteSelected={onDeleteSelected} */}
-              {/*       config={info} */}
-              {/*     /> */}
-              {/*   </Box> */}
-              {/* )} */}
-              {hideRuleToggle ? null : (
-                <Box width="50px">
-                  <RuleToggle
-                    disabled={!!info.error}
-                    onResumeClick={handleResumeClick}
-                    onPauseClick={handlePauseClick}
-                    isPaused={!enabledByUser || !!info.error}
-                  />
-                </Box>
-              )}{" "}
+
+              <Collapsible.Content>
+                <Flex width="stretch" justify={"between"} px="2" pb="2">
+                  <Flex maxWidth={"80%"} overflow={"hidden"}>
+                    {getPreview()}
+                  </Flex>
+                </Flex>
+              </Collapsible.Content>
             </Flex>
 
-            <Separator size="4" />
-          </Flex>
-        </Flex>
-
-        <Flex width="stretch" justify={"between"} px="2" pb="2">
-          <Flex maxWidth={"80%"} overflow={"hidden"}>
-            {getPreview()}
-          </Flex>
-        </Flex>
-      </Flex>
-
-      <Dialog.Root open={editModeEnabled}>
-        <Dialog.Content asChild>
-          <Flex direction={"column"} p="0">
-            {getEditForm()}
-            <Dialog.Close style={{ position: "absolute", right: 5, top: 5 }}>
-              <IconButton
-                radius="full"
-                onClick={onEditModalCloseClick}
-                color="red"
-              >
-                <Cross1Icon />
-              </IconButton>
-            </Dialog.Close>
-          </Flex>
-        </Dialog.Content>
-      </Dialog.Root>
-      <Dialog.Root open={deleteSelected}>
-        <Dialog.Content maxWidth={"500px"}>
-          <Dialog.Description>
-            <Text size="2">
-              Are you sure you want to delete "<Strong>{info.name}</Strong>" ?
-            </Text>
-          </Dialog.Description>
-          <Flex align="end" justify="between">
-            <Dialog.Close>
-              <Button onClick={onDeleteModalCloseClick} variant="ghost">
-                Cancel
-              </Button>
-            </Dialog.Close>
-            <Dialog.Close>
-              <Button onClick={handleDelete} color="red">
-                Delete
-              </Button>
-            </Dialog.Close>
-          </Flex>
-        </Dialog.Content>
-      </Dialog.Root>
-    </Card>
+            <Dialog.Root open={editModeEnabled}>
+              <Dialog.Content asChild>
+                <Flex direction={"column"}>{getEditForm()}</Flex>
+              </Dialog.Content>
+            </Dialog.Root>
+            <Dialog.Root open={deleteSelected}>
+              <Dialog.Content maxWidth={"500px"}>
+                <Dialog.Description>
+                  <Text size="2">
+                    Are you sure you want to delete "
+                    <Strong>{info.name}</Strong>" ?
+                  </Text>
+                </Dialog.Description>
+                <Flex align="end" justify="between">
+                  <Dialog.Close>
+                    <Button onClick={onDeleteModalCloseClick} variant="ghost">
+                      Cancel
+                    </Button>
+                  </Dialog.Close>
+                  <Dialog.Close>
+                    <Button onClick={handleDelete} color="red">
+                      Delete
+                    </Button>
+                  </Dialog.Close>
+                </Flex>
+              </Dialog.Content>
+            </Dialog.Root>
+          </Card>
+        </Collapsible.Root>
+        <InterpolationOptions
+          onDeleteSelected={onDeleteSelected}
+          onEditSelected={onEditSelected}
+          config={info}
+        />
+      </ContextMenu.Trigger>
+    </ContextMenu.Root>
   );
 };

@@ -1,4 +1,11 @@
-import { Box, Card, Flex, SegmentedControl, Strong } from "@radix-ui/themes";
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  SegmentedControl,
+  Strong,
+} from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
 import { FormEvent, useState } from "react";
 import { TextInput } from "../TextInput/TextInput";
@@ -26,6 +33,7 @@ export interface MockResponseFormValue {
 
 interface MockResponseFormProps {
   onSubmit: ({ value }: { value: MockResponseFormValue }) => void;
+  onCancelEdit?: () => void;
   defaultValues?: Partial<MockResponseFormValue>;
   mode?: "edit" | "create";
 }
@@ -40,6 +48,7 @@ const handleCreateMockAPIInterpolation = async ({
 
 export const MockResponseForm = ({
   onSubmit,
+  onCancelEdit,
   defaultValues,
   mode = "create",
 }: MockResponseFormProps) => {
@@ -211,7 +220,12 @@ export const MockResponseForm = ({
           />
         </Flex>
       </Card>
-      <Flex justify={"center"}>
+      <Flex justify={mode === "create" ? "end" : "between"} align="end">
+        {mode === "edit" && (
+          <Button radius="full" variant="outline" onClick={onCancelEdit}>
+            Cancel
+          </Button>
+        )}
         <SubmitButton>
           {mode === "create" && "Create mock"}
           {mode === "edit" && "Save"}

@@ -109,7 +109,7 @@ export const InterpolationsGroupsView = ({
   return (
     <ScrollArea>
       {noGroups && (
-        <Flex justify={"center"}>
+        <Flex justify={"center"} py="2">
           <Callout.Root size="1" variant="surface">
             <Flex align={"center"} gap="2">
               <Callout.Icon>{<InfoCircledIcon />}</Callout.Icon>

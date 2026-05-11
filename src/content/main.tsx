@@ -1,3 +1,5 @@
+import "@radix-ui/themes/styles.css";
+
 import { createRoot } from "react-dom/client";
 import { Notifier } from "./Notifier.tsx";
 import styles from "./Notifier.module.scss";

@@ -1,3 +1,4 @@
+import { TabManagerInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { logger } from "../utils/logger";
 import { InterpolateStorage } from "../utils/storage/InterpolateStorage/InterpolateStorage";
 import { handleDebuggerEvent } from "./handleDebuggerEvent";
@@ -43,6 +44,29 @@ try {
     handleInstall();
   });
 
+  chrome.tabs.onCreated.addListener(async (tab) => {
+    const currentTabManagementConfigs = await InterpolateStorage.getAllByTypes([
+      "tab-manager",
+    ]);
+
+    const matchingGroup = (
+      currentTabManagementConfigs as TabManagerInterpolation[]
+    ).find((interpTabMgmtConfig) => {
+      const isInterpolationDisabled = !interpTabMgmtConfig.enabledByUser;
+
+      if (isInterpolationDisabled) return false;
+      const regex = new RegExp(interpTabMgmtConfig.details.matcher);
+
+      const isMatch = tab.pendingUrl && regex.exec(tab.pendingUrl);
+
+      return isMatch;
+    });
+
+    chrome.tabs.group({
+      groupId: Number(matchingGroup?.details.groupId),
+      tabIds: tab?.id,
+    });
+  });
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "openSidePanel" && tab?.windowId) {
       // This will open the panel in all the pages on the current window.

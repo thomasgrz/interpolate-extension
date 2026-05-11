@@ -9,6 +9,7 @@ import {
   Button,
   ScrollArea,
   Separator,
+  SegmentedControl,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
@@ -18,7 +19,10 @@ import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/us
 import { CheckCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { ReactElement, useEffect, useState } from "react";
 import { TextInput } from "../TextInput/TextInput.tsx";
-import { SortingOptions } from "../SortingOptions/SortingOptions.tsx";
+import {
+  SortingOptions,
+  SortOption,
+} from "../SortingOptions/SortingOptions.tsx";
 import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection.tsx";
 import { FilteredSortedList } from "../FilteredSortedList/FilteredSortedList.tsx";
 import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
@@ -103,10 +107,7 @@ export const DashboardView = () => {
     useState<ExpandedSection>("all");
 
   const handleMenuClick = (section: ExpandedSection) => {
-    return () => {
-      if (expandedSection === section) return setExpandedSection("none");
-      setExpandedSection(section);
-    };
+    setExpandedSection(section);
   };
   const handleThemeSelect = (value: ThemeColor) => {
     setThemeChoiceBackgroundColor(`--${value}-2`);
@@ -130,14 +131,20 @@ export const DashboardView = () => {
     });
   }, []);
 
+  const sortingByInvokedWithoutInvocations =
+    [SortOption.NOT_INVOKED, SortOption.INVOKED].includes(sortOption) &&
+    !recentlyActive?.length;
   return (
     <Theme
       style={{
         height: "100vh",
         maxHeight: "100vh",
+        width: "100vw",
         overflow: "hidden",
         transition: "all 0.2s ease-in-out",
         // @ts-expect-error TODO: fix types
+        "--color-background": `var(${themeChoiceBackgroundColor})`,
+        "--segmented-control-indicator-background-color": `var(${themeChoiceActionColor})`,
         "--theme-choice-background": `var(${themeChoiceBackgroundColor})`,
         "--theme-choice-action": `var(${themeChoiceActionColor})`,
         "--theme-choice-high-contrast": `var(${themeChoiceHighContrast})`,
@@ -157,6 +164,7 @@ export const DashboardView = () => {
         <Flex
           className={styles.Container}
           direction="column"
+          align={"center"}
           height="100%"
           maxHeight={"100%"}
         >
@@ -207,60 +215,82 @@ export const DashboardView = () => {
           </Card>
           <Separator size="4" />
           <Flex
+            width={"100%"}
             className={styles.Nav}
             direction="column"
             height="stretch"
             flexGrow={"grow"}
             overflow="hidden"
+            p="2"
           >
-            {filter && (
+            {filter ? (
               <ScrollArea>
                 <FilteredSortedList filter={filter} />{" "}
               </ScrollArea>
+            ) : (
+              <>
+                <SegmentedControl.Root
+                  defaultValue={expandedSection}
+                  size="2"
+                  onValueChange={handleMenuClick}
+                >
+                  <SegmentedControl.Item value="all">All</SegmentedControl.Item>
+                  <SegmentedControl.Item value="enabled">
+                    Enabled
+                  </SegmentedControl.Item>
+                  <SegmentedControl.Item value="invoked">
+                    Invoked
+                  </SegmentedControl.Item>
+                  <SegmentedControl.Item value="groups">
+                    Groups
+                  </SegmentedControl.Item>
+                </SegmentedControl.Root>
+                {expandedSection === "all" && (
+                  <Flex direction={"column"} pt="2">
+                    {sortingByInvokedWithoutInvocations && (
+                      <Callout.Root size="1" variant="surface">
+                        <Callout.Text size="1">
+                          No interpolations have been invoked since last page
+                          load. Sorting alphabetically by default.
+                        </Callout.Text>
+                      </Callout.Root>
+                    )}
+
+                    <InterpolationsListView configs={interpolations} />
+                  </Flex>
+                )}
+                {expandedSection === "enabled" && (
+                  <Flex direction="column" pt="2">
+                    <Callout.Root size="1" variant="surface">
+                      <Callout.Text size="1">
+                        <Strong>{enabledInterpolations?.length} </Strong>
+                        interpolations enabled
+                      </Callout.Text>
+                    </Callout.Root>
+
+                    <InterpolationsListView
+                      hideRuleToggle
+                      configs={enabledInterpolations}
+                    />
+                  </Flex>
+                )}
+                {expandedSection === "invoked" && (
+                  <Flex direction={"column"} pt="2">
+                    <Callout.Root size="1" variant="surface">
+                      <Callout.Text size="1">
+                        <Strong>{recentlyActive?.length} </Strong>interpolations
+                        invoked since the last page load
+                      </Callout.Text>
+                    </Callout.Root>
+                    <InterpolationsListView
+                      hideRuleToggle
+                      configs={recentlyActive}
+                    />
+                  </Flex>
+                )}
+                {expandedSection === "groups" && <InterpolationsGroupsView />}
+              </>
             )}
-            <CollapsibleSection
-              onOpenChange={handleMenuClick("all")}
-              defaultIsOpen={expandedSection === "all"}
-              title={
-                <CollapsibleTitle
-                  text={`All interpolations (${interpolations?.length})`}
-                />
-              }
-            >
-              <InterpolationsListView configs={interpolations} />
-            </CollapsibleSection>
-            <CollapsibleSection
-              onOpenChange={handleMenuClick("enabled")}
-              defaultIsOpen={expandedSection === "enabled"}
-              title={
-                <CollapsibleTitle
-                  text={`Enabled (${enabledInterpolations?.length})`}
-                />
-              }
-            >
-              <InterpolationsListView
-                hideRuleToggle
-                configs={enabledInterpolations}
-              />
-            </CollapsibleSection>
-            <CollapsibleSection
-              onOpenChange={handleMenuClick("invoked")}
-              defaultIsOpen={expandedSection === "invoked"}
-              title={
-                <CollapsibleTitle
-                  text={`Invoked since last page load (${recentlyActive?.length ?? 0})`}
-                />
-              }
-            >
-              <InterpolationsListView hideRuleToggle configs={recentlyActive} />
-            </CollapsibleSection>
-            <CollapsibleSection
-              onOpenChange={handleMenuClick("groups")}
-              defaultIsOpen={expandedSection === "groups"}
-              title={<CollapsibleTitle text={`Groups (${groups.length})`} />}
-            >
-              <InterpolationsGroupsView />
-            </CollapsibleSection>
           </Flex>
         </Flex>
       </ErrorBoundary>

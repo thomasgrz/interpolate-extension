@@ -1,5 +1,5 @@
 .InterpolationCard {
-  box-shadow: var(--shadow-5);
+  box-shadow: var(--shadow-3);
   width: stretch;
   padding: 0;
 }
@@ -17,4 +17,11 @@
   box-shadow: none;
   width: 100%;
   height: unset;
+}
+
+.ExpansionTrigger {
+  transition: transform 0.1s ease-in;
+  &[data-open="true"] {
+    transform: rotate(0.5turn);
+  }
 }

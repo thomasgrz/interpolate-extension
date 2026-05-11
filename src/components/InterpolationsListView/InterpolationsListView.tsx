@@ -12,7 +12,7 @@ export const InterpolationsListView = ({
 }) => {
   return (
     <ScrollArea className={styles.InterpolationsContainer}>
-      <Flex direction={"column"} maxWidth="100%">
+      <Flex direction={"row"} width="100%" maxWidth="100%" pt="3" wrap="wrap">
         {configs?.map?.((interpolation) => (
           <Box
             key={interpolation.details?.id}

@@ -225,7 +225,7 @@ export const InterpolateStorage = {
           case "tab-manager":
             return createTabManagermentInterpolation({
               name: interp.name,
-              groupId: interp.details.groupId,
+              groupId: String(interp.details.groupId),
               groupName: interp.details.groupName,
               matcher: interp.details.matcher,
               id: interp.details.id,

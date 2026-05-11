@@ -1,4 +1,4 @@
-import { Card, Flex } from "@radix-ui/themes";
+import { Button, Card, Flex } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { ScriptsPermissionWarning } from "../ScriptsPermissionWarning/ScriptsPermissionWarning";
 import { useForm } from "@tanstack/react-form";
@@ -29,9 +29,11 @@ export const UserScriptForm = ({
   defaultValues = {
     runAt: "document_start",
   },
+  onCancelEdit,
   onSubmit,
   mode = "create",
 }: {
+  onCancelEdit: () => void;
   onSubmit?:
     | (({ value }: { value: UserScriptFormValue }) => void)
     | (({ value }: { value: UserScriptFormValue }) => Promise<void>);
@@ -108,7 +110,6 @@ export const UserScriptForm = ({
       setShowWarning(true);
     }
   }, []);
-  console.log("he");
   return (
     <form
       onSubmit={(e) => {
@@ -178,7 +179,12 @@ export const UserScriptForm = ({
           />
         </Flex>
       </Card>
-      <Flex pt="2" justify={"center"}>
+      <Flex justify={mode === "create" ? "end" : "between"} align="end">
+        {mode === "edit" && (
+          <Button radius="full" variant="outline" onClick={onCancelEdit}>
+            Cancel
+          </Button>
+        )}
         <SubmitButton disabled={showWarning}>
           {mode === "create" && "Create script"}
           {mode === "edit" && "Save script"}

@@ -1,4 +1,4 @@
-import { DropdownMenu, Flex, IconButton, Tooltip } from "@radix-ui/themes";
+import { ContextMenu, Flex, IconButton, Tooltip } from "@radix-ui/themes";
 import {
   DotsHorizontalIcon,
   GearIcon,
@@ -13,11 +13,13 @@ import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/us
 import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
 
 export const InterpolationOptions = ({
+  children,
   config,
   disableAddToGroup,
   onEditSelected,
   onDeleteSelected,
 }: {
+  children: React.ReactElement;
   config:
     | AnyInterpolation
     | AnyInterpolation[]
@@ -83,62 +85,47 @@ export const InterpolationOptions = ({
 
   const hideAddToGroupOption = disableAddToGroup || !groups.length;
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
-        <IconButton
-          size="1"
-          data-testid={"interpolation-options-trigger"}
-          className={styles.Button}
-          variant="outline"
-          radius="full"
-        >
-          <Tooltip content="Show options">
-            <ButtonIcon />
-          </Tooltip>
-        </IconButton>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        <DropdownMenu.Item onSelect={handleCopyConfig}>
-          <ClipboardCopyIcon /> Copy
-        </DropdownMenu.Item>
-        <DropdownMenu.Item onSelect={handleEditSelected}>
-          <GearIcon /> Edit
-        </DropdownMenu.Item>
-        <DropdownMenu.Item onSelect={onDeleteSelected}>
-          <TrashIcon /> Delete
-        </DropdownMenu.Item>
-        {hideAddToGroupOption ? null : (
-          <DropdownMenu.Sub>
-            <DropdownMenu.SubTrigger>Add to group</DropdownMenu.SubTrigger>
-            <DropdownMenu.SubContent>
-              {groups.map((group) => (
-                <DropdownMenu.Item
-                  onClick={() => {
-                    addToGroup({
-                      interps: config,
-                      groupId: group.groupId,
-                      onSuccess: () => setShowGroups(true),
-                    });
-                  }}
+    <ContextMenu.Content>
+      <ContextMenu.Item onSelect={handleCopyConfig}>
+        <ClipboardCopyIcon /> Copy
+      </ContextMenu.Item>
+      <ContextMenu.Item onSelect={handleEditSelected}>
+        <GearIcon /> Edit
+      </ContextMenu.Item>
+      <ContextMenu.Item onSelect={onDeleteSelected}>
+        <TrashIcon /> Delete
+      </ContextMenu.Item>
+      {hideAddToGroupOption ? null : (
+        <ContextMenu.Sub>
+          <ContextMenu.SubTrigger>Add to group</ContextMenu.SubTrigger>
+          <ContextMenu.SubContent>
+            {groups.map((group) => (
+              <ContextMenu.Item
+                onClick={() => {
+                  addToGroup({
+                    interps: config,
+                    groupId: group.groupId,
+                    onSuccess: () => setShowGroups(true),
+                  });
+                }}
+              >
+                <Flex
+                  width="stretch"
+                  wrap="wrap"
+                  align="center"
+                  justify={"between"}
+                  gap="3"
                 >
-                  <Flex
-                    width="stretch"
-                    wrap="wrap"
-                    align="center"
-                    justify={"between"}
-                    gap="3"
-                  >
-                    {group.name}
-                    {associatedGroupIdSet.has(group.groupId) && (
-                      <CheckCircledIcon />
-                    )}
-                  </Flex>
-                </DropdownMenu.Item>
-              ))}
-            </DropdownMenu.SubContent>
-          </DropdownMenu.Sub>
-        )}
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+                  {group.name}
+                  {associatedGroupIdSet.has(group.groupId) && (
+                    <CheckCircledIcon />
+                  )}
+                </Flex>
+              </ContextMenu.Item>
+            ))}
+          </ContextMenu.SubContent>
+        </ContextMenu.Sub>
+      )}
+    </ContextMenu.Content>
   );
 };

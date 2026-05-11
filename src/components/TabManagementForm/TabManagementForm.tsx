@@ -1,4 +1,13 @@
-import { Card, Flex, Select, Strong, Text } from "@radix-ui/themes";
+import {
+  Badge,
+  Button,
+  Callout,
+  Card,
+  Flex,
+  Select,
+  Strong,
+  Text,
+} from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
 import { FormEventHandler, useEffect, useState } from "react";
@@ -10,48 +19,75 @@ import { validateStringLength } from "#src/utils/validators/validateStringLength
 import { FieldError } from "../FieldError/FieldError";
 
 enum TabMgmtLabel {
-  INTERPOLATION_NAME = "name",
+  INTERPOLATION_NAME = "interpolation name",
   MATCHER = "matcher",
 }
 
 enum TabMgmtPlaceholder {
-  INTERPOLATION_NAME = "Tab group name",
+  INTERPOLATION_NAME = "interpolation name",
   MATCHER = ".*gitlab.com.*",
 }
 
-enum TabMgmtFormError {
+enum TabManagementFormError {
   NAME = "Please provide a name",
   MATCHER = "Please provide a valid regular expression",
   TAB_GROUP = "Please select a tab group",
 }
 
-export const TabMgmtForm = ({
+const TabGroupColor = ({ color }: { color: string }) => (
+  <span
+    style={{
+      boxShadow: "var(--shadow-5)",
+      width: "20px",
+      height: "20px",
+      borderRadius: "50%",
+      display: "inline-block",
+      backgroundColor: color,
+    }}
+  ></span>
+);
+
+export const TabManagementForm = ({
   mode,
   onSubmit,
+  onCancelEdit,
+  defaultValues,
 }: {
+  defaultValues: {
+    groupId?: string;
+    interpName?: string;
+    name?: string;
+    id?: string;
+    regex?: string;
+  };
   mode: "edit" | "create";
+  onCancelEdit?: () => void;
   onSubmit: () => void;
 }) => {
-  const [tabGroups, setTabGroups] = useState<{ title: string; id: number }[]>(
-    [],
-  );
+  const [tabGroups, setTabGroups] = useState<
+    { title: string; id: number; color: string }[]
+  >([]);
 
+  const [hideWarning, setHideWarning] = useState(false);
   const form = useForm({
-    defaultValues: {
-      regex: null as null | string,
-      group: null as null | string,
-      name: null as null | string,
-    },
+    defaultValues,
     onSubmit: async ({ value }) => {
+      const isInvalid = [
+        value?.groupId,
+        value?.interpName,
+        value?.regex,
+      ].includes((value: null | string) => !value);
+      if (isInvalid) return;
       const groupName = tabGroups?.find?.(
         (group) => group && String(group?.id) === value.group,
       )?.title;
       await InterpolateStorage.create(
         createTabManagermentInterpolation({
+          id: defaultValues?.id,
           matcher: value.regex as string,
-          groupId: value.group as string,
+          groupId: value.groupId as string,
           groupName: groupName as string,
-          name: value.name as string,
+          name: value.interpName as string,
         }),
       );
       onSubmit?.();
@@ -60,17 +96,17 @@ export const TabMgmtForm = ({
       onSubmit({ value }) {
         const errors = new Map();
         const nameError = validateStringLength({
-          value: value.name,
-          error: TabMgmtFormError.NAME,
+          value: value.interpName,
+          error: TabManagementFormError.NAME,
         });
 
         if (nameError) {
-          errors.set("name", nameError);
+          errors.set("interpName", nameError);
         }
 
         const matcherError = validateStringLength({
           value: value.regex,
-          error: TabMgmtFormError.MATCHER,
+          error: TabManagementFormError.MATCHER,
         });
 
         if (matcherError) {
@@ -78,12 +114,12 @@ export const TabMgmtForm = ({
         }
 
         const tabGroupError = validateStringLength({
-          value: value.group ?? "",
-          error: TabMgmtFormError.TAB_GROUP,
+          value: value.groupId ?? "",
+          error: TabManagementFormError.TAB_GROUP,
         });
 
         if (tabGroupError) {
-          errors.set("group", tabGroupError);
+          errors.set("groupId", tabGroupError);
         }
 
         const isValid = !errors.size;
@@ -94,9 +130,9 @@ export const TabMgmtForm = ({
 
         return {
           fields: {
-            name: errors.get("name") ?? null,
+            name: errors.get("interpName") ?? null,
             regex: errors.get("regex") ?? null,
-            group: errors.get("group") ?? null,
+            group: errors.get("groupId") ?? null,
           },
         };
       },
@@ -105,7 +141,13 @@ export const TabMgmtForm = ({
 
   useEffect(() => {
     chrome.tabGroups.query({}).then((_tabGroups) => {
-      setTabGroups(_tabGroups as { id: number; title: string }[]);
+      setTabGroups(
+        _tabGroups.map((g) => ({ ...g, title: g.title || "untitled" })) as {
+          id: number;
+          title: string;
+          color: string;
+        }[],
+      );
     });
   }, []);
 
@@ -115,20 +157,27 @@ export const TabMgmtForm = ({
     await form.handleSubmit();
   };
 
-  const getGroupTitleById = (id?: string) => {
+  const getGroupById = (id?: string) => {
     const noneSelected = !id;
-    if (noneSelected) return "no groups available";
+    if (noneSelected) return { title: "", color: "" };
 
     return tabGroups
-      ? tabGroups?.find?.((group) => group && String(group?.id) === id)?.title
-      : null;
+      ? tabGroups?.find?.((group) => group && String(group?.id) === id)
+      : { title: "", color: "" };
   };
+
+  const isWarningRelevant = !hideWarning;
+  const isGroupOutdated =
+    isWarningRelevant &&
+    mode === "edit" &&
+    !getGroupById(defaultValues?.groupId);
+
   return (
     <form onSubmit={handleSubmit}>
       <Card style={{ backgroundColor: "var(--orange-5)" }}>
         <Flex width="stretch" direction="column">
           <form.Field
-            name="name"
+            name="interpName"
             children={(field) => {
               return (
                 <TextInput
@@ -144,7 +193,6 @@ export const TabMgmtForm = ({
           <form.Field
             name="regex"
             children={(field) => {
-              console.log(field.state.value);
               return (
                 <TextInput
                   label={TabMgmtLabel.MATCHER}
@@ -157,7 +205,7 @@ export const TabMgmtForm = ({
             }}
           />
           <form.Field
-            name="group"
+            name="groupId"
             children={(field) => {
               return (
                 <Flex p="1" width="stretch" flexGrow="grow" direction="column">
@@ -171,15 +219,22 @@ export const TabMgmtForm = ({
                     defaultValue={String(tabGroups[0]?.id)}
                     onValueChange={(value) => {
                       field.handleChange(value);
+                      setHideWarning(true);
                     }}
                   >
                     <Select.Trigger
-                      value={field.state.value as string}
+                      value={String(field.state.value)}
                       placeholder="Select a tab"
                     >
-                      {getGroupTitleById(
-                        field.state.value as string | undefined,
-                      )}
+                      <Flex gap="3">
+                        {
+                          getGroupById(field.state.value as string | undefined)
+                            ?.title
+                        }{" "}
+                        <TabGroupColor
+                          color={getGroupById(field?.state?.value)?.color ?? ""}
+                        />
+                      </Flex>
                     </Select.Trigger>
                     <Select.Content>
                       {tabGroups.map((tabGroup) => {
@@ -188,20 +243,41 @@ export const TabMgmtForm = ({
                             style={{ width: "stretch" }}
                             value={String(tabGroup?.id)}
                           >
-                            {tabGroup.title}
+                            <Flex gap="3" justify={"between"} width="stretch">
+                              {tabGroup.title}
+                              <TabGroupColor color={tabGroup.color} />
+                            </Flex>
                           </Select.Item>
                         );
                       })}
                     </Select.Content>
                   </Select.Root>
                   <FieldError errors={field.state.meta.errors} />
+                  {isGroupOutdated && (
+                    <Callout.Root size="1" mt="1">
+                      <Callout.Text size="1">
+                        It looks like you may have previously specified a group
+                        that no longer exists. Please select a new one.
+                      </Callout.Text>
+                    </Callout.Root>
+                  )}
                 </Flex>
               );
             }}
           />
         </Flex>
       </Card>
-      <Flex justify={"center"}>
+      <Flex justify={mode === "create" ? "end" : "between"} align="end">
+        {mode === "edit" && (
+          <Button
+            type="button"
+            radius="full"
+            variant="outline"
+            onClick={onCancelEdit}
+          >
+            Cancel
+          </Button>
+        )}
         <SubmitButton>
           {mode === "create" && "Create"}
           {mode === "edit" && "Save"}
