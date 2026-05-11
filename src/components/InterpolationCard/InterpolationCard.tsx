@@ -2,17 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import {
-  CardStackIcon,
-  CardStackPlusIcon,
-  ChevronUpIcon,
-  Cross1Icon,
-  DotsHorizontalIcon,
-  DotsVerticalIcon,
-  DoubleArrowDownIcon,
-  DoubleArrowUpIcon,
-  Link1Icon,
-} from "@radix-ui/react-icons";
+import { ChevronUpIcon } from "@radix-ui/react-icons";
 import {
   Badge,
   Box,
@@ -23,7 +13,6 @@ import {
   Flex,
   IconButton,
   Text,
-  Tooltip,
   Strong,
   Separator,
 } from "@radix-ui/themes";
@@ -123,53 +112,19 @@ export const InterpolationCard = ({
     }
   }, [type]);
 
-  const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
-    "horizontal",
-  );
   const [isExpanded, setIsExpanded] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-
-    const observer = new ResizeObserver(() => {
-      const elementWidth = ref.current?.clientWidth;
-      if (!elementWidth) return;
-      if (elementWidth > 300) {
-        setOrientation("horizontal");
-      } else {
-        setOrientation("vertical");
-      }
-    });
-
-    observer.observe(ref.current);
-    return () => {
-      observer.disconnect();
-    };
-  }, [ref]);
 
   const getPreview = () => {
     switch (type) {
       case "headers":
-        return (
-          <HeaderRulePreview
-            dataOrientation={orientation}
-            details={details}
-            name={name}
-          />
-        );
+        return <HeaderRulePreview details={details} />;
       case "redirect":
         return <RedirectRulePreview name={name} rule={info} />;
       case "mockAPI":
-        return (
-          <MockPreview
-            name={name}
-            dataOrientation={orientation}
-            details={details}
-          />
-        );
+        return <MockPreview details={details} />;
       case "script":
-        return <ScriptPreview name={name} rule={info} />;
+        return <ScriptPreview rule={info} />;
       case "tab-manager":
         return (
           <TabManagerPreview
@@ -261,10 +216,6 @@ export const InterpolationCard = ({
     setEditModeEnabled(true);
   };
 
-  const onEditModalCloseClick = () => {
-    setEditModeEnabled(false);
-  };
-
   const onDeleteSelected = () => {
     setDeleteSelected(true);
   };
@@ -278,15 +229,21 @@ export const InterpolationCard = ({
   };
 
   return (
-    <ContextMenu.Root>
-      <ContextMenu.Trigger>
-        <Collapsible.Root onOpenChange={setIsExpanded} open={isExpanded}>
+    <Collapsible.Root
+      style={{ width: "stretch" }}
+      onOpenChange={setIsExpanded}
+      open={isExpanded}
+      asChild
+    >
+      <ContextMenu.Root>
+        <ContextMenu.Trigger asChild>
           <Card
             ref={ref}
             data-ui-error={!!info.error}
             data-testid={`${type}-preview-${info?.name}`}
             className={styles.InterpolationCard}
             variant="surface"
+            style={{ width: "stretch" }}
           >
             {error && (
               <Callout.Root color="red">
@@ -307,7 +264,7 @@ export const InterpolationCard = ({
                     align="center"
                     p="2"
                   >
-                    <Flex justify={"center"} align="center" gap="2">
+                    <Flex justify={"start"} align="center" gap="2" width="100%">
                       <Badge size="1" color={badgeColor}>
                         <Strong>
                           <Text align="center" weight="medium" size="1">
@@ -316,7 +273,9 @@ export const InterpolationCard = ({
                         </Strong>
                       </Badge>
 
-                      <Text size="2">{info.name}</Text>
+                      <Flex maxWidth="150px">
+                        <Text size="2">{info.name}</Text>
+                      </Flex>
                     </Flex>
                     <Flex gap="3">
                       {hideRuleToggle ? null : (
@@ -385,14 +344,16 @@ export const InterpolationCard = ({
                 </Flex>
               </Dialog.Content>
             </Dialog.Root>
+            {hideOptions ? null : (
+              <InterpolationOptions
+                onDeleteSelected={onDeleteSelected}
+                onEditSelected={onEditSelected}
+                config={info}
+              />
+            )}
           </Card>
-        </Collapsible.Root>
-        <InterpolationOptions
-          onDeleteSelected={onDeleteSelected}
-          onEditSelected={onEditSelected}
-          config={info}
-        />
-      </ContextMenu.Trigger>
-    </ContextMenu.Root>
+        </ContextMenu.Trigger>
+      </ContextMenu.Root>
+    </Collapsible.Root>
   );
 };

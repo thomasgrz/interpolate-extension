@@ -21,7 +21,7 @@ export const InterpolationGroup = ({
       </Flex>
       <Flex p="2" gap="1" direction="column">
         {interpolations?.map?.((interp) => (
-          <InterpolationCard noShadow info={interp} />
+          <InterpolationCard info={interp} />
         ))}
       </Flex>
     </Card>

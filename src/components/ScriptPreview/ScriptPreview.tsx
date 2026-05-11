@@ -1,13 +1,9 @@
 import { ScriptInterpolation } from "@/utils/factories/Interpolation";
 import { ClockIcon } from "@radix-ui/react-icons";
 import { Code, ScrollArea, Flex, Text } from "@radix-ui/themes";
-import styles from "./ScriptPreview.module.scss";
 
-export const ScriptPreview = (props: {
-  rule: ScriptInterpolation;
-  name: string;
-}) => {
-  const { rule, name } = props;
+export const ScriptPreview = (props: { rule: ScriptInterpolation }) => {
+  const { rule } = props;
 
   return (
     <Flex direction={"column"} width="stretch" gap="3">

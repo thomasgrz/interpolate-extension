@@ -3,24 +3,17 @@ import {
   CheckCircledIcon,
   CrossCircledIcon,
   DotsVerticalIcon,
-  EnvelopeOpenIcon,
-  FileTextIcon,
   InfoCircledIcon,
   QuestionMarkCircledIcon,
   ResetIcon,
   SewingPinIcon,
-  UploadIcon,
 } from "@radix-ui/react-icons";
-import { Code, DataList, Flex, Text, ScrollArea, Card } from "@radix-ui/themes";
+import { Code, Flex, Text, ScrollArea, Card } from "@radix-ui/themes";
 
 export const MockPreview = ({
   details,
-  name,
-  dataOrientation,
 }: {
   details: MockAPIInterpolation["details"];
-  name: string;
-  dataOrientation: "horizontal" | "vertical";
 }) => {
   const getIcon = () => {
     const { httpCode } = details;

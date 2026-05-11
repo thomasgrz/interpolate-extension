@@ -1,6 +1,7 @@
 import { TabManagerInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { logger } from "../utils/logger";
 import { InterpolateStorage } from "../utils/storage/InterpolateStorage/InterpolateStorage";
+import { debouncedPushTabActivity } from "./debouncedPushTabActivity";
 import { handleDebuggerEvent } from "./handleDebuggerEvent";
 import { handleDebugTabUpdates } from "./handleDebugTabUpdates";
 import { handleInstall } from "./handleInstall";
@@ -66,6 +67,27 @@ try {
       groupId: Number(matchingGroup?.details.groupId),
       tabIds: tab?.id,
     });
+
+    setTimeout(() => {
+      debugger;
+      if (!matchingGroup || !tab.id) return;
+      debugger;
+      // Update storage without hammering it..
+      debouncedPushTabActivity({
+        tabId: tab.id,
+        interpolations: [matchingGroup],
+      });
+      // TODO: find a more robust solution for updating activity
+      // and sending messages..
+      // the delay here is just a rough workaround to ensure that if the
+      // interpolation is a redirect at the top level, the page
+      // will still show the notifs (rather than have them eschewed instantly during navigation)
+      chrome.tabs.sendMessage(tab?.id, {
+        interpolations: [matchingGroup],
+        isInterpolation: true,
+        tabId: tab.id,
+      });
+    }, 2000);
   });
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "openSidePanel" && tab?.windowId) {

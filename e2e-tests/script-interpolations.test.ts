@@ -102,11 +102,11 @@ test("should edit a script in place", async ({ page, extensionId }) => {
     endOnOptionsPage: true,
   });
 
-  const options = page.getByTestId("interpolation-options-trigger");
+  const options = page.getByTestId(/script-preview.*/);
 
   await options.isVisible();
 
-  await options.click();
+  await options.click({ button: "right" });
 
   const edit = page.getByText("Edit");
 

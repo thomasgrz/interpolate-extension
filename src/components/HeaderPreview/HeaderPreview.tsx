@@ -1,12 +1,10 @@
 import { HeaderInterpolation } from "@/utils/factories/Interpolation";
-import { Code, DataList, Flex, ScrollArea, Text } from "@radix-ui/themes";
+import { Code, Flex, ScrollArea, Text } from "@radix-ui/themes";
 
 export const HeaderRulePreview = ({
   details,
-  name,
 }: {
   details: HeaderInterpolation["details"];
-  name: string;
 }) => {
   return (
     <Flex gap="2" direction={"column"}>

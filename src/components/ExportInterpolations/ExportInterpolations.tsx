@@ -122,7 +122,7 @@ export const ExportInterpolations = () => {
               return (
                 <Flex
                   key={interp?.details?.id}
-                  width="stretch"
+                  width="width"
                   flexGrow="1"
                   gap="2"
                   align="center"
@@ -131,7 +131,7 @@ export const ExportInterpolations = () => {
                     // @ts-expect-error TODO: fix types
                     onClick={(e) => handleChange(e, interp)}
                   />
-                  <InterpolationCard noShadow hideRuleToggle info={interp} />
+                  <InterpolationCard hideRuleToggle info={interp} />
                 </Flex>
               );
             })}

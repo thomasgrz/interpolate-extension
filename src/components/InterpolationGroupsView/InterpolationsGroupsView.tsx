@@ -19,7 +19,7 @@ import { RuleDeleteAction } from "../RuleDeleteAction/RuleDeleteAction";
 import { CreateGroupView } from "../CreateGroupView/CreateGroupView";
 import { SortOption } from "../SortingOptions/SortingOptions";
 import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
-import { Collapsible } from "radix-ui";
+import { Collapsible, ContextMenu } from "radix-ui";
 import {
   DoubleArrowDownIcon,
   DoubleArrowUpIcon,
@@ -143,21 +143,81 @@ export const InterpolationsGroupsView = ({
           Showing {sortedHydratedGroups?.length} groups matching "{query}"
         </Text>
       )}
-      <Flex direction={"column"} gap="2" p="3">
+      <Flex direction={"column"} gap="3" p="3">
         <CreateGroupView />
         {sortedHydratedGroups.map((config) => (
-          <Card className={styles.Card} variant="surface" key={config.groupId}>
-            <Flex justify="center" gap="1" direction="column">
-              <Flex width="stretch" justify={"between"}>
-                <Flex direction="column">
-                  <Strong>
-                    <Flex gap="2">
-                      <Badge>group</Badge>
-                      <Text size="2">{config.name}</Text>
+          <ContextMenu.Root>
+            <ContextMenu.Trigger>
+              <Card
+                className={styles.Card}
+                variant="surface"
+                style={{ boxShadow: "var(--shadow-3)" }}
+                key={config.groupId}
+              >
+                <Flex justify="center" gap="1" direction="column">
+                  <Flex width="stretch" justify={"between"}>
+                    <Flex direction="column">
+                      <Strong>
+                        <Flex gap="2">
+                          <Badge>group</Badge>
+                          <Text size="2">{config.name}</Text>
+                        </Flex>
+                      </Strong>
                     </Flex>
-                  </Strong>
-                </Flex>
+                  </Flex>
+                  <Flex width="stretch" direction="column">
+                    <Collapsible.Root
+                      open={expandedGroups[config.name]}
+                      onOpenChange={(isOpen) =>
+                        onGroupOpenChange(config.name, isOpen)
+                      }
+                    >
+                      <Flex width="stretch" justify="between">
+                        <Text size="1" style={{ fontSize: "0.5em" }}>
+                          {new Date(config.createdAt).toDateString()}
+                        </Text>
+                        <Tooltip
+                          content={
+                            expandedGroups[config.name]
+                              ? "hide configs in group"
+                              : "show configs in group"
+                          }
+                        >
+                          <Collapsible.Trigger asChild>
+                            <Button
+                              // className={styles.ToggleCollapse}
+                              size="1"
+                              radius="none"
+                              variant="outline"
+                              // TODO: rm inline styles when prod build doesnt break className styles
+                              style={{ height: "unset", boxShadow: "none" }}
+                            >
+                              {expandedGroups[config.name] ? (
+                                <>
+                                  Collapse <DoubleArrowUpIcon />{" "}
+                                </>
+                              ) : (
+                                <>
+                                  {config.interpolations?.length} config
+                                  {config.interpolations.length > 1 ? "s" : ""}
+                                  <DoubleArrowDownIcon />
+                                </>
+                              )}
+                            </Button>
+                          </Collapsible.Trigger>
+                        </Tooltip>
+                      </Flex>
 
+                      <Collapsible.Content>
+                        <Flex width="stretch" justify="start">
+                          <InterpolationsListView
+                            configs={config.interpolations}
+                          />
+                        </Flex>
+                      </Collapsible.Content>
+                    </Collapsible.Root>
+                  </Flex>
+                </Flex>
                 <InterpolationOptions
                   disableAddToGroup
                   onDeleteSelected={() => onDeleteSelected(config)}
@@ -165,59 +225,9 @@ export const InterpolationsGroupsView = ({
                   onEditSelected={onEditSelected}
                   config={config}
                 />
-              </Flex>
-              <Flex width="stretch" direction="column">
-                <Collapsible.Root
-                  open={expandedGroups[config.name]}
-                  onOpenChange={(isOpen) =>
-                    onGroupOpenChange(config.name, isOpen)
-                  }
-                >
-                  <Flex width="stretch" justify="between">
-                    <Text size="1" style={{ fontSize: "0.5em" }}>
-                      {new Date(config.createdAt).toDateString()}
-                    </Text>
-                    <Tooltip
-                      content={
-                        expandedGroups[config.name]
-                          ? "hide configs in group"
-                          : "show configs in group"
-                      }
-                    >
-                      <Collapsible.Trigger asChild>
-                        <Button
-                          // className={styles.ToggleCollapse}
-                          size="1"
-                          radius="none"
-                          variant="outline"
-                          // TODO: rm inline styles when prod build doesnt break className styles
-                          style={{ height: "unset", boxShadow: "none" }}
-                        >
-                          {expandedGroups[config.name] ? (
-                            <>
-                              Collapse <DoubleArrowUpIcon />{" "}
-                            </>
-                          ) : (
-                            <>
-                              {config.interpolations?.length} config
-                              {config.interpolations.length > 1 ? "s" : ""}
-                              <DoubleArrowDownIcon />
-                            </>
-                          )}
-                        </Button>
-                      </Collapsible.Trigger>
-                    </Tooltip>
-                  </Flex>
-
-                  <Collapsible.Content>
-                    <Flex width="stretch" justify="start">
-                      <InterpolationsListView configs={config.interpolations} />
-                    </Flex>
-                  </Collapsible.Content>
-                </Collapsible.Root>
-              </Flex>
-            </Flex>
-          </Card>
+              </Card>
+            </ContextMenu.Trigger>
+          </ContextMenu.Root>
         ))}
       </Flex>
     </ScrollArea>

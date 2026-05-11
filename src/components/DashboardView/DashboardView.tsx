@@ -17,37 +17,14 @@ import { InterpolationsListView } from "../InterpolationsListView/Interpolations
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 import { CheckCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { ReactElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { TextInput } from "../TextInput/TextInput.tsx";
 import {
   SortingOptions,
   SortOption,
 } from "../SortingOptions/SortingOptions.tsx";
-import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection.tsx";
 import { FilteredSortedList } from "../FilteredSortedList/FilteredSortedList.tsx";
 import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
-
-const CollapsibleTitle = ({
-  text,
-  icon,
-}: {
-  text: string;
-  icon?: ReactElement;
-}) => (
-  <Flex
-    style={{ cursor: "pointer" }}
-    direction={"column"}
-    p="2"
-    justify={"center"}
-  >
-    <Strong>
-      <Flex gap="3" align="center">
-        {icon}
-        <Text size="2">{text}</Text>
-      </Flex>
-    </Strong>
-  </Flex>
-);
 
 type ThemeColor =
   | "grass"
@@ -62,7 +39,6 @@ type ExpandedSection = "all" | "enabled" | "invoked" | "groups" | "none";
 export const DashboardView = () => {
   const {
     enabledInterpolations,
-    groups,
     onChangeFilter,
     onChangeSort,
     filter,
@@ -189,13 +165,13 @@ export const DashboardView = () => {
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content>
                     {[
-                      "mint",
+                      "blue",
                       "grass",
                       "iris",
-                      "blue",
-                      "yellow",
+                      "mint",
                       "ruby",
                       "slate",
+                      "yellow",
                     ].map((option) => {
                       return (
                         <DropdownMenu.Item
@@ -232,6 +208,7 @@ export const DashboardView = () => {
                 <SegmentedControl.Root
                   defaultValue={expandedSection}
                   size="2"
+                  style={{ minHeight: "var(--space-6)" }}
                   onValueChange={handleMenuClick}
                 >
                   <SegmentedControl.Item value="all">All</SegmentedControl.Item>
@@ -246,7 +223,7 @@ export const DashboardView = () => {
                   </SegmentedControl.Item>
                 </SegmentedControl.Root>
                 {expandedSection === "all" && (
-                  <Flex direction={"column"} pt="2">
+                  <Flex direction={"column"} pt="2" mb="3" maxHeight={"95%"}>
                     {sortingByInvokedWithoutInvocations && (
                       <Callout.Root size="1" variant="surface">
                         <Callout.Text size="1">
@@ -260,7 +237,7 @@ export const DashboardView = () => {
                   </Flex>
                 )}
                 {expandedSection === "enabled" && (
-                  <Flex direction="column" pt="2">
+                  <Flex direction={"column"} pt="2" mb="3" maxHeight={"95%"}>
                     <Callout.Root size="1" variant="surface">
                       <Callout.Text size="1">
                         <Strong>{enabledInterpolations?.length} </Strong>
@@ -275,7 +252,7 @@ export const DashboardView = () => {
                   </Flex>
                 )}
                 {expandedSection === "invoked" && (
-                  <Flex direction={"column"} pt="2">
+                  <Flex direction={"column"} pt="2" mb="3" maxHeight={"95%"}>
                     <Callout.Root size="1" variant="surface">
                       <Callout.Text size="1">
                         <Strong>{recentlyActive?.length} </Strong>interpolations

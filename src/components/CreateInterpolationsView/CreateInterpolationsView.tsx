@@ -188,13 +188,13 @@ export const CreateInterpolationsView = ({
             <FormSelectionStep onChange={handleChange} />
           )}
           {step === InterpolationOptionSelection.ADD_HEADERS && (
-            <AddHeaderForm onSubmit={handleFormSubmit} />
+            <AddHeaderForm mode="create" onSubmit={handleFormSubmit} />
           )}
           {step === InterpolationOptionSelection.CREATE_USER_SCRIPT && (
-            <UserScriptForm onSubmit={handleFormSubmit} />
+            <UserScriptForm mode="create" onSubmit={handleFormSubmit} />
           )}
           {step === InterpolationOptionSelection.REDIRECT_REQUEST && (
-            <RedirectForm onSubmit={handleFormSubmit} />
+            <RedirectForm mode="create" onSubmit={handleFormSubmit} />
           )}
           {step === InterpolationOptionSelection.EXPORT && (
             <ExportInterpolations />
@@ -206,7 +206,7 @@ export const CreateInterpolationsView = ({
             />
           )}
           {step === InterpolationOptionSelection.MOCK_RESPONSE && (
-            <MockResponseForm onSubmit={handleFormSubmit} />
+            <MockResponseForm mode="create" onSubmit={handleFormSubmit} />
           )}
           {step === InterpolationOptionSelection.TAB_MGMT && (
             <TabManagementForm mode="create" onSubmit={handleFormSubmit} />

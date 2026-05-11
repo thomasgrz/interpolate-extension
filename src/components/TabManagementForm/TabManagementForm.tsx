@@ -1,5 +1,4 @@
 import {
-  Badge,
   Button,
   Callout,
   Card,
@@ -11,7 +10,7 @@ import {
 import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
 import { FormEventHandler, useEffect, useState } from "react";
-import { Form, Label } from "radix-ui";
+import { Label } from "radix-ui";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { createTabManagermentInterpolation } from "#src/utils/factories/createTabManagerInterpolation/createTabManagerInterpolation.ts";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
@@ -53,7 +52,7 @@ export const TabManagementForm = ({
   onCancelEdit,
   defaultValues,
 }: {
-  defaultValues: {
+  defaultValues?: {
     groupId?: string;
     interpName?: string;
     name?: string;
@@ -76,10 +75,11 @@ export const TabManagementForm = ({
         value?.groupId,
         value?.interpName,
         value?.regex,
-      ].includes((value: null | string) => !value);
+        // @ts-expect-error TODO fix types
+      ].includes((value: string | undefined) => !value);
       if (isInvalid) return;
       const groupName = tabGroups?.find?.(
-        (group) => group && String(group?.id) === value.group,
+        (group) => group && String(group?.id) === value.groupId,
       )?.title;
       await InterpolateStorage.create(
         createTabManagermentInterpolation({

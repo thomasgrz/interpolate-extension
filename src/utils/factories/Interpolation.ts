@@ -27,7 +27,7 @@ export type HeaderInterpolationConfig = {
 export type TabManagerInterpolationConfig = {
   details: {
     matcher: string;
-    groupId: number;
+    groupId: string;
     groupName: string;
     id: string;
   };

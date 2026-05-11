@@ -1,5 +1,5 @@
 import { PauseIcon, PlayIcon } from "@radix-ui/react-icons";
-import { Flex, IconButton } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import styles from "./RuleToggle.module.scss";
 import { Switch } from "radix-ui";
 
@@ -14,7 +14,6 @@ export const RuleToggle = ({
   onResumeClick: () => void;
 }) => {
   const handleClick = isPaused ? onResumeClick : onPauseClick;
-  const buttonColor = isPaused ? "green" : "blue";
   return (
     <Flex
       style={{
@@ -36,14 +35,14 @@ export const RuleToggle = ({
         }}
       >
         <Flex align={"center"} justify={"between"}>
-          <Flex px="2">
+          <Flex px="1">
             <PlayIcon />
           </Flex>
           <Switch.Thumb
             defaultChecked={!isPaused}
             className={styles.SwitchThumb}
           />
-          <Flex px="2">
+          <Flex px="1">
             <PauseIcon />
           </Flex>
         </Flex>

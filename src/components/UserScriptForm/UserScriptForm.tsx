@@ -33,7 +33,7 @@ export const UserScriptForm = ({
   onSubmit,
   mode = "create",
 }: {
-  onCancelEdit: () => void;
+  onCancelEdit?: () => void;
   onSubmit?:
     | (({ value }: { value: UserScriptFormValue }) => void)
     | (({ value }: { value: UserScriptFormValue }) => Promise<void>);

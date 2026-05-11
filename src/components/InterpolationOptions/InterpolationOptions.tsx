@@ -1,25 +1,20 @@
-import { ContextMenu, Flex, IconButton, Tooltip } from "@radix-ui/themes";
+import { ContextMenu, Flex } from "@radix-ui/themes";
 import {
-  DotsHorizontalIcon,
   GearIcon,
   ClipboardCopyIcon,
   TrashIcon,
   CheckCircledIcon,
-  ButtonIcon,
 } from "@radix-ui/react-icons";
-import styles from "./InterpolationOptions.module.scss";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
 
 export const InterpolationOptions = ({
-  children,
   config,
   disableAddToGroup,
   onEditSelected,
   onDeleteSelected,
 }: {
-  children: React.ReactElement;
   config:
     | AnyInterpolation
     | AnyInterpolation[]

@@ -1,18 +1,16 @@
 import { RedirectInterpolation } from "@/utils/factories/Interpolation";
 import {
-  DotsHorizontalIcon,
   DotsVerticalIcon,
-  ResetIcon,
   SewingPinFilledIcon,
   SewingPinIcon,
 } from "@radix-ui/react-icons";
-import { Code, DataList, Flex, Text } from "@radix-ui/themes";
+import { Code, Flex } from "@radix-ui/themes";
 
 export const RedirectRulePreview = (props: {
   rule: RedirectInterpolation;
   name: string;
 }) => {
-  const { rule, name } = props;
+  const { rule } = props;
 
   return (
     <Flex direction="column" gap="1">

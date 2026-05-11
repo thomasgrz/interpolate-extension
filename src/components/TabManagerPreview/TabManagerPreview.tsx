@@ -1,5 +1,5 @@
-import { CardStackIcon, Link1Icon } from "@radix-ui/react-icons";
-import { Badge, Code, Flex, Strong, Text } from "@radix-ui/themes";
+import { Link1Icon } from "@radix-ui/react-icons";
+import { Code, Flex, Strong, Text } from "@radix-ui/themes";
 
 export const TabManagerPreview = ({
   regex,

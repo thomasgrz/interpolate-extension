@@ -43,7 +43,7 @@ export const RedirectForm = ({
   mode = "create",
 }: {
   defaultValues?: RedirectFormValue;
-  onCancelEdit: () => void;
+  onCancelEdit?: () => void;
   onSubmit?:
     | (({ value }: { value: RedirectFormValue }) => void)
     | (({ value }: { value: RedirectFormValue }) => Promise<void>);
