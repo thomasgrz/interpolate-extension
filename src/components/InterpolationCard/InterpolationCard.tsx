@@ -252,12 +252,7 @@ export const InterpolationCard = ({
             )}
             <Flex width="stretch" gap="2" direction="column" maxWidth="100%">
               <Flex justify={"between"} align="center" flexGrow={"grow"}>
-                <Flex
-                  direction="column"
-                  width="stretch"
-                  px="2"
-                  justify={"between"}
-                >
+                <Flex direction="column" width="stretch" justify={"between"}>
                   <Flex
                     width="stretch"
                     justify={"between"}
@@ -292,6 +287,7 @@ export const InterpolationCard = ({
                         <Flex justify={"center"} gap="2">
                           <IconButton
                             data-open={isExpanded}
+                            type="button"
                             className={styles.ExpansionTrigger}
                             radius="full"
                             size="1"
