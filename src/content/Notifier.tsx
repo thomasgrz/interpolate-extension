@@ -61,7 +61,7 @@ export const Notifier = () => {
           content: (
             <InterpolationCard info={interp} hideOptions hideRuleToggle />
           ),
-          duration: 10000,
+          duration: 100000,
           onOpenChange: (value: boolean) => {
             const open = !!value;
             if (open) return;
