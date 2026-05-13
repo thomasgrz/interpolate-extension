@@ -25,7 +25,9 @@ export const createTestHeaderInterpolation = async (arg: {
     .getByPlaceholder(AddHeaderFormPlaceholder.HEADER_VALUE)
     .fill(headerValue);
   await page.getByText("Create header").click();
+
   await page.getByTestId(`headers-preview-${name}`).waitFor();
+
   await page.goto("https://httpbin.org/headers");
   await page.goto(
     `chrome-extension://${arg.extensionId}/src/options/index.html`,

@@ -29,6 +29,24 @@ export const InterpolateStorage = {
   getTabActivityId(tabId: number) {
     return `${tabId}-active`;
   },
+  async subscribeToExtensionEnablement(callback: (isEnabled: boolean) => void) {
+    chrome.storage.onChanged.addListener((changes) => {
+      const noRelatedChange = !Object.hasOwn(changes, "isExtensionEnabled");
+      if (noRelatedChange) return;
+      const currentValue = changes["isExtensionEnabled"].newValue;
+      callback(currentValue);
+    });
+  },
+  async getIsExtensionEnabled() {
+    const storageRecords = await chrome.storage.local.get("isExtensionEnabled");
+    return storageRecords["isExtensionEnabled"];
+  },
+  async disableExtension() {
+    chrome.storage.local.set({ isExtensionEnabled: false });
+  },
+  async enableExtension() {
+    chrome.storage.local.set({ isExtensionEnabled: true });
+  },
   async addToGroup({
     interps,
     groupId,

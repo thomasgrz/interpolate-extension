@@ -13,6 +13,45 @@ try {
     InterpolateStorage.deleteDebuggerTab(tabId);
   });
 
+  chrome.storage.local.onChanged.addListener(async (changes) => {
+    const { isExtensionEnabled } = changes;
+
+    const isIrrelevant = !isExtensionEnabled;
+    if (isIrrelevant) return;
+
+    const isUserEnablingExtension = isExtensionEnabled.newValue === true;
+    const isUserDisablingExtension = isExtensionEnabled.newValue === false;
+
+    if (isUserEnablingExtension) {
+      const tabs = await chrome.tabs.query({});
+      const debuggableTabs = tabs.filter((tab) => tab.url?.startsWith("http"));
+
+      await Promise.all(
+        debuggableTabs.map((tab) => handleDebugTabUpdates(null, tab)),
+      );
+    }
+
+    if (isUserDisablingExtension) {
+      const tabs = await chrome.tabs.query({});
+      const debuggableTabs = tabs.filter((tab) => tab.url?.startsWith("http"));
+      const debuggerTargets = await chrome.debugger.getTargets();
+      const tabsBeingDebugged = debuggableTabs.filter((debuggableTab) => {
+        const matchingDebuggerTarget = debuggerTargets.find(
+          (target) => target.tabId === debuggableTab.id,
+        );
+
+        const isBeingDebugged = matchingDebuggerTarget?.attached;
+
+        return isBeingDebugged;
+      });
+      await Promise.all(
+        tabsBeingDebugged.map((tab) =>
+          chrome.debugger.detach({ tabId: tab.id }),
+        ),
+      );
+    }
+  });
+
   // For this tab, make sure we only handle
   // request paused events
   chrome.debugger.onEvent.addListener(handleDebuggerEvent);
@@ -29,6 +68,10 @@ try {
         logger("*ahem* RAHHHHHHHHHHHHHH!" + chrome.runtime.lastError);
       }
     }
+  });
+
+  chrome.debugger.onDetach.addListener(async () => {
+    await InterpolateStorage.disableExtension();
   });
 
   chrome.sidePanel
@@ -69,9 +112,7 @@ try {
     });
 
     setTimeout(() => {
-      debugger;
       if (!matchingGroup || !tab.id) return;
-      debugger;
       // Update storage without hammering it..
       debouncedPushTabActivity({
         tabId: tab.id,

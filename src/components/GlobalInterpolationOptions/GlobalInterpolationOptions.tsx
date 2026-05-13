@@ -1,41 +1,40 @@
-import { IconButton } from "@radix-ui/themes";
-import Pause from "../../assets/pause.svg";
-import Play from "../../assets/play.svg";
+import { IconButton, Tooltip } from "@radix-ui/themes";
 import styles from "./GlobalInterpolationOptions.module.scss";
-import { useMemo } from "react";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
+import { ResumeIcon, StopIcon } from "@radix-ui/react-icons";
 
 export const GlobalInterpolationOptions = ({}: {}) => {
-  const { interpolations, allPaused, pauseAll, resumeAll } =
+  const { isExtensionEnabled, disableExtension, enableExtension } =
     useInterpolationsContext();
 
-  const ruleCount = useMemo(() => interpolations?.length, [interpolations]);
-
-  return allPaused ? (
-    <IconButton
-      variant="solid"
-      radius="full"
-      type="button"
-      data-testid="resume-all"
-      disabled={!ruleCount}
-      className={styles.ResumeAllRules}
-      color="green"
-      onClick={resumeAll}
-    >
-      <Play />
-    </IconButton>
+  const isExtensionDisabled = !isExtensionEnabled;
+  return isExtensionDisabled ? (
+    <Tooltip content="Enable interpolate extension in browser">
+      <IconButton
+        variant="solid"
+        radius="full"
+        type="button"
+        data-testid="resume-all"
+        className={styles.ResumeAllRules}
+        color="green"
+        onClick={enableExtension}
+      >
+        <ResumeIcon />
+      </IconButton>
+    </Tooltip>
   ) : (
-    <IconButton
-      variant="solid"
-      radius="full"
-      type="button"
-      data-testid="pause-all"
-      disabled={!ruleCount}
-      className={styles.PauseAllRules}
-      color="blue"
-      onClick={pauseAll}
-    >
-      <Pause />
-    </IconButton>
+    <Tooltip content="Disable interpolate extension in browser">
+      <IconButton
+        variant="solid"
+        radius="full"
+        type="button"
+        data-testid="pause-all"
+        className={styles.PauseAllRules}
+        color="red"
+        onClick={disableExtension}
+      >
+        <StopIcon />
+      </IconButton>
+    </Tooltip>
   );
 };

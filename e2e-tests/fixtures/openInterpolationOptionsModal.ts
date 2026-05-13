@@ -4,5 +4,6 @@ export const openInterpolationOptionsModal = async (arg: {
 }) => {
   const { page, extensionId } = arg;
   await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
+  await page.getByTestId("browser-ui-toggle").click();
   await page.getByTestId("manage-interpolations").click();
 };

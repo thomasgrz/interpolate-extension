@@ -27,35 +27,6 @@ describe("useInterpolations", () => {
     );
   });
 
-  it("should pause all interpolations", async () => {
-    const interpolation1 = createHeaderInterpolation({
-      headerKey: "X-Test-1",
-      headerValue: "test1.domain",
-      name: "Test Interpolation 1",
-    });
-    const interpolation2 = createHeaderInterpolation({
-      headerKey: "X-Test-2",
-      headerValue: "test2.domain",
-      name: "Test Interpolation 2",
-    });
-    await InterpolateStorage.create([interpolation1, interpolation2]);
-    const { result } = renderHook(() => useInterpolationsContext(), {
-      wrapper: InterpolateProvider,
-    });
-
-    await waitFor(() => {
-      return expect(result.current.interpolations?.length).toEqual(2);
-    });
-
-    result.current.pauseAll();
-    await waitFor(() =>
-      expect(
-        result.current.interpolations?.every(
-          (interp) => interp.enabledByUser === false,
-        ),
-      ).toBe(true),
-    );
-  });
   it("should resume all interpolations", async () => {
     const interpolation1 = createHeaderInterpolation({
       headerKey: "X-Test-1",
@@ -72,7 +43,7 @@ describe("useInterpolations", () => {
       wrapper: InterpolateProvider,
     });
 
-    result.current.pauseAll();
+    result.current.disableExtension();
     await waitFor(() =>
       expect(
         result.current.interpolations?.every(
@@ -85,7 +56,7 @@ describe("useInterpolations", () => {
       return expect(result.current.interpolations?.length).toEqual(2);
     });
 
-    result.current.resumeAll();
+    result.current.enableExtension();
     await waitFor(() =>
       expect(
         result.current.interpolations?.every(
@@ -122,40 +93,7 @@ describe("useInterpolations", () => {
       expect(result.current.interpolations?.[0]?.enabledByUser).toBeFalsy();
     });
   });
-  it("should indicate when all interpolations are paused", async () => {
-    const interpolations = [
-      createHeaderInterpolation({
-        headerKey: "X-Test",
-        headerValue: "test.domain",
-        name: "Test Interpolation",
-      }),
-      createHeaderInterpolation({
-        headerKey: "X-Test-2",
-        headerValue: "test2.domain",
-        name: "Test Interpolation 2",
-      }),
-    ];
 
-    await InterpolateStorage.create(interpolations);
-    const { result } = renderHook(() => useInterpolationsContext(), {
-      wrapper: InterpolateProvider,
-    });
-    await waitFor(() => {
-      return expect(result.current.interpolations?.length).toEqual(2);
-    });
-
-    expect(result.current.allPaused).toBe(false);
-
-    result.current.pauseAll();
-
-    await waitFor(() => expect(result.current.allPaused).toBe(true));
-
-    expect(
-      result.current.interpolations?.every(
-        (interp: AnyInterpolation) => interp.enabledByUser === false,
-      ),
-    ).toBe(true);
-  });
   it("should remove an interpolation", async () => {
     const interpolations = [
       createHeaderInterpolation({

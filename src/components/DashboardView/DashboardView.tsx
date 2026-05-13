@@ -25,6 +25,7 @@ import {
 } from "../SortingOptions/SortingOptions.tsx";
 import { FilteredSortedList } from "../FilteredSortedList/FilteredSortedList.tsx";
 import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
+import { ExtensionEnablmentNotice } from "../ExtensionEnablementNotice/ExtensionEnablementNotice.tsx";
 
 type ThemeColor =
   | "grass"
@@ -145,7 +146,9 @@ export const DashboardView = () => {
           maxHeight={"100%"}
         >
           <Card m="2" className={styles.TopArea}>
-            <Flex direction="column">
+            <Flex direction="column" flexGrow="1" height="stretch" gap="3">
+              <ExtensionEnablmentNotice />
+
               <ControlCenter onCreate={onSuccessfulGroupCreation} />
               <TextInput
                 size="1"
