@@ -122,7 +122,7 @@ export const InterpolationCard = ({
         return (
           <TabManagerPreview
             regex={info.details.matcher}
-            tabGroupName={info.name}
+            tabGroupName={info.details.groupName}
           />
         );
     }
