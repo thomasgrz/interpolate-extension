@@ -276,7 +276,7 @@ export const InterpolationCard = ({
                           />
                         </Box>
                       )}{" "}
-                      <Collapsible.Trigger>
+                      <Collapsible.Trigger asChild>
                         <Flex justify={"center"} gap="2">
                           <IconButton
                             data-open={isExpanded}

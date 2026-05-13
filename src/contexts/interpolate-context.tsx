@@ -324,7 +324,7 @@ export const InterpolateProvider = ({
       callbackRefs.current["handleTabActivated"] = true;
     // Update recentlyActive when a user switches tabs
     chrome.tabs?.onActivated?.addListener(async ({ tabId }) => {
-      const currentActivity = await InterpolateStorage.getTabActivity(tabId);
+      const currentActivity = await InterpolateStorage?.getTabActivity(tabId);
       setRecentlyActive(currentActivity ?? []);
     });
   }, []);

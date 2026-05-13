@@ -117,6 +117,7 @@ export const DashboardView = () => {
         height: "100vh",
         maxHeight: "100vh",
         width: "100vw",
+
         overflow: "hidden",
         transition: "all 0.2s ease-in-out",
         // @ts-expect-error TODO: fix types
@@ -208,23 +209,28 @@ export const DashboardView = () => {
               </ScrollArea>
             ) : (
               <>
-                <SegmentedControl.Root
-                  defaultValue={expandedSection}
-                  size="2"
-                  style={{ minHeight: "var(--space-6)" }}
-                  onValueChange={handleMenuClick}
-                >
-                  <SegmentedControl.Item value="all">All</SegmentedControl.Item>
-                  <SegmentedControl.Item value="enabled">
-                    Enabled
-                  </SegmentedControl.Item>
-                  <SegmentedControl.Item value="invoked">
-                    Invoked
-                  </SegmentedControl.Item>
-                  <SegmentedControl.Item value="groups">
-                    Groups
-                  </SegmentedControl.Item>
-                </SegmentedControl.Root>
+                <Flex justify={"center"}>
+                  <SegmentedControl.Root
+                    defaultValue={expandedSection}
+                    size="2"
+                    style={{ minHeight: "var(--space-6)", maxWidth: "1000px" }}
+                    onValueChange={handleMenuClick}
+                  >
+                    <SegmentedControl.Item value="all">
+                      All
+                    </SegmentedControl.Item>
+                    <SegmentedControl.Item value="enabled">
+                      Enabled
+                    </SegmentedControl.Item>
+                    <SegmentedControl.Item value="invoked">
+                      Invoked
+                    </SegmentedControl.Item>
+                    <SegmentedControl.Item value="groups">
+                      Groups
+                    </SegmentedControl.Item>
+                  </SegmentedControl.Root>
+                </Flex>
+
                 {expandedSection === "all" && (
                   <Flex direction={"column"} pt="2" mb="3" maxHeight={"95%"}>
                     {sortingByInvokedWithoutInvocations && (

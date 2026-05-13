@@ -118,7 +118,7 @@ export const InterpolateStorage = {
     try {
       const key = this.getTabActivityId(tabId);
       const activity = await chrome?.storage?.local.get([key]);
-      const tabActivity = activity[key].newValue ?? activity[key];
+      const tabActivity = activity[key]?.newValue ?? activity[key];
       const isInvalidValueType = !Array.isArray(tabActivity);
       if (isInvalidValueType) return [];
       return tabActivity ?? [];

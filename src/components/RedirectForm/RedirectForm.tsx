@@ -191,7 +191,6 @@ export const RedirectForm = ({
             Cancel
           </Button>
         )}
-        https://google.com
         <SubmitButton>
           {mode === "create" && "Create redirect"}
           {mode === "edit" && "Save redirect"}

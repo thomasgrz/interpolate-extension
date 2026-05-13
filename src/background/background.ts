@@ -13,6 +13,7 @@ try {
     InterpolateStorage.deleteDebuggerTab(tabId);
   });
 
+  // Handle extension enablement
   chrome.storage.local.onChanged.addListener(async (changes) => {
     const { isExtensionEnabled } = changes;
 
@@ -22,6 +23,7 @@ try {
     const isUserEnablingExtension = isExtensionEnabled.newValue === true;
     const isUserDisablingExtension = isExtensionEnabled.newValue === false;
 
+    console.log({ isUserDisablingExtension, isUserEnablingExtension });
     if (isUserEnablingExtension) {
       const tabs = await chrome.tabs.query({});
       const debuggableTabs = tabs.filter((tab) => tab.url?.startsWith("http"));
