@@ -52,13 +52,6 @@ export const InterpolationCard = ({
 
   useEffect(() => {
     chrome.storage?.local?.onChanged?.addListener?.((changes) => {
-      const isUnrelatedToGlobalPause = !changes?.allPaused;
-      if (isUnrelatedToGlobalPause) return;
-      const isAllPaused = changes?.allPaused?.newValue === true;
-      const isRuleEnabledByUser = !isAllPaused;
-      setIsEnabledByUser(isRuleEnabledByUser);
-    });
-    chrome.storage?.local?.onChanged?.addListener?.((changes) => {
       const recordKey = InterpolateStorage.getInterpolationRecordKey(id);
       const relatedChanges = changes?.[recordKey];
       const isUnrelatedToEnablement = !changes?.[recordKey];
@@ -283,7 +276,7 @@ export const InterpolationCard = ({
                           />
                         </Box>
                       )}{" "}
-                      <Collapsible.Trigger>
+                      <Collapsible.Trigger asChild>
                         <Flex justify={"center"} gap="2">
                           <IconButton
                             data-open={isExpanded}

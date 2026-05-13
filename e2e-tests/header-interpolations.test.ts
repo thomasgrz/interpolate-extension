@@ -2,6 +2,8 @@ import { expect, test } from "./fixtures/expect";
 import { createTestHeaderInterpolation } from "./fixtures/createTestHeaderInterpolation";
 
 test("should apply header rule", async ({ page, extensionId }) => {
+  await page.goto("https://example.com");
+
   // Create a header modification rule
   await createTestHeaderInterpolation({
     page,
@@ -13,7 +15,8 @@ test("should apply header rule", async ({ page, extensionId }) => {
 
   // Navigate to a test page
   await page.goto("https://httpbin.org/headers");
-
+  await page.reload();
+  await page.reload();
   // Verify that the header has been added
   expect(await page.locator("pre").innerText()).toContain(
     '"X-Test-Header": "ModRequest"',

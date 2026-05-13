@@ -1,5 +1,6 @@
 import { SortOption } from "#src/components/SortingOptions/SortingOptions.tsx";
 import { GroupConfigInStorage } from "#src/utils/factories/InterpolationGroup.ts";
+import { logger } from "#src/utils/logger.ts";
 import { sortInterpolations } from "#src/utils/sortInterpolations.ts";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
@@ -12,14 +13,6 @@ import {
   useState,
 } from "react";
 
-const getIsEveryRulePaused = async () => {
-  const rulesInStorage = await InterpolateStorage.getAllInterpolations();
-  const isEveryRulePaused = rulesInStorage?.every(
-    (rule) => rule?.enabledByUser === false,
-  );
-  return !!isEveryRulePaused;
-};
-
 export const InterpolateContext = createContext({
   interpolations: [] as AnyInterpolation[] | [] | undefined,
   add: async (_interps: AnyInterpolation[] | AnyInterpolation) => {},
@@ -28,7 +21,7 @@ export const InterpolateContext = createContext({
     groupId: string;
     onSuccess?: () => void;
   }) => {},
-  allPaused: undefined as boolean | undefined,
+  isExtensionEnabled: undefined as boolean | undefined,
   enabledInterpolations: [],
   filter: "",
   filteredInterpolations: [],
@@ -36,10 +29,10 @@ export const InterpolateContext = createContext({
   onChangeFilter: (_filter: string) => {},
   onChangeSort: (_sortOption: SortOption) => {},
   pause: (_id: string | number) => {},
-  pauseAll: () => {},
+  disableExtension: () => {},
   recentlyActive: [] as AnyInterpolation[] | [] | undefined,
   resume: (_id: string | number) => {},
-  resumeAll: () => {},
+  enableExtension: () => {},
   remove: (_id: string | number) => {},
   removeAll: () => {},
   refresh: () => {},
@@ -83,7 +76,7 @@ export const InterpolateProvider = ({
       ) ?? []
     );
   }, [sortOption, interpolations, filter]);
-  const [allPaused, setAllPaused] = useState<boolean>();
+  const [isExtensionEnabled, setIsExtensionEnabled] = useState<boolean>(false);
 
   const filteredInterpolations = useMemo(() => {
     const nofilter = !filter;
@@ -92,6 +85,7 @@ export const InterpolateProvider = ({
       interp.name?.includes(filter),
     );
   }, [sortedInterpolations, filter]);
+
   const onChangeSort = (option: SortOption) => {
     setSortOption(option);
     chrome?.storage?.local.set({ sortOption: option });
@@ -122,13 +116,12 @@ export const InterpolateProvider = ({
     return result;
   };
 
-  const pauseAll = async () => {
+  const disableExtension = async () => {
     try {
-      await InterpolateStorage.disableAll();
-      setAllPaused(true);
+      setIsExtensionEnabled(false);
+      await InterpolateStorage.disableExtension();
     } catch (e) {
-      // reset "resume" status if theres a failures
-      setAllPaused(false);
+      logger(e);
     }
   };
 
@@ -137,13 +130,12 @@ export const InterpolateProvider = ({
     return result;
   };
 
-  const resumeAll = async () => {
+  const enableExtension = async () => {
     try {
-      await InterpolateStorage.enableAll();
-      setAllPaused(false);
+      setIsExtensionEnabled(true);
+      await InterpolateStorage.enableExtension();
     } catch (e) {
-      // reset "pause" status if theres a failure
-      setAllPaused(true);
+      logger(e);
     }
   };
 
@@ -155,10 +147,11 @@ export const InterpolateProvider = ({
     InterpolateStorage.removeGroup(groupId);
   };
 
-  const getInitAllPaused = async () => {
-    const isEveryRulePaused = await getIsEveryRulePaused();
-    setAllPaused(isEveryRulePaused);
+  const getInitIsExtensionEnabled = async () => {
+    const isExtensionEnabled = await InterpolateStorage.getIsExtensionEnabled();
+    setIsExtensionEnabled(isExtensionEnabled);
   };
+
   const handleStorageChanges = async (changes: {
     updated: AnyInterpolation[];
     removed: AnyInterpolation[];
@@ -208,9 +201,6 @@ export const InterpolateProvider = ({
 
       return interpolationsAfterChanges;
     });
-
-    const isEveryRulePaused = await getIsEveryRulePaused();
-    setAllPaused(isEveryRulePaused);
   };
 
   const handleInitialization = async () => {
@@ -283,6 +273,18 @@ export const InterpolateProvider = ({
   }>({});
 
   useEffect(() => {
+    InterpolateStorage.subscribeToExtensionEnablement((value) => {
+      setIsExtensionEnabled(value);
+    });
+
+    (async () => {
+      const initialIsExtensionEnabled =
+        await InterpolateStorage.getIsExtensionEnabled();
+      setIsExtensionEnabled(initialIsExtensionEnabled);
+    })();
+  }, []);
+
+  useEffect(() => {
     InterpolateStorage.syncWithUserScripts();
   }, []);
 
@@ -322,7 +324,7 @@ export const InterpolateProvider = ({
       callbackRefs.current["handleTabActivated"] = true;
     // Update recentlyActive when a user switches tabs
     chrome.tabs?.onActivated?.addListener(async ({ tabId }) => {
-      const currentActivity = await InterpolateStorage.getTabActivity(tabId);
+      const currentActivity = await InterpolateStorage?.getTabActivity(tabId);
       setRecentlyActive(currentActivity ?? []);
     });
   }, []);
@@ -377,7 +379,7 @@ export const InterpolateProvider = ({
   }, []);
 
   useEffect(() => {
-    getInitAllPaused();
+    getInitIsExtensionEnabled();
   }, []);
 
   if (!initialValue) return "loading...";
@@ -388,7 +390,7 @@ export const InterpolateProvider = ({
         add,
         // @ts-expect-error TODO: FIXME: types
         addToGroup,
-        allPaused,
+        isExtensionEnabled,
         // @ts-expect-error TODO: FIXME types
         enabledInterpolations,
         filter,
@@ -396,13 +398,13 @@ export const InterpolateProvider = ({
         onChangeSort,
         onChangeFilter,
         pause,
-        pauseAll,
+        disableExtension,
         refresh,
         remove,
         removeGroup,
         removeAll,
         resume,
-        resumeAll,
+        enableExtension,
         showGroups,
         setShowGroups: handleShowGroups,
         groups,
