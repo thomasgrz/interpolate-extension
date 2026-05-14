@@ -92,6 +92,11 @@ try {
   });
 
   chrome.tabs.onCreated.addListener(async (tab) => {
+    const isExtensionEnabled = await InterpolateStorage.getIsExtensionEnabled();
+    const isDisabled = !isExtensionEnabled;
+
+    if (isDisabled) return;
+
     const currentTabManagementConfigs = await InterpolateStorage.getAllByTypes([
       "tab-manager",
     ]);
