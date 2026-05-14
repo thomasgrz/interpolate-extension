@@ -21,7 +21,7 @@ export const TabManagerPreview = ({
         </Flex>
         <Text size="1">
           <Flex align="center" gap="2">
-            in <Strong> {tabGroupName}</Strong> tab group
+            in <Strong>"{tabGroupName}"</Strong> tab group
           </Flex>
         </Text>
       </Flex>

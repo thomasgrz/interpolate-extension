@@ -72,7 +72,8 @@ try {
     }
   });
 
-  chrome.debugger.onDetach.addListener(async () => {
+  chrome.debugger.onDetach.addListener(async (_debuggee, reason) => {
+    if (reason === "target_closed") return;
     await InterpolateStorage.disableExtension();
   });
 
