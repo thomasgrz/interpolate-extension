@@ -19,7 +19,7 @@ export const sortInterpolations = (
       return interpolations?.sort?.((a, b) => {
         if (a.createdAt === b.createdAt)
           return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
-        return a.createdAt < b.createdAt ? 1 : -1;
+        return a.createdAt < b.createdAt ? -1 : 1;
       });
     case SortOption.DISABLED:
       return interpolations?.sort?.((a, b) => {
@@ -59,7 +59,7 @@ export const sortInterpolations = (
       return interpolations?.sort?.((a, b) => {
         if (a.createdAt === b.createdAt)
           return a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1;
-        return a.createdAt < b.createdAt ? -1 : 1;
+        return a.createdAt < b.createdAt ? 1 : -1;
       });
   }
 };

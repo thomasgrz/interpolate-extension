@@ -10,6 +10,7 @@ import {
   ScrollArea,
   Separator,
   SegmentedControl,
+  Box,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
@@ -40,6 +41,7 @@ type ExpandedSection = "all" | "enabled" | "invoked" | "groups" | "none";
 export const DashboardView = () => {
   const {
     enabledInterpolations,
+    isExtensionEnabled,
     onChangeFilter,
     onChangeSort,
     filter,
@@ -52,6 +54,8 @@ export const DashboardView = () => {
   const onSuccessfulGroupCreation = () => {
     setShowGroups(true);
   };
+  const isExtensionDisabled = !isExtensionEnabled;
+
   const [themeColor, setThemeColor] = useState<ThemeColor>("yellow");
   const [themeChoiceBackgroundColor, setThemeChoiceBackgroundColor] = useState<
     | "--mint-2"
@@ -148,8 +152,6 @@ export const DashboardView = () => {
         >
           <Card m="2" className={styles.TopArea}>
             <Flex direction="column" flexGrow="1" height="stretch" gap="3">
-              <ExtensionEnablmentNotice />
-
               <ControlCenter onCreate={onSuccessfulGroupCreation} />
               <TextInput
                 size="1"
@@ -193,6 +195,12 @@ export const DashboardView = () => {
               </Flex>
             </Flex>
           </Card>
+          {isExtensionDisabled && (
+            <Box pb="2" width="90%">
+              <ExtensionEnablmentNotice />
+            </Box>
+          )}
+
           <Separator size="4" />
           <Flex
             width={"100%"}

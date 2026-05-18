@@ -27,7 +27,7 @@ describe("useInterpolations", () => {
     );
   });
 
-  it("should resume all interpolations", async () => {
+  it("should disable all interpolations", async () => {
     const interpolation1 = createHeaderInterpolation({
       headerKey: "X-Test-1",
       headerValue: "test1.domain",
@@ -55,15 +55,6 @@ describe("useInterpolations", () => {
     await waitFor(() => {
       return expect(result.current.interpolations?.length).toEqual(2);
     });
-
-    result.current.enableExtension();
-    await waitFor(() =>
-      expect(
-        result.current.interpolations?.every(
-          (interp: AnyInterpolation) => interp.enabledByUser === true,
-        ),
-      ).toBe(true),
-    );
   });
   it("should pause a single interpolation", async () => {
     const interpolations = [

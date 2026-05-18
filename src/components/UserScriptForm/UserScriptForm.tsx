@@ -133,6 +133,7 @@ export const UserScriptForm = ({
             name="name"
             children={(field) => (
               <TextInput
+                disabled={showWarning}
                 id="name-field"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
@@ -155,6 +156,7 @@ export const UserScriptForm = ({
             name="script"
             children={(field) => (
               <TextAreaInput
+                disabled={showWarning}
                 resize="both"
                 label="Script:"
                 value={field.state.value}

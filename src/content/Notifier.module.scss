@@ -16,6 +16,8 @@
 
 .GlobalInterpolationOptionsContainer {
   position: fixed;
+  padding: var(--space-2);
+  box-shadow: var(--shadow-5);
   left: 0;
   bottom: 0;
 }
