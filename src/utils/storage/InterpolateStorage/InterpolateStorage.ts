@@ -42,7 +42,8 @@ export const InterpolateStorage = {
     return storageRecords["isExtensionEnabled"];
   },
   async disableExtension() {
-    chrome.storage.local.set({ isExtensionEnabled: false });
+    await chrome.storage.local.set({ isExtensionEnabled: false });
+    await this.disableAll();
   },
   async enableExtension() {
     chrome.storage.local.set({ isExtensionEnabled: true });
@@ -482,6 +483,7 @@ export const InterpolateStorage = {
     } catch (e) {
       this.logError(caller, e as string);
     }
+    await this.enableExtension();
   },
   async subscribeToRecentlyInvoked(
     cb: (arg: { recentlyInvoked: AnyInterpolation[] }) => Promise<void>,

@@ -6,6 +6,7 @@ import styles from "./Notifier.module.scss";
 import { Theme } from "@radix-ui/themes";
 import { ToastNotificationsContainer } from "#src/components/ToastNotifications/ToastNotificationsContainer.component.tsx";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
+import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
 
 const container = document.createElement("div");
 container.id = "crxjs-app";
@@ -22,9 +23,11 @@ await chrome?.storage?.local
 
     createRoot(container).render(
       <Theme radius="full">
-        <ToastNotificationsContainer>
-          <Notifier />
-        </ToastNotificationsContainer>
+        <InterpolateProvider>
+          <ToastNotificationsContainer>
+            <Notifier />
+          </ToastNotificationsContainer>
+        </InterpolateProvider>
       </Theme>,
     );
   });

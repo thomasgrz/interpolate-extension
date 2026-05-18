@@ -47,7 +47,6 @@ export const ControlCenter = ({
         flexGrow={"1"}
         data-testid={"dashboard"}
         align={"end"}
-        pb="3"
         className={styles.FormContainer}
       >
         <Flex

@@ -118,7 +118,6 @@ export const InterpolateProvider = ({
 
   const disableExtension = async () => {
     try {
-      setIsExtensionEnabled(false);
       await InterpolateStorage.disableExtension();
     } catch (e) {
       logger(e);
@@ -132,7 +131,6 @@ export const InterpolateProvider = ({
 
   const enableExtension = async () => {
     try {
-      setIsExtensionEnabled(true);
       await InterpolateStorage.enableExtension();
     } catch (e) {
       logger(e);

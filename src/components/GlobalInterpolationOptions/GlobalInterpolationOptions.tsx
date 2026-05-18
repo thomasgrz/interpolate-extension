@@ -3,7 +3,7 @@ import styles from "./GlobalInterpolationOptions.module.scss";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 import { ResumeIcon, StopIcon } from "@radix-ui/react-icons";
 
-export const GlobalInterpolationOptions = ({}: {}) => {
+export const GlobalInterpolationOptions = () => {
   const { isExtensionEnabled, disableExtension, enableExtension } =
     useInterpolationsContext();
 

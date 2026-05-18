@@ -56,8 +56,8 @@ export const continueRequestWithInterpolations = async ({
     interpolations?.filter?.((interp) => interp.type === "headers") ?? [];
 
   const requestHeadersOverrides = headerInterpolations.map((interp) => ({
-    name: interp?.details?.headerKey,
-    value: interp?.details?.headerValue,
+    name: interp?.details?.headerKey?.replaceAll?.("\n", ""),
+    value: interp?.details?.headerValue?.replaceAll?.("\n", ""),
   }));
 
   const apiMock = interpolations?.find((interp) => interp.type === "mockAPI");

@@ -2,13 +2,14 @@ import { InterpolationCard } from "@/components/InterpolationCard/InterpolationC
 import styles from "./Notifier.module.scss";
 import { Card, Flex, Strong, Text } from "@radix-ui/themes";
 import { useToastCreationContext } from "#src/hooks/useToastCreationContext/useToastCreationContext.ts";
-import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { GlobalInterpolationOptions } from "#src/components/GlobalInterpolationOptions/GlobalInterpolationOptions.tsx";
 import { useEffect, useRef, useState } from "react";
 import { InterpolateStorage } from "#src/utils/storage/InterpolateStorage/InterpolateStorage.ts";
+import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
 
 export const Notifier = () => {
+  const { isExtensionEnabled } = useInterpolationsContext();
   const createToast = useToastCreationContext();
   const isInitialized = useRef<boolean>(null);
   const [isBrowserUIEnabled, setIsBrowserUIEnabled] = useState(true);
@@ -77,20 +78,22 @@ export const Notifier = () => {
   }, []);
 
   return isBrowserUIEnabled ? (
-    <InterpolateProvider>
-      <Card
-        data-radius="full"
-        variant="surface"
-        className={styles.GlobalInterpolationOptionsContainer}
-        m="3"
-      >
+    <Card
+      style={{ backgroundColor: isExtensionEnabled ? "unset" : "red" }}
+      variant="surface"
+      className={styles.GlobalInterpolationOptionsContainer}
+      m="3"
+    >
+      <Flex direction={"column"}>
         <Flex gap="2" align="center" justify="center">
-          <Text size="2">
-            <Strong>interpolate</Strong>
+          <Text size="1">
+            <Strong>
+              Interpolate is {isExtensionEnabled ? "enabled" : "disabled"}
+            </Strong>
           </Text>
           <GlobalInterpolationOptions />
         </Flex>
-      </Card>
-    </InterpolateProvider>
+      </Flex>
+    </Card>
   ) : null;
 };
