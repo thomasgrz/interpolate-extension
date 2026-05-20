@@ -2,7 +2,6 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
 import { createHeaderInterpolation } from "@/utils/factories/createHeaderInterpolation/createHeaderInterpolation";
-import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { useInterpolationsContext } from "./useInterpolationsContext";
 import { InterpolateProvider } from "#src/contexts/interpolate-context.tsx";
 
