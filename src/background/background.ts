@@ -114,8 +114,11 @@ try {
       return isMatch;
     });
 
+    const isMissingGroupId = !matchingGroup?.details?.groupId;
+    if (isMissingGroupId) return;
+
     chrome.tabs.group({
-      groupId: Number(matchingGroup?.details.groupId),
+      groupId: parseInt(matchingGroup?.details.groupId, 10),
       tabIds: tab?.id,
     });
 
