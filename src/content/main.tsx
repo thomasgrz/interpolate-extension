@@ -12,22 +12,35 @@ const container = document.createElement("div");
 container.id = "crxjs-app";
 container.className = styles.Root;
 document.body.prepend(container);
-await chrome?.storage?.local
-  .get(InterpolateStorage.BROWSER_UI_TOGGLE_KEY)
-  .then(async (value) => {
-    if (value?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY] !== true) return;
 
-    // conditionally importing the radix ui styles
-    // because they seem to conflict with websites using radix ui styles..
-    // will figure out a true fix later, but for now the ui can be toggled off to bypass the issue
+const interpolateBrowserUI = async () => {
+  await chrome?.storage?.local
+    .get(InterpolateStorage.BROWSER_UI_TOGGLE_KEY)
+    .then(async (value) => {
+      if (value?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY] !== true) return;
 
-    createRoot(container).render(
-      <Theme radius="full">
-        <InterpolateProvider>
-          <ToastNotificationsContainer>
-            <Notifier />
-          </ToastNotificationsContainer>
-        </InterpolateProvider>
-      </Theme>,
-    );
-  });
+      // conditionally importing the radix ui styles
+      // because they seem to conflict with websites using radix ui styles..
+      // will figure out a true fix later, but for now the ui can be toggled off to bypass the issue
+
+      createRoot(container).render(
+        <Theme radius="full">
+          <InterpolateProvider>
+            <ToastNotificationsContainer>
+              <Notifier />
+            </ToastNotificationsContainer>
+          </InterpolateProvider>
+        </Theme>,
+      );
+    });
+};
+
+interpolateBrowserUI();
+
+chrome.storage.onChanged.addListener((changes) => {
+  const isEnablingBrowserUI = changes?.displayBrowserUI?.newValue === true;
+
+  if (isEnablingBrowserUI) {
+    interpolateBrowserUI();
+  }
+});

@@ -11,13 +11,18 @@ import {
   Separator,
   SegmentedControl,
   Box,
+  AlertDialog,
 } from "@radix-ui/themes";
 import { ErrorBoundary } from "react-error-boundary";
 import styles from "./DashboardView.module.scss";
 import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView.tsx";
 import { ControlCenter } from "../ControlCenter/ControlCenter.tsx";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
-import { CheckCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import {
+  CheckCircledIcon,
+  MagnifyingGlassIcon,
+  ResumeIcon,
+} from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { TextInput } from "../TextInput/TextInput.tsx";
 import {
@@ -41,6 +46,7 @@ type ExpandedSection = "all" | "enabled" | "invoked" | "groups" | "none";
 export const DashboardView = () => {
   const {
     enabledInterpolations,
+    enableExtension,
     isExtensionEnabled,
     onChangeFilter,
     onChangeSort,
@@ -50,12 +56,12 @@ export const DashboardView = () => {
     sortOption,
     setShowGroups,
   } = useInterpolationsContext();
+
   const [error, setError] = useState<null | string>(null);
   const onSuccessfulGroupCreation = () => {
     setShowGroups(true);
   };
   const isExtensionDisabled = !isExtensionEnabled;
-
   const [themeColor, setThemeColor] = useState<ThemeColor>("yellow");
   const [themeChoiceBackgroundColor, setThemeChoiceBackgroundColor] = useState<
     | "--mint-2"
@@ -150,6 +156,31 @@ export const DashboardView = () => {
           height="100%"
           maxHeight={"100%"}
         >
+          <AlertDialog.Root open={isExtensionDisabled}>
+            <AlertDialog.Content align="center">
+              <Flex justify={"center"}>
+                <AlertDialog.Title size={"3"}>
+                  <Text>You've disabled Interpolate</Text>
+                </AlertDialog.Title>
+              </Flex>
+
+              <AlertDialog.Description>
+                <Box>
+                  <Text size="1">
+                    No interpolations will be applied until extension is
+                    re-enabled
+                  </Text>
+                </Box>
+              </AlertDialog.Description>
+              <Flex pt="2" justify={"end"} align={"center"}>
+                <AlertDialog.Action>
+                  <Button onClick={enableExtension} size={"2"} color={"grass"}>
+                    Enable <ResumeIcon />
+                  </Button>
+                </AlertDialog.Action>
+              </Flex>
+            </AlertDialog.Content>
+          </AlertDialog.Root>
           <Card m="2" className={styles.TopArea}>
             <Flex direction="column" flexGrow="1" height="stretch" gap="3">
               <ControlCenter onCreate={onSuccessfulGroupCreation} />
