@@ -23,7 +23,6 @@ try {
     const isUserEnablingExtension = isExtensionEnabled.newValue === true;
     const isUserDisablingExtension = isExtensionEnabled.newValue === false;
 
-    console.log({ isUserDisablingExtension, isUserEnablingExtension });
     if (isUserEnablingExtension) {
       const tabs = await chrome.tabs.query({});
       const debuggableTabs = tabs.filter((tab) => tab.url?.startsWith("http"));

@@ -15,15 +15,17 @@ export const handleDebugTabUpdates = async (
   const isTabMissing = !tab.id;
   if (isTabMissing) return;
 
-  const debuggerTabs = await chrome.debugger.getTargets();
-  const debuggerTargetInfo = debuggerTabs.find(
-    (target) => target.tabId === tab.id,
-  );
-
-  const isDebuggerAttached = debuggerTargetInfo?.attached;
-
-  if (isDebuggerAttached) return;
-  // Attach to the tab's debugger session.
+  // TODO: re-enable guard that asserts we don't attach
+  // to tab if it already has a debugger attached ...
+  // right now it doesnt really tell us enough info to
+  // discern between if OUR extension (interpolate) is attached
+  // of if some other extension/worker is attached...
+  // this breaks CI and could cause issues in production env
+  // const debuggerTabs = await chrome.debugger.getTargets();
+  // const debuggerTargetInfo = debuggerTabs.find(
+  //   (target) => target.tabId === tab.id,
+  // );
+  // const isDebuggerAttached = debuggerTargetInfo?.attached;
 
   chrome.debugger.attach({ tabId: tab.id }, "1.3", () => {
     InterpolateStorage.addTabDebugger(tab.id as number);
