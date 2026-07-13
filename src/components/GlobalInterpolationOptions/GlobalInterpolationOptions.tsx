@@ -6,7 +6,7 @@ import { ResumeIcon, StopIcon } from "@radix-ui/react-icons";
 export const GlobalInterpolationOptions = ({
   onChange,
 }: {
-  onChange: (_value: boolean) => void;
+  onChange?: (_value: boolean) => void;
 }) => {
   const { isExtensionEnabled, disableExtension, enableExtension } =
     useInterpolationsContext();
@@ -15,7 +15,7 @@ export const GlobalInterpolationOptions = ({
 
   const handleDisableExtension = () => {
     disableExtension();
-    onChange(false);
+    onChange?.(false);
   };
   return isExtensionDisabled ? (
     <Tooltip content="Enable interpolate extension in browser">
