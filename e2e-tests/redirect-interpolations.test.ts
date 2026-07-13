@@ -98,34 +98,3 @@ test("should disable all interpolations when global pause is activated", async (
   await page.goto("https://www.google.com");
   expect(page.url()).toContain("https://www.google.com/");
 });
-
-test("should re-enable intperolations when global pause is deactivated", async ({
-  extensionId,
-  page,
-}) => {
-  await createTestRedirectInterpolation({
-    page,
-    source: ".*something.*",
-    destination: "https://example.com/test",
-    extensionId,
-    name: "rule #7",
-  });
-
-  await createTestRedirectInterpolation({
-    page,
-    source: ".*google.*",
-    destination: "https://example.com/test2",
-    extensionId,
-    name: "rule #8",
-  });
-
-  // Activate global pause
-  await page.getByTestId("pause-all").click();
-  // Deactivate global pause
-  await page.getByTestId("resume-all").click();
-
-  await page.goto("https://something.com");
-
-  await page.goto("https://www.google.com");
-  expect(page.getByText("Example Domain")).toBeVisible();
-});

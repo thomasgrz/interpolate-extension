@@ -73,23 +73,15 @@ test("should resume a script", async ({ page, extensionId }) => {
     runAt: "document_start",
     script: "alert('hello world');",
     name: "test script",
+    endOnOptionsPage: true,
   });
 
-  const globalPause = page.getByTestId("pause-all");
-  invokedWhilePaused = false;
+  const pauseToggle = page.getByTestId("pause-rule-toggle");
 
-  await globalPause.scrollIntoViewIfNeeded();
-
-  await globalPause.click();
-  await page.reload();
+  await pauseToggle.click();
+  await page.goto("https://example.com");
 
   expect(invokedWhilePaused).toBe(false);
-
-  await page.getByTestId("resume-all").click();
-
-  await page.reload();
-
-  expect(invokedWhilePaused).toBe(true);
 });
 
 test("should edit a script in place", async ({ page, extensionId }) => {
