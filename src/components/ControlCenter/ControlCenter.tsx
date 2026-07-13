@@ -57,7 +57,7 @@ export const ControlCenter = ({
           flexGrow={"grow"}
         >
           <Flex gap="3">
-            <GlobalInterpolationOptions />
+            <GlobalInterpolationOptions onChange={handleBrowserUIToggle} />
 
             <BrowserUIToggle
               onChange={handleBrowserUIToggle}
