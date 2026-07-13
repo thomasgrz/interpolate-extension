@@ -1,13 +1,5 @@
-> [!WARNING]
-> Currently there is a bug where user created scripts are broken
-> and will not execute in the browser as expected
->
-> Please follow the issue at <https://github.com/thomasgrz/interpolate-extension/issues/109>
 
-# Interpolate web extension [beta] <span><img src="./docs/artifacts/icon-128.png" width="25" height="25" /></span>
-
-> [!IMPORTANT]
-> this extension is in beta and is subject to breaking changes
+# Interpolate web extension <span><img src="./docs/artifacts/icon-128.png" width="25" height="25" /></span>
 
 [Currently available in Chrome Web Store](https://chromewebstore.google.com/detail/interpolatebeta/hjcffgbkfajlmfpmjijiafmlbeofhbpe)
 
