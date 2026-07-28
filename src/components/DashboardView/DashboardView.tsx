@@ -118,9 +118,6 @@ export const DashboardView = () => {
     });
   }, []);
 
-  const sortingByInvokedWithoutInvocations =
-    [SortOption.NOT_INVOKED, SortOption.INVOKED].includes(sortOption) &&
-    !recentlyActive?.length;
   return (
     <Theme
       style={{
@@ -272,14 +269,6 @@ export const DashboardView = () => {
 
                 {expandedSection === "all" && (
                   <Flex direction={"column"} pt="2" mb="3" maxHeight={"95%"}>
-                    {sortingByInvokedWithoutInvocations && (
-                      <Callout.Root size="1" variant="surface">
-                        <Callout.Text size="1">
-                          No interpolations have been invoked since last page
-                          load. Sorting alphabetically by default.
-                        </Callout.Text>
-                      </Callout.Root>
-                    )}
                     {!interpolations?.length && (
                       <Callout.Root size="1" variant="surface">
                         <Callout.Text size="1">
