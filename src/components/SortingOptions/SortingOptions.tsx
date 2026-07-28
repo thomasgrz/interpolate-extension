@@ -9,6 +9,7 @@ export enum SortOption {
   DISABLED = "disabled",
   INVOKED = "invoked",
   NOT_INVOKED = "not-invoked",
+  TYPE = "type",
 }
 
 export interface SortingOptionsProps {
@@ -26,6 +27,7 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
     [SortOption.DISABLED]: "Disabled first",
     [SortOption.INVOKED]: "Recently invoked first",
     [SortOption.NOT_INVOKED]: "Recently invoked last",
+    [SortOption.TYPE]: "By type",
   };
   return (
     <Flex>
@@ -76,6 +78,9 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
               <Text size="1">{options[SortOption.NOT_INVOKED]}</Text>
             </Select.Item>
           </Select.Group>
+          <Select.Item value={SortOption.TYPE}>
+            <Text size="1">{options[SortOption.TYPE]}</Text>
+          </Select.Item>
         </Select.Content>
       </Select.Root>
     </Flex>
