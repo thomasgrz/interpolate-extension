@@ -59,7 +59,7 @@ export const DashboardView = () => {
     setShowGroups(true);
   };
   const isExtensionDisabled = !isExtensionEnabled;
-  const [themeColor, setThemeColor] = useState<ThemeColor>("yellow");
+  const [themeColor, setThemeColor] = useState<ThemeColor>("mint");
   const [themeChoiceBackgroundColor, setThemeChoiceBackgroundColor] = useState<
     | "--mint-2"
     | "--grass-2"
@@ -68,7 +68,7 @@ export const DashboardView = () => {
     | "--yellow-2"
     | "--ruby-2"
     | "--slate-2"
-  >("--yellow-2");
+  >("--mint-2");
   const [themeChoiceActionColor, setThemeChoiceActionColor] = useState<
     | "--mint-5"
     | "--grass-5"
@@ -77,7 +77,7 @@ export const DashboardView = () => {
     | "--yellow-5"
     | "--ruby-5"
     | "--slate-5"
-  >("--yellow-5");
+  >("--mint-5");
   const [themeChoiceHighContrast, setThemeChoiceHighContrast] = useState<
     | "--mint-8"
     | "--grass-8"
