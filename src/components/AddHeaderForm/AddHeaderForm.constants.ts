@@ -8,7 +8,7 @@ export const AddHeaderFormErrors = {
 
 export enum AddHeaderFormPlaceholder {
   HEADER_KEY = "x-test-header",
-  HEADER_VALUE = "foobar",
+  HEADER_VALUE = 'String like "foobar" or JSON like { "foo": "bar" }',
   INTERPOLATION_NAME = "My Test Header",
 }
 

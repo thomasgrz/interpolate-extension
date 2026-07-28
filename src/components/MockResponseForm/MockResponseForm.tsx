@@ -200,6 +200,7 @@ export const MockResponseForm = ({
                   </Flex>
                   {responseType === "html" && (
                     <TextAreaInput
+                      resize="vertical"
                       placeholder={MockResponseFormPlaceholder.BODY_HTML}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
@@ -208,6 +209,7 @@ export const MockResponseForm = ({
                   )}
                   {responseType === "json" && (
                     <TextAreaInput
+                      resize="vertical"
                       placeholder={MockResponseFormPlaceholder.BODY_JSON}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}

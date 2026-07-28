@@ -206,12 +206,22 @@ export const TabManagementForm = ({
             children={(field) => {
               return (
                 <Flex p="1" width="stretch" flexGrow="grow" direction="column">
+                  {!tabGroups?.length && (
+                    <Callout.Root size="1" mt="1">
+                      <Callout.Text size="1">
+                        You must have at least 1 tab group created in Chrome to
+                        manage tabs.
+                      </Callout.Text>
+                    </Callout.Root>
+                  )}
+
                   <Label.Root>
                     <Strong>
                       <Text size="2">group</Text>
                     </Strong>
                   </Label.Root>
                   <Select.Root
+                    disabled={!tabGroups?.length}
                     value={`${field.state.value ?? String(tabGroups[0]?.id)}`}
                     defaultValue={String(tabGroups[0]?.id)}
                     onValueChange={(value) => {
@@ -228,9 +238,13 @@ export const TabManagementForm = ({
                           getGroupById(field.state.value as string | undefined)
                             ?.title
                         }{" "}
-                        <TabGroupColor
-                          color={getGroupById(field?.state?.value)?.color ?? ""}
-                        />
+                        {!!tabGroups.length && (
+                          <TabGroupColor
+                            color={
+                              getGroupById(field?.state?.value)?.color ?? ""
+                            }
+                          />
+                        )}
                       </Flex>
                     </Select.Trigger>
                     <Select.Content>
