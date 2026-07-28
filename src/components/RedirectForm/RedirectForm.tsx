@@ -153,6 +153,7 @@ export const RedirectForm = ({
               name="matcher"
               children={(field) => (
                 <TextAreaInput
+                  resize="vertical"
                   label={RedirectFormLabel.REDIRECT_FROM}
                   placeholder={RedirectFormPlaceholder.REDIRECT_FROM}
                   onChange={(e) => field.handleChange(e.target.value)}
@@ -173,6 +174,7 @@ export const RedirectForm = ({
               name="destination"
               children={(field) => (
                 <TextAreaInput
+                  resize="vertical"
                   label={RedirectFormLabel.REDIRECT_TO}
                   placeholder={RedirectFormPlaceholder.REDIRECT_TO}
                   onChange={(e) => field.handleChange(e.target.value)}
