@@ -25,10 +25,7 @@ import {
 } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { TextInput } from "../TextInput/TextInput.tsx";
-import {
-  SortingOptions,
-  SortOption,
-} from "../SortingOptions/SortingOptions.tsx";
+import { SortingOptions } from "../SortingOptions/SortingOptions.tsx";
 import { FilteredSortedList } from "../FilteredSortedList/FilteredSortedList.tsx";
 import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
 import { ExtensionEnablmentNotice } from "../ExtensionEnablementNotice/ExtensionEnablementNotice.tsx";
