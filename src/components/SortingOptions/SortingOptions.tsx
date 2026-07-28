@@ -5,10 +5,6 @@ export enum SortOption {
   Z_TO_A = "ztoa",
   OLDEST = "oldest",
   NEWEST = "newest",
-  ENABLED = "enabled",
-  DISABLED = "disabled",
-  INVOKED = "invoked",
-  NOT_INVOKED = "not-invoked",
   TYPE = "type",
 }
 
@@ -19,15 +15,11 @@ export interface SortingOptionsProps {
 
 export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
   const options = {
+    [SortOption.TYPE]: "By type",
     [SortOption.A_TO_Z]: "A to Z",
     [SortOption.Z_TO_A]: "Z to A",
     [SortOption.NEWEST]: "Newest first",
     [SortOption.OLDEST]: "Oldest first",
-    [SortOption.ENABLED]: "Enabled first",
-    [SortOption.DISABLED]: "Disabled first",
-    [SortOption.INVOKED]: "Recently invoked first",
-    [SortOption.NOT_INVOKED]: "Recently invoked last",
-    [SortOption.TYPE]: "By type",
   };
   return (
     <Flex>
@@ -43,6 +35,10 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
           </Flex>
         </Select.Trigger>
         <Select.Content>
+          <Select.Item value={SortOption.TYPE}>
+            <Text size="1">{options[SortOption.TYPE]}</Text>
+          </Select.Item>
+          <Select.Separator />
           <Select.Group>
             <Select.Item value={SortOption.NEWEST}>
               <Text size="1">{options[SortOption.NEWEST]}</Text>
@@ -60,27 +56,6 @@ export const SortingOptions = ({ onChange, value }: SortingOptionsProps) => {
               <Text size="1">{options[SortOption.Z_TO_A]}</Text>
             </Select.Item>
           </Select.Group>
-          <Select.Separator />
-          <Select.Group>
-            <Select.Item value={SortOption.ENABLED}>
-              <Text size="1">{options[SortOption.ENABLED]}</Text>
-            </Select.Item>
-            <Select.Item value={SortOption.DISABLED}>
-              <Text size="1">{options[SortOption.DISABLED]}</Text>
-            </Select.Item>
-          </Select.Group>
-          <Select.Separator />
-          <Select.Group>
-            <Select.Item value={SortOption.INVOKED}>
-              <Text size="1">{options[SortOption.INVOKED]}</Text>
-            </Select.Item>
-            <Select.Item value={SortOption.NOT_INVOKED}>
-              <Text size="1">{options[SortOption.NOT_INVOKED]}</Text>
-            </Select.Item>
-          </Select.Group>
-          <Select.Item value={SortOption.TYPE}>
-            <Text size="1">{options[SortOption.TYPE]}</Text>
-          </Select.Item>
         </Select.Content>
       </Select.Root>
     </Flex>
