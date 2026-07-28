@@ -7,6 +7,8 @@ export const sortInterpolations = (
   sortOption: SortOption,
 ) => {
   switch (sortOption) {
+    case SortOption.TYPE:
+      return interpolations?.sort?.((a, b) => (a?.type < b?.type ? -1 : 1));
     case SortOption.A_TO_Z:
       return interpolations?.sort?.((a, b) =>
         a?.name?.toLowerCase() < b?.name?.toLowerCase() ? -1 : 1,
