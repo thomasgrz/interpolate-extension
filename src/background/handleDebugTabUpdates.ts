@@ -34,5 +34,11 @@ export const handleDebugTabUpdates = async (
         console.error(chrome.runtime.lastError);
       }
     });
+    chrome.debugger.sendCommand({ tabId: tab.id }, "Target.setAutoAttach", {
+      autoAttach: true,
+      waitForDebuggerOnStart: false,
+      flatten: true,
+      filter: [{ type: "iframe", exclude: false }],
+    });
   });
 };
