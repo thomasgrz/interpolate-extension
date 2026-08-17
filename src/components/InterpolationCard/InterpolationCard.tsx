@@ -236,7 +236,7 @@ export const InterpolationCard = ({
             data-testid={`${type}-preview-${info?.name}`}
             className={styles.InterpolationCard}
             variant="surface"
-            style={{ width: "stretch" }}
+            style={{ width: "stretch", padding: "0" }}
           >
             {error && (
               <Callout.Root color="red">
