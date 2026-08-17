@@ -50,8 +50,8 @@ export const handleInstall = async () => {
       userScripts: [],
     });
 
-    const addedHeaders = headers.filter((rule) => rule.isActive);
-    const removedHeaders = headers.filter((rule) => !rule.isActive);
+    const addedHeaders = headers.filter((rule) => rule.enabledByUser);
+    const removedHeaders = headers.filter((rule) => !rule.enabledByUser);
 
     addedHeaders.map((rule) => {
       try {
