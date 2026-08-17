@@ -17,16 +17,20 @@ export const handleInstall = async () => {
   }
   const reducer = (
     acc: {
-      dynamicRules: (RedirectInterpolation | HeaderInterpolation)[];
+      redirects: RedirectInterpolation[];
+      headers: HeaderInterpolation[];
       userScripts: ScriptInterpolation[];
     },
     curr: AnyInterpolation,
   ) => {
     const { type } = curr;
+
     switch (type) {
       case "headers":
+        acc.headers.push(curr);
+        break;
       case "redirect":
-        acc.dynamicRules.push(curr);
+        acc.redirects.push(curr);
         break;
       case "script":
         acc.userScripts.push(curr);
@@ -40,9 +44,52 @@ export const handleInstall = async () => {
   const handleInterpolationUpdates = async (
     interpolations: AnyInterpolation[],
   ) => {
-    const { userScripts } = interpolations.reduce(reducer, {
-      dynamicRules: [],
+    const { headers, userScripts } = interpolations.reduce(reducer, {
+      headers: [],
+      redirects: [],
       userScripts: [],
+    });
+
+    const addedHeaders = headers.filter((rule) => rule.isActive);
+    const removedHeaders = headers.filter((rule) => !rule.isActive);
+
+    addedHeaders.map((rule) => {
+      try {
+        chrome.declarativeNetRequest.updateDynamicRules({
+          addRules: [
+            {
+              action: {
+                type: "modifyHeaders",
+                requestHeaders: [
+                  {
+                    header: rule.details.headerKey,
+                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    value: rule.details.headerValue,
+                  },
+                ],
+              },
+              condition: {
+                regexFilter: ".*",
+                resourceTypes: ["main_frame", "sub_frame", "script"],
+              } as chrome.declarativeNetRequest.RuleCondition,
+              id: Number(rule.details.id),
+              priority: 1,
+            } as chrome.declarativeNetRequest.Rule,
+          ],
+        });
+      } catch (e) {
+        logger({ error: e });
+      }
+    });
+
+    removedHeaders.map((rule) => {
+      try {
+        chrome.declarativeNetRequest.updateDynamicRules({
+          removeRuleIds: [Number(rule.details.id)],
+        });
+      } catch (e) {
+        logger({ error: e });
+      }
     });
 
     // Update user scripts
@@ -52,27 +99,76 @@ export const handleInstall = async () => {
   const handleInterpolationRemovals = async (
     interpolations: AnyInterpolation[],
   ) => {
-    const { userScripts } = interpolations.reduce(reducer, {
-      dynamicRules: [],
+    const { headers, userScripts } = interpolations.reduce(reducer, {
+      headers: [],
+      redirects: [],
       userScripts: [],
     });
+
     // Remove user scripts
     const userScriptIdsToRemove = userScripts.map(
       (script) => script.details.id,
     );
-    await chrome.userScripts?.unregister({ ids: userScriptIdsToRemove });
+    try {
+      await chrome.userScripts?.unregister({ ids: userScriptIdsToRemove });
+    } catch (e) {
+      logger({ error: e });
+    }
+
+    headers.map((rule) => {
+      try {
+        chrome.declarativeNetRequest.updateDynamicRules({
+          removeRuleIds: [Number(rule.details.id)],
+        });
+      } catch (e) {
+        logger({ error: e });
+      }
+    });
 
     // Remove user scripts from browser
     await BrowserRules.removeUserScriptsById(userScriptIdsToRemove);
   };
+
   const handleInterpolationCreations = async (
     interpolations: AnyInterpolation[],
   ) => {
-    const { userScripts } = interpolations.reduce(reducer, {
-      dynamicRules: [],
+    const { userScripts, headers } = interpolations.reduce(reducer, {
+      headers: [],
+      redirects: [],
       userScripts: [],
     });
+
+    headers.map((rule) => {
+      try {
+        chrome.declarativeNetRequest.updateDynamicRules({
+          addRules: [
+            {
+              action: {
+                type: "modifyHeaders",
+                requestHeaders: [
+                  {
+                    header: rule.details.headerKey,
+                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    value: rule.details.headerValue,
+                  },
+                ],
+              },
+              condition: {
+                regexFilter: ".*",
+                resourceTypes: ["main_frame", "sub_frame", "script"],
+              } as chrome.declarativeNetRequest.RuleCondition,
+              id: Number(rule.details.id),
+              priority: 1,
+            } as chrome.declarativeNetRequest.Rule,
+          ],
+        });
+      } catch (e) {
+        logger({ error: e });
+      }
+    });
+
     const userScriptConfigs = userScripts.map((script) => script.details);
+
     // Add user scripts
     await BrowserRules.addUserScripts(userScriptConfigs);
   };

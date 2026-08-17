@@ -19,6 +19,7 @@ export default defineManifest({
   permissions: [
     "activeTab",
     "contextMenus", // add an item to the menu displayed on right click
+    "declarativeNetRequest",
     "debugger",
     "sidePanel",
     "storage",
