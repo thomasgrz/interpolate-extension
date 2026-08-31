@@ -4,7 +4,6 @@ import {
   Card,
   Flex,
   SegmentedControl,
-  Select,
   Strong,
 } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
@@ -54,7 +53,11 @@ export const MockResponseForm = ({
   defaultValues,
   mode = "create",
 }: MockResponseFormProps) => {
-  const [responseType, setResponseType] = useState("html");
+  const defaultSelectedMockType = defaultValues?.isJson ? "json" : "html";
+
+  const [responseType, setResponseType] = useState(defaultSelectedMockType);
+  const selectedMockType = responseType ?? defaultSelectedMockType;
+
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value, formApi }) => {
@@ -126,6 +129,7 @@ export const MockResponseForm = ({
   const handleChangeResponseType = (type: "json" | "html") => {
     setResponseType(type);
   };
+
   return (
     <form onSubmit={handleSubmit}>
       <Card
@@ -204,12 +208,15 @@ export const MockResponseForm = ({
                       size="1"
                       onValueChange={handleChangeResponseType}
                       radius="full"
-                      value={responseType}
+                      value={selectedMockType}
                     >
                       <SegmentedControl.Item value="html">
                         HTML
                       </SegmentedControl.Item>
-                      <SegmentedControl.Item value="json">
+                      <SegmentedControl.Item
+                        data-test="json-option"
+                        value="json"
+                      >
                         JSON
                       </SegmentedControl.Item>
                     </SegmentedControl.Root>
@@ -240,7 +247,12 @@ export const MockResponseForm = ({
       </Card>
       <Flex justify={mode === "create" ? "end" : "between"} align="end">
         {mode === "edit" && (
-          <Button radius="full" variant="outline" onClick={onCancelEdit}>
+          <Button
+            type="button"
+            radius="full"
+            variant="outline"
+            onClick={onCancelEdit}
+          >
             Cancel
           </Button>
         )}

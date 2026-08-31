@@ -194,6 +194,7 @@ export const InterpolationCard = ({
         return (
           <MockResponseForm
             mode="edit"
+            onCancelEdit={onCancelEdit}
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               ...info.details,
@@ -278,7 +279,7 @@ export const InterpolationCard = ({
                         </Box>
                       )}{" "}
                       <Collapsible.Trigger asChild>
-                        <Flex justify={"center"} gap="2">
+                        <Flex justify={"center"} gap="2" align={"center"}>
                           <IconButton
                             data-open={isExpanded}
                             type="button"
@@ -300,7 +301,7 @@ export const InterpolationCard = ({
 
               <Collapsible.Content>
                 <Flex width="stretch" justify={"between"} px="2" pb="2">
-                  <Flex maxWidth={"80%"} overflow={"hidden"}>
+                  <Flex minWidth="100%" maxWidth={"80%"} overflow={"hidden"}>
                     {getPreview()}
                   </Flex>
                 </Flex>

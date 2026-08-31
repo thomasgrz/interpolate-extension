@@ -17,5 +17,5 @@ export enum MockResponseFormPlaceholder {
   BODY_HTML = "<h1>You've got example!</h1>",
   BODY_JSON = `{ status: "success",  code: "foobar" }`,
   MATCHER = ".*example.com/some/.*/path",
-  BODY_MATCHER = ".*",
+  BODY_MATCHER = ".*MembershipData.*",
 }

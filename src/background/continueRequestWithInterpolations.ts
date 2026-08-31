@@ -9,9 +9,9 @@ export const continueRequestWithInterpolations = async ({
   interpolations,
 }: {
   request: {
-    headers: Record<string, string>;
+    headers?: Record<string, unknown>;
     hasPostData?: boolean;
-    postDataEntries?: string;
+    postDataEntries?: { bytes: string }[];
   };
   requestId: string;
   tabId: number;
@@ -52,7 +52,7 @@ export const continueRequestWithInterpolations = async ({
       });
     }
   }
-  const originalHeaders = Object.entries(request.headers).map(
+  const originalHeaders = Object.entries(request?.headers ?? []).map(
     ([key, value]) => ({ name: key, value }),
   );
 
@@ -80,10 +80,14 @@ export const continueRequestWithInterpolations = async ({
 
     if (hasBodyMatcher) {
       const bodyMatcherRegEx = new RegExp(bodyMatcher);
-      const isMatch = request?.postDataEntries?.some?.((entry) => {
-        const decodedValue = atob(entry?.bytes);
-        return !!bodyMatcherRegEx.exec(decodedValue);
-      });
+      const isMatch = request?.postDataEntries?.some?.(
+        (entry: { bytes?: string }) => {
+          const noBytes = typeof entry?.bytes === "undefined";
+          if (noBytes) return false;
+          const decodedValue = atob(entry?.bytes ?? "");
+          return !!bodyMatcherRegEx.exec(decodedValue);
+        },
+      );
       return isMatch;
     } else {
       return true;

@@ -2,13 +2,11 @@ import { MockAPIInterpolation } from "#src/utils/factories/Interpolation.ts";
 import {
   CheckCircledIcon,
   CrossCircledIcon,
-  DotsVerticalIcon,
   InfoCircledIcon,
   QuestionMarkCircledIcon,
   ResetIcon,
-  SewingPinIcon,
 } from "@radix-ui/react-icons";
-import { Code, Flex, Text, ScrollArea, Card } from "@radix-ui/themes";
+import { Code, Flex, Text, ScrollArea, Card, Strong } from "@radix-ui/themes";
 
 export const MockPreview = ({
   details,
@@ -35,22 +33,35 @@ export const MockPreview = ({
     }
   };
   return (
-    <Flex direction="column" gap="2">
-      <Flex>
-        <SewingPinIcon /> <Code size="1">{details.matcher}</Code>
+    <Flex direction="column" gap="2" minWidth="100%">
+      <Flex align={"center"}>
+        <Text size="1">Mock responses from&nbsp;</Text>{" "}
+        <Code size="1">{details.matcher}</Code>{" "}
       </Flex>
-      <DotsVerticalIcon />
+      <Flex>
+        <Text size={"1"}>
+          {details.bodyMatcher ? (
+            <>
+              if request body contains&nbsp;
+              <Strong>/{details.bodyMatcher || ".*"}/</Strong>
+            </>
+          ) : (
+            <></>
+          )}
+        </Text>
+      </Flex>
 
       <Card>
         <Flex direction={"column"} gap="2">
           <Flex gap="2" justify={"start"}>
             <Text size="1">
-              <Code>{details.httpCode ?? 200}</Code>
+              Response status: <Code>HTTP {details.httpCode ?? 200}</Code>
             </Text>
             {getIcon()}
           </Flex>
+          <Text size="1">Response body:</Text>
 
-          <ScrollArea style={{ maxHeight: 80 }}>
+          <ScrollArea style={{ maxHeight: 100 }}>
             <Flex direction={"column"}>
               <Code size="1">{details.body}</Code>
             </Flex>
