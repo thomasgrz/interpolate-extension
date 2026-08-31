@@ -4,6 +4,7 @@ import {
   Card,
   Flex,
   SegmentedControl,
+  Select,
   Strong,
 } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
@@ -26,6 +27,7 @@ export interface MockResponseFormValue {
   id?: string | number;
   name?: string;
   matcher?: string;
+  bodyMatcher?: string;
   httpCode?: number;
   body?: string;
   isJson?: boolean;
@@ -168,6 +170,20 @@ export const MockResponseForm = ({
                 <TextInput
                   label={MockResponseFormLabel.MATCHER}
                   placeholder={MockResponseFormPlaceholder.MATCHER}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  errors={field.state.meta.errors}
+                />
+              );
+            }}
+          />
+          <form.Field
+            name="bodyMatcher"
+            children={(field) => {
+              return (
+                <TextInput
+                  label={MockResponseFormLabel.BODY_MATCHER}
+                  placeholder={MockResponseFormPlaceholder.BODY_MATCHER}
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   errors={field.state.meta.errors}

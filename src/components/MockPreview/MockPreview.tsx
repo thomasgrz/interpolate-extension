@@ -16,7 +16,7 @@ export const MockPreview = ({
   details: MockAPIInterpolation["details"];
 }) => {
   const getIcon = () => {
-    const { httpCode } = details;
+    const { httpCode = 200 } = details;
     if (!httpCode) return <QuestionMarkCircledIcon />;
     if (httpCode >= 100 && httpCode <= 199) {
       return <InfoCircledIcon />;
@@ -45,7 +45,7 @@ export const MockPreview = ({
         <Flex direction={"column"} gap="2">
           <Flex gap="2" justify={"start"}>
             <Text size="1">
-              <Code>{details.httpCode}</Code>
+              <Code>{details.httpCode ?? 200}</Code>
             </Text>
             {getIcon()}
           </Flex>

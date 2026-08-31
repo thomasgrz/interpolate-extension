@@ -193,6 +193,7 @@ export const InterpolationCard = ({
       case "mockAPI":
         return (
           <MockResponseForm
+            mode="edit"
             onSubmit={() => setEditModeEnabled(false)}
             defaultValues={{
               ...info.details,
