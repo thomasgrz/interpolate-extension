@@ -1,7 +1,7 @@
 {
   "name": "interpolate",
   "type": "module",
-  "version": "1.17.6",
+  "version": "1.17.0",
   "private": true,
   "imports": {
     "#*": [
