@@ -8,7 +8,11 @@ export const continueRequestWithInterpolations = async ({
   requestUrl,
   interpolations,
 }: {
-  request: { headers: Record<string, unknown> };
+  request: {
+    headers?: Record<string, unknown>;
+    hasPostData?: boolean;
+    postDataEntries?: { bytes: string }[];
+  };
   requestId: string;
   tabId: number;
   requestUrl?: string;
@@ -48,7 +52,7 @@ export const continueRequestWithInterpolations = async ({
       });
     }
   }
-  const originalHeaders = Object.entries(request.headers).map(
+  const originalHeaders = Object.entries(request?.headers ?? []).map(
     ([key, value]) => ({ name: key, value }),
   );
 
@@ -70,7 +74,30 @@ export const continueRequestWithInterpolations = async ({
     });
   }
 
-  if (apiMock) {
+  const isMatchingRequestBody = () => {
+    const bodyMatcher = apiMock?.details?.bodyMatcher;
+    const hasBodyMatcher = !!bodyMatcher;
+
+    if (hasBodyMatcher) {
+      const bodyMatcherRegEx = new RegExp(bodyMatcher);
+      const isMatch = request?.postDataEntries?.some?.(
+        (entry: { bytes?: string }) => {
+          const noBytes = typeof entry?.bytes === "undefined";
+          if (noBytes) return false;
+          const decodedValue = atob(entry?.bytes ?? "");
+          return !!bodyMatcherRegEx.exec(decodedValue);
+        },
+      );
+      return isMatch;
+    } else {
+      return true;
+    }
+  };
+
+  const shouldMockResponse = apiMock && isMatchingRequestBody();
+
+  if (shouldMockResponse) {
+    // Continue by mocking request
     chrome.debugger.sendCommand({ tabId }, "Fetch.fulfillRequest", {
       requestId,
       responseCode: Number(apiMock?.details?.httpCode ?? 200),
@@ -78,6 +105,7 @@ export const continueRequestWithInterpolations = async ({
       responseHeaders: [...originalHeaders, ...requestHeadersOverrides],
     });
   } else {
+    // Continue without mocking request
     chrome.debugger.sendCommand({ tabId }, "Fetch.continueRequest", {
       requestId,
       url: urlOverride ?? requestUrl,

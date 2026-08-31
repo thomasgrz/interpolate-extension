@@ -8,6 +8,7 @@ export enum MockResponseFormLabel {
   HTTP_STATUS = "HTTP Status Code:",
   BODY = "Response body:",
   MATCHER = "Request URL RegEx:",
+  BODY_MATCHER = "Request body RegEx (optional):",
 }
 
 export enum MockResponseFormPlaceholder {
@@ -16,4 +17,5 @@ export enum MockResponseFormPlaceholder {
   BODY_HTML = "<h1>You've got example!</h1>",
   BODY_JSON = `{ status: "success",  code: "foobar" }`,
   MATCHER = ".*example.com/some/.*/path",
+  BODY_MATCHER = ".*MembershipData.*",
 }
