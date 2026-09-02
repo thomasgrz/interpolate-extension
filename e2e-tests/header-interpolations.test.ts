@@ -1,5 +1,6 @@
 import { expect, test } from "./fixtures/expect";
 import { createTestHeaderInterpolation } from "./fixtures/createTestHeaderInterpolation";
+import { openInterpolationOptionsModal } from "./fixtures/openInterpolationOptionsModal";
 
 test("should apply header rule", async ({ page, extensionId }) => {
   await page.goto("https://example.com");
@@ -116,4 +117,30 @@ test("should disable all header rules when global pause is activated", async ({
   // Verify that the header has NOT been added
   const headerContent = await page.locator("pre").innerText();
   expect(headerContent).not.toContain('"X-Test-Header": "ModRequest"');
+});
+
+test("should apply edited header immediately", async ({
+  page,
+  extensionId,
+}) => {
+  await createTestHeaderInterpolation({
+    page,
+    headerName: "X-Test-Header",
+    headerValue: "first value",
+    extensionId,
+    name: "my header interpolation",
+  });
+
+  await page.goto("https://httpbin.org/headers");
+  await expect(page.getByText('"X-Test-Header": "first value"')).toBeVisible();
+  await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
+
+  await page.getByText("my header interpolation").click({ button: "right" });
+  await page.getByText("Edit", { exact: false }).click();
+
+  await page.getByText("first value").fill("new value");
+  expect(page.getByText("first value")).not.toBeVisible();
+  await page.getByText("Save").click();
+  await page.goto("https://httpbin.org/headers");
+  await expect(page.getByText('"X-Test-Header": "new value"')).toBeVisible();
 });

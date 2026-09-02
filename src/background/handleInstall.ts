@@ -53,9 +53,10 @@ export const handleInstall = async () => {
     const addedHeaders = headers.filter((rule) => rule.enabledByUser);
     const removedHeaders = headers.filter((rule) => !rule.enabledByUser);
 
-    addedHeaders.map((rule) => {
+    addedHeaders.forEach(async (rule) => {
       try {
-        chrome.declarativeNetRequest.updateDynamicRules({
+        await chrome.declarativeNetRequest.updateDynamicRules({
+          removeRuleIds: [Number(rule?.details?.id)],
           addRules: [
             {
               action: {
@@ -181,7 +182,7 @@ export const handleInstall = async () => {
     try {
       const containsUpdatedValues = !!values.updated.length;
       const containsRemovedValues = !!values.removed.length;
-      const contatinsCreatedValues = !!values.created.length;
+      const containsCreatedValues = !!values.created.length;
 
       if (containsUpdatedValues) {
         await handleInterpolationUpdates(values.updated);
@@ -191,7 +192,7 @@ export const handleInstall = async () => {
         await handleInterpolationRemovals(values.removed);
       }
 
-      if (contatinsCreatedValues) {
+      if (containsCreatedValues) {
         await handleInterpolationCreations(values.created);
       }
     } catch (e) {
