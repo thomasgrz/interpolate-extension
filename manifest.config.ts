@@ -16,6 +16,8 @@ export default defineManifest({
     default_title: "click to open sidepanel",
   },
   devtools_page: "src/sidepanel/side-panel.html",
+  description:
+    "Interpolate allows you to declaratively add headers to requests, mock responses from real (or fake) APIs with JSON or HTML payloads, automatically open certain URLs in specified groups, and manage/execute javascript snippets in the browser",
   permissions: [
     "activeTab",
     "contextMenus", // add an item to the menu displayed on right click
