@@ -17,7 +17,7 @@ export default defineManifest({
   },
   devtools_page: "src/sidepanel/side-panel.html",
   description:
-    "Interpolate allows you to declaratively add headers to requests, mock responses from real (or fake) APIs with JSON or HTML payloads, automatically open certain URLs in specified groups, and manage/execute javascript snippets in the browser",
+    "Add headers to requests, mock responses from APIs, open certain URLs in specified tab groups, and execute/manage user scripts",
   permissions: [
     "activeTab",
     "contextMenus", // add an item to the menu displayed on right click
