@@ -43,7 +43,6 @@ export const InterpolateStorage = {
   },
   async disableExtension() {
     await chrome.storage.local.set({ isExtensionEnabled: false });
-    await this.disableAll();
   },
   async enableExtension() {
     chrome.storage.local.set({ isExtensionEnabled: true });
