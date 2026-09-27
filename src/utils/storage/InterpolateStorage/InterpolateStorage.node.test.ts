@@ -118,6 +118,7 @@ describe("InterpolateStorage", () => {
       created: [interpolation],
       removed: [],
       updated: [],
+      extensionEnabled: null,
     });
   });
   it("should invoke subscriber callback when interpolation disabled by user", async () => {
@@ -136,6 +137,7 @@ describe("InterpolateStorage", () => {
     expect(callback).toHaveBeenNthCalledWith(1, {
       created: [],
       removed: [],
+      extensionEnabled: null,
       updated: [{ ...interpolation, enabledByUser: false }],
     });
   });
@@ -156,6 +158,7 @@ describe("InterpolateStorage", () => {
     expect(callback).toHaveBeenNthCalledWith(1, {
       created: [],
       removed: [],
+      extensionEnabled: null,
       updated: [{ ...interpolation, enabledByUser: true }],
     });
   });
@@ -175,6 +178,7 @@ describe("InterpolateStorage", () => {
     expect(callback).toHaveBeenCalledExactlyOnceWith({
       created: [],
       removed: [interpolation],
+      extensionEnabled: null,
       updated: [],
     });
   });
