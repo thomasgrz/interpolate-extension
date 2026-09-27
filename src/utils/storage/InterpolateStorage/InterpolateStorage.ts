@@ -17,6 +17,17 @@ import { createMockAPIInterpolation } from "#src/utils/factories/createMockAPIIn
 import { createRedirectInterpolation } from "#src/utils/factories/createRedirectInterpolation/createRedirectInterpolation.ts";
 import { createTabManagermentInterpolation } from "#src/utils/factories/createTabManagerInterpolation/createTabManagerInterpolation.ts";
 
+type SubscriptionCallbackPayload = {
+  created: AnyInterpolation[];
+  updated: AnyInterpolation[];
+  removed: AnyInterpolation[];
+  extensionEnabled: boolean | null;
+};
+
+export type SubscriptionCallback = (
+  arg: SubscriptionCallbackPayload,
+) => Promise<void>;
+
 export const InterpolateStorage = {
   BROWSER_UI_TOGGLE_KEY: "displayBrowserUI",
   DEBUGGING_TABS_KEY: "debuggingTabs",
@@ -43,7 +54,6 @@ export const InterpolateStorage = {
   },
   async disableExtension() {
     await chrome.storage.local.set({ isExtensionEnabled: false });
-    await this.disableAll();
   },
   async enableExtension() {
     chrome.storage.local.set({ isExtensionEnabled: true });
@@ -501,24 +511,19 @@ export const InterpolateStorage = {
       this.logError(caller, e);
     }
   },
-  async subscribeToInterpolationChanges(
-    cb: (arg: {
-      created: AnyInterpolation[];
-      updated: AnyInterpolation[];
-      removed: AnyInterpolation[];
-    }) => Promise<void>,
-  ) {
+  async subscribeToInterpolationChanges(cb: SubscriptionCallback) {
     const caller = "subscribeToChanges";
 
     try {
       chrome.storage?.local?.onChanged.addListener(async (changes) => {
-        const interpolationConfigs = Object.entries(changes)?.reduce<{
-          created: AnyInterpolation[];
-          updated: AnyInterpolation[];
-          removed: AnyInterpolation[];
-        }>(
+        const interpolationConfigs = Object.entries(
+          changes,
+        )?.reduce<SubscriptionCallbackPayload>(
           (acc, curr) => {
             const [key, value] = curr;
+            if (key === "isExtensionEnabled") {
+              return { ...acc, extensionEnabled: value?.newValue };
+            }
             const isInterpolation = key.startsWith(INTERPOLATE_RECORD_PREFIX);
             if (isInterpolation) {
               const isCreated = !Object.hasOwn(value, "oldValue");
@@ -545,6 +550,7 @@ export const InterpolateStorage = {
             created: [],
             updated: [],
             removed: [],
+            extensionEnabled: null,
           },
         );
         cb(interpolationConfigs);

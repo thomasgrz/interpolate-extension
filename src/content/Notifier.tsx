@@ -15,15 +15,6 @@ export const Notifier = () => {
   const [isBrowserUIEnabled, setIsBrowserUIEnabled] = useState(true);
 
   useEffect(() => {
-    chrome.storage?.local?.onChanged?.addListener((changes) => {
-      if (changes?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY]) {
-        const value =
-          changes?.[InterpolateStorage.BROWSER_UI_TOGGLE_KEY]?.newValue;
-        setIsBrowserUIEnabled(value);
-      }
-    });
-  }, []);
-  useEffect(() => {
     if (isInitialized.current) return;
 
     chrome?.storage?.local

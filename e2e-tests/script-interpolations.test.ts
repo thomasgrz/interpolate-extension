@@ -49,7 +49,6 @@ test("should pause a script", async ({ page, extensionId }) => {
   let invokedWhilePaused = false;
   page.on("dialog", async (dialog: Dialog) => {
     invokedWhilePaused = true;
-    dialog.accept();
   });
 
   await page.reload();
@@ -62,7 +61,6 @@ test("should resume a script", async ({ page, extensionId }) => {
 
   page.on("dialog", async (dialog: Dialog) => {
     invokedWhilePaused = true;
-    dialog.accept();
   });
 
   await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);

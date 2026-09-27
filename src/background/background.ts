@@ -33,22 +33,9 @@ try {
     }
 
     if (isUserDisablingExtension) {
-      const tabs = await chrome.tabs.query({});
-      const debuggableTabs = tabs.filter((tab) => tab.url?.startsWith("http"));
       const debuggerTargets = await chrome.debugger.getTargets();
-      const tabsBeingDebugged = debuggableTabs.filter((debuggableTab) => {
-        const matchingDebuggerTarget = debuggerTargets.find(
-          (target) => target.tabId === debuggableTab.id,
-        );
-
-        const isBeingDebugged = matchingDebuggerTarget?.attached;
-
-        return isBeingDebugged;
-      });
       await Promise.all(
-        tabsBeingDebugged.map((tab) =>
-          chrome.debugger.detach({ tabId: tab.id }),
-        ),
+        debuggerTargets.map(({ tabId }) => chrome.debugger.detach({ tabId })),
       );
     }
   });

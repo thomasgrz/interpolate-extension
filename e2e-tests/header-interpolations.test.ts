@@ -94,29 +94,21 @@ test("should disable all header rules when global pause is activated", async ({
   // Create a header modification rule
   await createTestHeaderInterpolation({
     page,
-    headerName: "X-Test-Header",
-    headerValue: "ModRequest",
-    extensionId,
-    name: "rule #5",
-  });
-
-  await createTestHeaderInterpolation({
-    page,
-    headerName: "X-Another-Header",
+    headerName: "X-Header",
     headerValue: "ShouldNotApply",
     extensionId,
-    name: "rule #6",
+    name: "foobar",
   });
 
   // Activate global pause
+  await page.getByTestId("browser-ui-toggle").click();
   await page.getByTestId("pause-all").click();
 
   // Navigate to a test page
   await page.goto("https://httpbin.org/headers");
-
   // Verify that the header has NOT been added
   const headerContent = await page.locator("pre").innerText();
-  expect(headerContent).not.toContain('"X-Test-Header": "ModRequest"');
+  expect(headerContent).not.toContain('"X-Header": "ShouldNotApply"');
 });
 
 test("should apply edited header immediately", async ({
