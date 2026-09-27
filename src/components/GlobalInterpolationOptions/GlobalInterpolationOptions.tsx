@@ -1,7 +1,7 @@
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import styles from "./GlobalInterpolationOptions.module.scss";
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
-import { ResumeIcon, StopIcon } from "@radix-ui/react-icons";
+import { ResumeIcon, PauseIcon } from "@radix-ui/react-icons";
 
 export const GlobalInterpolationOptions = ({
   onChange,
@@ -42,7 +42,7 @@ export const GlobalInterpolationOptions = ({
         color="red"
         onClick={handleDisableExtension}
       >
-        <StopIcon />
+        <PauseIcon />
       </IconButton>
     </Tooltip>
   );
