@@ -286,10 +286,7 @@ export const DashboardView = () => {
                       </Callout.Text>
                     </Callout.Root>
 
-                    <InterpolationsListView
-                      hideRuleToggle
-                      configs={enabledInterpolations}
-                    />
+                    <InterpolationsListView configs={enabledInterpolations} />
                   </Flex>
                 )}
                 {expandedSection === "invoked" && (
