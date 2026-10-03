@@ -12,11 +12,14 @@ export type RedirectInterpolationConfig = {
   };
   name: string;
 };
+
 export type MockAPIInterpolationConfig = {
   details: NonNullable<MockResponseFormValue> & { id: string };
   name: string;
 };
+
 export type HeaderInterpolationConfig = {
+  createdAt: number;
   details: {
     headerKey: string;
     headerValue: string;
@@ -24,13 +27,16 @@ export type HeaderInterpolationConfig = {
   };
   name: string;
 };
+
 export type TabManagerInterpolationConfig = {
+  createdAt: number;
   details: {
     matcher: string;
     groupId: string;
     groupName: string;
     id: string;
   };
+  isActive: boolean;
   name: string;
 };
 export type InterpolationType =
@@ -97,6 +103,7 @@ export class HeaderInterpolation extends Interpolation {
     super(config);
     this.type = "headers";
     this.details = config.details;
+    this.createdAt = config.createdAt;
   }
 }
 
@@ -104,7 +111,7 @@ export class TabManagerInterpolation extends Interpolation {
   details: TabManagerInterpolationConfig["details"];
   type: "tab-manager";
 
-  constructor(config: TabManagerInterpolation) {
+  constructor(config: TabManagerInterpolationConfig) {
     super(config);
     this.type = "tab-manager";
     this.details = config.details;

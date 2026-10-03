@@ -9,6 +9,7 @@ export const createHeaderInterpolation = (rule: {
 }) => {
   return new HeaderInterpolation({
     name: rule.name,
+    createdAt: new Date().getTime(),
     details: {
       headerKey: rule.headerKey,
       headerValue: rule.headerValue,

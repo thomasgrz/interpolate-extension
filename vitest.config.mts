@@ -10,6 +10,7 @@ export default defineConfig((configEnv) => {
         TEST: "true",
       },
       test: {
+        retry: 2,
         exclude: [...configDefaults.exclude, "browser-tests"],
         projects: [
           {

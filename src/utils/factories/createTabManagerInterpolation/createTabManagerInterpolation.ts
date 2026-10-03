@@ -16,7 +16,6 @@ export const createTabManagermentInterpolation = (tabForm: {
       groupName: tabForm.groupName,
       id: tabForm.id ?? String(generateRuleId()),
     },
-    type: "tab-manager",
     isActive: true,
     name: tabForm.name,
     createdAt: tabForm?.createdAt ?? new Date().getTime(),
