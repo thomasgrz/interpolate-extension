@@ -52,16 +52,15 @@ test("should display toast notifications for redirect interpolations", async ({
     page,
     extensionId,
     name: "boobaz",
-    destination: "https://example.com",
-    source: ".*google.com.*",
+    destination: "http://localhost:8080/alt.html",
+    source: ".*index.html.*",
   });
 
   await page.getByTestId("browser-ui-toggle").click();
-  await page.goto("https://google.com");
+  await page.goto("http://localhost:8080/index.html");
   await page.reload();
-  const content = page.getByText("Example domain");
+  expect(page.getByText("page two")).toBeVisible();
 
-  await content.waitFor({ state: "visible" });
   const toast = page.getByTestId("redirect-preview-boobaz");
 
   await toast.scrollIntoViewIfNeeded();

@@ -77,7 +77,7 @@ test("should resume a script", async ({ page, extensionId }) => {
   const pauseToggle = page.getByTestId("pause-rule-toggle");
 
   await pauseToggle.click();
-  await page.goto("https://example.com");
+  await page.goto("http://localhost:8080");
 
   expect(invokedWhilePaused).toBe(false);
 });

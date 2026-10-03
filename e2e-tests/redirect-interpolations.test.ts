@@ -1,26 +1,18 @@
 import { expect, test } from "./fixtures/expect";
 import { createTestRedirectInterpolation } from "./fixtures/createTestRedirectInterpolation";
 
-test("should apply redirect interpolation", async ({
-  page,
-  network,
-  extensionId,
-}) => {
+test("should apply redirect interpolation", async ({ page, extensionId }) => {
   await createTestRedirectInterpolation({
     page,
     source: ".*something.*",
-    destination: "https://example.com/*",
+    destination: "http://localhost:8080",
     extensionId,
     name: "rule #1",
   });
 
   await page.goto("https://something.com");
   await page.reload();
-  await expect(
-    page.getByText(
-      "This domain is for use in documentation examples without needing permission",
-    ),
-  ).toBeVisible();
+  await expect(page.getByText("index page")).toBeVisible();
 });
 
 test("should not apply paused redirect interpolation", async ({
@@ -30,7 +22,7 @@ test("should not apply paused redirect interpolation", async ({
   await createTestRedirectInterpolation({
     page,
     source: ".*something.*",
-    destination: "https://example.com/*",
+    destination: "http://localhost:8080/*",
     extensionId,
     name: "rule #2",
   });
@@ -49,7 +41,7 @@ test("should selectively apply redirect interpolation if enabled", async ({
   await createTestRedirectInterpolation({
     page,
     source: ".*something.*",
-    destination: "https://example.com/test",
+    destination: "http://localhost:8080/test",
     extensionId,
     name: "rule #3",
   });
@@ -57,7 +49,7 @@ test("should selectively apply redirect interpolation if enabled", async ({
   await createTestRedirectInterpolation({
     page,
     source: ".*google.*",
-    destination: "https://example.com/test2",
+    destination: "http://localhost:8080/test2",
     extensionId,
     name: "rule #4",
   });
@@ -86,7 +78,7 @@ test("should disable all interpolations when global pause is activated", async (
   await createTestRedirectInterpolation({
     page,
     source: ".*google.*",
-    destination: "https://example.com/test2",
+    destination: "http://localhost:8080/test2",
     extensionId,
     name: "rule #6",
   });

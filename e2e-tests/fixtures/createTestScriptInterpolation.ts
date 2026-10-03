@@ -29,5 +29,5 @@ export const createTestScriptInterpolation = async (arg: {
   await page.getByTestId(/script-preview-.*/).waitFor();
 
   if (endOnOptionsPage) return;
-  await page.goto("https://example.com");
+  await page.goto("http://localhost:8080/");
 };
