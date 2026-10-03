@@ -15,7 +15,6 @@ export default {
     [
       "@semantic-release/git",
       {
-        assets: ["release/*.zip"],
         message: "chore(release): ${nextRelease.version} [skip ci]\n\n",
       },
     ],
