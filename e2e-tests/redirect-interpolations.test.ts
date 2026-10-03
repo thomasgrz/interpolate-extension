@@ -16,7 +16,11 @@ test("should apply redirect interpolation", async ({
 
   await page.goto("https://something.com");
   await page.reload();
-  await expect(page.getByText(/Example Domain/)).toBeVisible();
+  await expect(
+    page.getByText(
+      "This domain is for use in documentation examples without needing permission",
+    ),
+  ).toBeVisible();
 });
 
 test("should not apply paused redirect interpolation", async ({
