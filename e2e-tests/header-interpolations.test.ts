@@ -1,9 +1,8 @@
 import { expect, test } from "./fixtures/expect";
 import { createTestHeaderInterpolation } from "./fixtures/createTestHeaderInterpolation";
-import { openInterpolationOptionsModal } from "./fixtures/openInterpolationOptionsModal";
 
 test("should apply header rule", async ({ page, extensionId }) => {
-  await page.goto("https://example.com");
+  await page.goto("http://localhost:8080/");
 
   // Create a header modification rule
   await createTestHeaderInterpolation({

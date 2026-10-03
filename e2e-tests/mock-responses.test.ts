@@ -1,16 +1,14 @@
 import { expect, test } from "./fixtures/expect";
 import { openInterpolationOptionsModal } from "./fixtures/openInterpolationOptionsModal";
-import {
-  MockResponseFormLabel,
-  MockResponseFormPlaceholder,
-} from "../src/components/MockResponseForm/MockResponseForm.constants.ts";
+import { MockResponseFormPlaceholder } from "../src/components/MockResponseForm/MockResponseForm.constants.ts";
 import { createTestHeaderInterpolation } from "./fixtures/createTestHeaderInterpolation.ts";
 
 test("should redirect requests without a matcher", async ({
   page,
-  network,
   extensionId,
 }) => {
+  await page.goto("http://localhost:8080");
+
   await openInterpolationOptionsModal({
     extensionId,
     page,
@@ -21,14 +19,13 @@ test("should redirect requests without a matcher", async ({
     .fill("nonexistent endpoint");
   await page
     .getByPlaceholder(MockResponseFormPlaceholder.MATCHER)
-    .fill(".*example.com");
+    .fill(".*localhost.*");
   await page
     .getByPlaceholder(MockResponseFormPlaceholder.BODY_HTML)
     .fill("<h1>hello world</h1>");
 
   await page.getByText("Create mock", { exact: false }).click();
-  await page.goto("https://example.com");
-  await page.reload();
+  await page.goto("http://localhost:8080");
   expect(page.getByText("hello world")).toBeVisible();
 });
 
@@ -47,7 +44,7 @@ test("should redirect requests with a matcher", async ({
     .fill("without body matcher");
   await page
     .getByPlaceholder(MockResponseFormPlaceholder.MATCHER)
-    .fill(".*example.com");
+    .fill(".*localhost.*");
   await page
     .getByPlaceholder(MockResponseFormPlaceholder.BODY_HTML)
     .fill(
@@ -87,6 +84,6 @@ test("should redirect requests with a matcher", async ({
 
   await page.getByText("Create mock", { exact: false }).click();
 
-  await page.goto("https://example.com");
+  await page.goto("http://localhost:8080");
   expect(page.getByText("fetched string")).toBeVisible();
 });

@@ -11,18 +11,19 @@
     ]
   },
   "scripts": {
+    "build": "tsc -b && vite build",
+    "build-storybook": "storybook build",
+    "build:debug": "CI=true tsc -b --stopBuildOnErrors && vite build",
+    "check": "tsc --noEmit",
     "dev": "vite",
+    "prepare": "husky",
+    "preview": "vite preview",
+    "storybook": "TEST=true storybook dev -p 6006",
     "test:component": "vitest run",
     "test:component:ui": "vitest --ui",
     "test:e2e": "pnpm run dev & sleep 5 && playwright test -c playwright.config.ts -x",
     "test:e2e:ui": "pnpm run dev & sleep 5 & playwright test --ui -c playwright.config.ts",
-    "build:debug": "CI=true tsc -b --stopBuildOnErrors && vite build",
-    "build": "tsc -b && vite build",
-    "check": "tsc --noEmit",
-    "preview": "vite preview",
-    "prepare": "husky",
-    "storybook": "TEST=true storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "start:test-server": "pnpm dev & http-server ./test-server"
   },
   "dependencies": {
     "@msw/playwright": "^0.4.2",
@@ -74,6 +75,7 @@
     "eslint-plugin-storybook": "^10.1.2",
     "globals": "^16.3.0",
     "happy-dom": "^20.0.10",
+    "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "jiti": "^2.5.1",
     "prettier": "3.6.2",
