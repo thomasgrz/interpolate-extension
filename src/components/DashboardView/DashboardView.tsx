@@ -256,7 +256,10 @@ export const DashboardView = () => {
                     <SegmentedControl.Item value="invoked">
                       Invoked
                     </SegmentedControl.Item>
-                    <SegmentedControl.Item value="groups">
+                    <SegmentedControl.Item
+                      value="groups"
+                      data-testid="groups-button"
+                    >
                       Groups
                     </SegmentedControl.Item>
                   </SegmentedControl.Root>

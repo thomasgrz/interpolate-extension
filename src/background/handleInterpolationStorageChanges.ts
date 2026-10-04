@@ -3,6 +3,7 @@ import { SubscriptionCallback } from "#src/utils/storage/InterpolateStorage/Inte
 import { handleExtensionEnabled } from "./handleExtensionEnabled";
 import { handleExtensionPause } from "./handleExtensionPause";
 import { handleInterpolationCreations } from "./handleInterpolationCreations";
+import { handleInterpolationRemovals } from "./handleInterpolationRemovals";
 import { handleInterpolationUpdates } from "./handleInterpolationUpdates";
 
 export const handleInterpolationStorageChanges: SubscriptionCallback = async (
@@ -28,7 +29,7 @@ export const handleInterpolationStorageChanges: SubscriptionCallback = async (
     }
 
     if (containsRemovedValues) {
-      await handleInterpolationUpdates(values.removed);
+      await handleInterpolationRemovals(values.removed);
     }
 
     if (containsCreatedValues) {

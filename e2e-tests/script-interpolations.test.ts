@@ -47,7 +47,7 @@ test("should pause a script", async ({ page, extensionId }) => {
   await pauseAll.click();
 
   let invokedWhilePaused = false;
-  page.on("dialog", async (dialog: Dialog) => {
+  page.on("dialog", async () => {
     invokedWhilePaused = true;
   });
 
@@ -59,7 +59,7 @@ test("should pause a script", async ({ page, extensionId }) => {
 test("should resume a script", async ({ page, extensionId }) => {
   let invokedWhilePaused = false;
 
-  page.on("dialog", async (dialog: Dialog) => {
+  page.on("dialog", async () => {
     invokedWhilePaused = true;
   });
 

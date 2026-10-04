@@ -35,7 +35,7 @@ export const InterpolationsGroupsView = ({
   sortOption?: SortOption;
   query?: string;
 }) => {
-  const { groups, removeGroup } = useInterpolationsContext();
+  const { interpolations, groups, removeGroup } = useInterpolationsContext();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteModalConfig, setDeleteModalConfig] =
     useState<GroupConfigInStorage | null>(null);
@@ -71,7 +71,7 @@ export const InterpolationsGroupsView = ({
       setHydratedGroups(hydrated);
       setLoading(false);
     });
-  }, [groups]);
+  }, [groups, interpolations]);
 
   const onEditSelected = (
     config: GroupConfigInStorage & { interpolations: AnyInterpolation[] },
@@ -101,7 +101,8 @@ export const InterpolationsGroupsView = ({
     return sortInterpolations(hydratedGroups, sortOption).filter((group) =>
       group.name?.toLowerCase?.()?.includes(query ?? ""),
     ) as (GroupConfigInStorage & { interpolations: AnyInterpolation[] })[];
-  }, [hydratedGroups, sortOption, query]);
+  }, [groups, hydratedGroups, sortOption, query]);
+
   const noGroups = !loading && !hydratedGroups?.length;
   const onGroupOpenChange = (groupName: string, isOpen: boolean) => {
     setEpxandedGroups((prevState) => ({ ...prevState, [groupName]: isOpen }));
@@ -176,36 +177,41 @@ export const InterpolationsGroupsView = ({
                         <Text size="1" style={{ fontSize: "0.5em" }}>
                           {new Date(config.createdAt).toDateString()}
                         </Text>
-                        <Tooltip
-                          content={
-                            expandedGroups[config.name]
-                              ? "hide configs in group"
-                              : "show configs in group"
-                          }
-                        >
-                          <Collapsible.Trigger asChild>
-                            <Button
-                              // className={styles.ToggleCollapse}
-                              size="1"
-                              radius="none"
-                              variant="outline"
-                              // TODO: rm inline styles when prod build doesnt break className styles
-                              style={{ height: "unset", boxShadow: "none" }}
-                            >
-                              {expandedGroups[config.name] ? (
-                                <>
-                                  Collapse <DoubleArrowUpIcon />{" "}
-                                </>
-                              ) : (
-                                <>
-                                  {config.interpolations?.length} config
-                                  {config.interpolations.length > 1 ? "s" : ""}
-                                  <DoubleArrowDownIcon />
-                                </>
-                              )}
-                            </Button>
-                          </Collapsible.Trigger>
-                        </Tooltip>
+                        {!config?.interpolations?.length ? (
+                          <Text size="1">This group is empty</Text>
+                        ) : (
+                          <Tooltip
+                            content={
+                              expandedGroups[config.name]
+                                ? "hide configs in group"
+                                : "show configs in group"
+                            }
+                          >
+                            <Collapsible.Trigger asChild>
+                              <Button
+                                size="1"
+                                radius="none"
+                                variant="outline"
+                                // TODO: rm inline styles when prod build doesnt break className styles
+                                style={{ height: "unset", boxShadow: "none" }}
+                              >
+                                {expandedGroups[config.name] ? (
+                                  <>
+                                    Collapse <DoubleArrowUpIcon />{" "}
+                                  </>
+                                ) : (
+                                  <>
+                                    {config.interpolations?.length} config
+                                    {config?.interpolations?.length === 1
+                                      ? ""
+                                      : "s"}
+                                    <DoubleArrowDownIcon />
+                                  </>
+                                )}
+                              </Button>
+                            </Collapsible.Trigger>
+                          </Tooltip>
+                        )}
                       </Flex>
 
                       <Collapsible.Content>
