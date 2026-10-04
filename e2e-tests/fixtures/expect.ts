@@ -1,6 +1,16 @@
 import { createNetworkFixture, type NetworkFixture } from "@msw/playwright";
-import { test as base, chromium, type BrowserContext } from "@playwright/test";
+import {
+  test as base,
+  chromium,
+  Page,
+  type BrowserContext,
+} from "@playwright/test";
 import path from "path";
+
+export interface TestInterface {
+  page: Page;
+  extensionId: string;
+}
 
 export const test = base.extend<{
   context: BrowserContext;

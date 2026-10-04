@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { AnyInterpolation } from "@/utils/factories/Interpolation";
 import { InterpolateStorage } from "@/utils/storage/InterpolateStorage/InterpolateStorage";
-import { ChevronUpIcon } from "@radix-ui/react-icons";
+import { ChevronUpIcon, TrashIcon } from "@radix-ui/react-icons";
 import {
   Badge,
   Box,
@@ -15,6 +15,7 @@ import {
   Text,
   Strong,
   Separator,
+  Checkbox,
 } from "@radix-ui/themes";
 import { Collapsible, ContextMenu } from "radix-ui";
 import { HeaderRulePreview } from "../HeaderPreview/HeaderPreview";
@@ -36,12 +37,23 @@ type InterpolationCardProps = {
 };
 
 export const InterpolationCard = ({
+  enableCheckbox,
   info,
+  isCheckboxSelected,
+  hideDeleteButton,
   hideRuleToggle,
   hideOptions,
+  onCheckboxSelected,
 }: {
+  isCheckboxSelected?: boolean;
+  enableCheckbox?: boolean;
   hideRuleToggle?: boolean;
+  hideDeleteButton?: boolean;
   hideOptions?: boolean;
+  onCheckboxSelected?: (arg: {
+    checked: boolean;
+    interpolation: AnyInterpolation;
+  }) => void;
 } & InterpolationCardProps) => {
   const { error, type, details, name } = info;
   const { id } = details ?? {};
@@ -88,6 +100,13 @@ export const InterpolationCard = ({
   const handlePauseClick = async () => {
     await InterpolateStorage.setIsEnabled(details?.id, false);
     setIsEnabledByUser(false);
+  };
+
+  const handleCheckboxSelected = () => {
+    onCheckboxSelected?.({
+      checked: !isCheckboxSelected,
+      interpolation: info,
+    });
   };
 
   const badgeColor = useMemo(() => {
@@ -221,6 +240,7 @@ export const InterpolationCard = ({
 
   const handleDelete = async () => {
     await InterpolateStorage.delete(info.details?.id);
+    setDeleteSelected(false);
   };
 
   return (
@@ -255,6 +275,13 @@ export const InterpolationCard = ({
                     p="2"
                   >
                     <Flex justify={"start"} align="center" gap="2" width="100%">
+                      {enableCheckbox ? (
+                        <Checkbox
+                          data-testid={`checkbox-${info?.type}-${info?.name}`}
+                          defaultChecked={isCheckboxSelected}
+                          onClick={() => handleCheckboxSelected()}
+                        />
+                      ) : null}
                       <Badge size="1" color={badgeColor}>
                         <Strong>
                           <Text align="center" weight="medium" size="1">
@@ -267,7 +294,7 @@ export const InterpolationCard = ({
                         <Text size="2">{info.name}</Text>
                       </Flex>
                     </Flex>
-                    <Flex gap="3">
+                    <Flex gap="3" align={"center"}>
                       {hideRuleToggle ? null : (
                         <Box width="50px">
                           <RuleToggle
@@ -278,6 +305,18 @@ export const InterpolationCard = ({
                           />
                         </Box>
                       )}{" "}
+                      {hideDeleteButton ? null : (
+                        <IconButton
+                          onClick={() => setDeleteSelected(true)}
+                          radius="full"
+                          variant="ghost"
+                          color="red"
+                        >
+                          <TrashIcon
+                            data-testid={`delete-${info?.type}-${info?.name}`}
+                          />
+                        </IconButton>
+                      )}
                       <Collapsible.Trigger asChild>
                         <Flex justify={"center"} gap="2" align={"center"}>
                           <IconButton
@@ -328,7 +367,11 @@ export const InterpolationCard = ({
                     </Button>
                   </Dialog.Close>
                   <Dialog.Close>
-                    <Button onClick={handleDelete} color="red">
+                    <Button
+                      data-testid="delete-confirmation-button"
+                      onClick={handleDelete}
+                      color="red"
+                    >
                       Delete
                     </Button>
                   </Dialog.Close>

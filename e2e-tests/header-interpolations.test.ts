@@ -135,3 +135,31 @@ test("should apply edited header immediately", async ({
   await page.goto("https://httpbin.org/headers");
   await expect(page.getByText('"X-Test-Header": "new value"')).toBeVisible();
 });
+
+test("should allow user to delete header with delete button click", async ({
+  extensionId,
+  page,
+}) => {
+  await createTestHeaderInterpolation({
+    page,
+    headerName: "X-Test-Header",
+    headerValue: "header value",
+    extensionId,
+    name: "my header interpolation",
+  });
+
+  expect(page.getByText("X-Test-Header")).toBeVisible();
+
+  await page.goto("https://httpbin.org/headers");
+  await expect(page.getByText('"X-Test-Header": "header value"')).toBeVisible();
+  await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
+  await expect(page.getByText("my header interpolation")).toBeVisible();
+  await page.getByTestId(`delete-headers-my header interpolation`).click();
+  await page.getByTestId("delete-confirmation-button").isVisible();
+  await page.getByTestId("delete-confirmation-button").click();
+  expect(page.getByText("my header interpolation")).toHaveCount(0);
+  await page.goto("https://httpbin.org/headers");
+  await expect(
+    page.getByText('"X-Test-Header": "header value"'),
+  ).not.toBeVisible();
+});

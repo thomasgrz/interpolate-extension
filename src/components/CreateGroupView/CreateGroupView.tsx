@@ -2,7 +2,6 @@ import { CrossCircledIcon, PlusIcon } from "@radix-ui/react-icons";
 import {
   Box,
   Button,
-  Checkbox,
   Dialog,
   Flex,
   Heading,
@@ -11,7 +10,6 @@ import {
 } from "@radix-ui/themes";
 import { useForm } from "@tanstack/react-form";
 import { TextInput } from "../TextInput/TextInput";
-import { InterpolationCard } from "../InterpolationCard/InterpolationCard";
 import { AnyInterpolation } from "#src/utils/factories/Interpolation.ts";
 import { useMemo, useState } from "react";
 import { SubmitButton } from "../SubmitButton/SubmitButton";
@@ -23,14 +21,12 @@ import {
   GroupConfigInStorage,
 } from "#src/utils/factories/InterpolationGroup.ts";
 import styles from "./CreateGroupView.module.scss";
-
-export enum CreateGroupLabel {
-  NAME = "Group name:",
-}
-
-export enum CreateGroupFormError {
-  NAME = "Please define a name for this group",
-}
+import { InterpolationsListView } from "../InterpolationsListView/InterpolationsListView";
+import {
+  CreateGroupFormError,
+  CreateGroupLabel,
+  CreateGroupPlaceholder,
+} from "./CreateGroupView.constants";
 
 export const CreateGroupView = ({
   hideTrigger,
@@ -118,15 +114,17 @@ export const CreateGroupView = ({
     },
   });
 
-  const handleChange = (e: MouseEvent, interp: AnyInterpolation) => {
-    // @ts-expect-error TODO: fix types
-    const isCheckedAfterChange = e?.target?.ariaChecked === "false";
+  const handleCheckboxChange = (arg: {
+    checked: boolean;
+    interpolation: AnyInterpolation;
+  }) => {
+    const { interpolation, checked } = arg;
     setSelectedStates((prev) => {
       return {
         ...prev,
-        [interp?.details?.id]: {
-          isChecked: isCheckedAfterChange,
-          ...interp,
+        [interpolation?.details?.id]: {
+          isChecked: checked,
+          ...interpolation,
         },
       };
     });
@@ -176,7 +174,7 @@ export const CreateGroupView = ({
                   <TextInput
                     onChange={(e) => field.handleChange(e.target.value)}
                     errors={field.state.meta.errors}
-                    placeholder="My Favorite Interpolations"
+                    placeholder={CreateGroupPlaceholder.NAME}
                     label={CreateGroupLabel.NAME}
                     onBlur={field.handleBlur}
                     value={field.state.value}
@@ -185,21 +183,13 @@ export const CreateGroupView = ({
               />
               <ScrollArea style={{ height: "100%" }}>
                 <Flex gap="2" direction="column" maxHeight="100%">
-                  {interpolations?.map?.((interp) => {
-                    return (
-                      <Flex width="stretch" flexGrow="1" gap="2" align="center">
-                        <Checkbox
-                          key={interp?.details?.id}
-                          defaultChecked={
-                            selectedStates[interp?.details?.id]?.isChecked
-                          }
-                          // @ts-expect-error TODO: fix types
-                          onClick={(e) => handleChange(e, interp)}
-                        />
-                        <InterpolationCard hideRuleToggle info={interp} />
-                      </Flex>
-                    );
-                  })}
+                  <InterpolationsListView
+                    configs={interpolations}
+                    hideDeleteButton
+                    hideRuleToggle
+                    showCheckboxes
+                    onInterpolationCheckboxChange={handleCheckboxChange}
+                  />
                 </Flex>
               </ScrollArea>
               <Flex width="stretch" justify="start" pt="3">
