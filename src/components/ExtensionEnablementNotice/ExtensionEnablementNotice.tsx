@@ -1,5 +1,5 @@
 import { useInterpolationsContext } from "#src/hooks/useInterpolationsContext/useInterpolationsContext.ts";
-import { Callout, Flex, Strong, Text } from "@radix-ui/themes";
+import { Callout, Strong, Text } from "@radix-ui/themes";
 import styles from "./ExtensionEnablementNotice.module.scss";
 
 export const ExtensionEnablmentNotice = () => {
@@ -16,12 +16,12 @@ export const ExtensionEnablmentNotice = () => {
         color="red"
       >
         <Callout.Text size="2">
-          <Flex justify="center" direction={"column"} gap="1">
-            <Strong>
-              <Text>Interpolate is disabled</Text>
-            </Strong>
-            <Text size="1">Configurations will be automatically paused</Text>
-          </Flex>
+          <Strong>
+            <Text>Interpolate is disabled</Text>
+          </Strong>
+        </Callout.Text>
+        <Callout.Text>
+          <Text size="1">Configurations will be automatically paused</Text>
         </Callout.Text>
       </Callout.Root>
     )

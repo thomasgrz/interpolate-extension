@@ -159,12 +159,10 @@ export const DashboardView = () => {
               </Flex>
 
               <AlertDialog.Description>
-                <Box>
-                  <Text size="1">
-                    No interpolations will be applied until extension is
-                    re-enabled
-                  </Text>
-                </Box>
+                <Text size="1">
+                  No interpolations will be applied until extension is
+                  re-enabled
+                </Text>
               </AlertDialog.Description>
               <Flex pt="2" justify={"end"} align={"center"}>
                 <AlertDialog.Action>
