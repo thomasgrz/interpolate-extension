@@ -285,6 +285,7 @@ export const InterpolateStorage = {
               matches: interp.details.matches![0],
               name: interp.name,
               id: interp?.details?.id,
+              runAt: interp.details?.runAt,
             });
         }
       };
