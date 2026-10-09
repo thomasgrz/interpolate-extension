@@ -1,5 +1,4 @@
-import { expect, test } from "./fixtures/expect";
-import { Dialog } from "@playwright/test";
+import { expect, test, TestInterface } from "./fixtures/expect";
 import { createTestScriptInterpolation } from "./fixtures/createTestScriptInterpolation";
 import { enableUserScriptsForExtension } from "./fixtures/enableUserScriptsForExtension";
 
@@ -7,92 +6,70 @@ test.beforeEach(async ({ page }) => {
   await enableUserScriptsForExtension({ page });
 });
 
-test("should apply script interpolation", async ({ page, extensionId }) => {
-  page.on("dialog", async (dialog: Dialog) => {
-    const message = dialog.message();
-
-    expect(message).toBe("hello world");
-    dialog.accept();
-  });
-
+const createHelloWorldScript = async ({ extensionId, page }: TestInterface) => {
+  const script = `const el = document.createElement('h1'); el.innerHTML = "<h1>hello world!</h1>";document.body.prepend(el)`;
   await createTestScriptInterpolation({
+    endOnOptionsPage: true,
     page,
     extensionId,
-    runAt: "document_start",
-    script: "alert('hello world');",
+    runAt: "document_end",
+    script,
     name: "test script",
   });
+};
+
+test("should apply script interpolation", async ({ page, extensionId }) => {
+  await createHelloWorldScript({ extensionId, page });
+  page.goto("http://localhost:8080/index.html");
+  expect(page.getByText("hello world")).toBeVisible();
 });
 
 test("should pause a script", async ({ page, extensionId }) => {
-  page.on("dialog", async (dialog: Dialog) => {
-    const message = dialog.message();
-
-    expect(message).toBe("hello world");
-    dialog.accept();
-  });
   await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
   await page.getByTestId("browser-ui-toggle").click();
-  await createTestScriptInterpolation({
-    page,
-    extensionId,
-    runAt: "document_start",
-    script: "alert('hello world');",
-    name: "test script",
-  });
+  await createHelloWorldScript({ extensionId, page });
+  await page.goto("http://localhost:8080/index.html");
+  await page.getByText("hello world!").isVisible();
 
+  await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
   const pauseAll = page.getByTestId("pause-all");
   await expect(pauseAll).toBeVisible();
   await pauseAll.scrollIntoViewIfNeeded();
   await pauseAll.click();
-
-  let invokedWhilePaused = false;
-  page.on("dialog", async () => {
-    invokedWhilePaused = true;
-  });
-
   await page.reload();
 
-  expect(invokedWhilePaused).toBe(false);
+  expect(page.getByText("hello world")).toHaveCount(0);
 });
 
 test("should resume a script", async ({ page, extensionId }) => {
-  let invokedWhilePaused = false;
-
-  page.on("dialog", async () => {
-    invokedWhilePaused = true;
-  });
-
   await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
   await page.getByTestId("browser-ui-toggle").click();
-  await createTestScriptInterpolation({
-    page,
-    extensionId,
-    runAt: "document_start",
-    script: "alert('hello world');",
-    name: "test script",
-    endOnOptionsPage: true,
-  });
+  await createHelloWorldScript({ extensionId, page });
+  await page.goto("http://localhost:8080/index.html");
+  await page.getByText("hello world!").isVisible();
 
-  const pauseToggle = page.getByTestId("pause-rule-toggle");
+  await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
+  const pauseAll = page.getByTestId("pause-all");
+  await expect(pauseAll).toBeVisible();
+  await pauseAll.scrollIntoViewIfNeeded();
+  await pauseAll.click();
+  await page.reload();
 
-  await pauseToggle.click();
-  await page.goto("http://localhost:8080");
-
-  expect(invokedWhilePaused).toBe(false);
+  expect(page.getByText("hello world")).toHaveCount(0);
+  await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
+  const resumeAll = page.getByTestId("re-enable");
+  await expect(resumeAll).toBeVisible();
+  await resumeAll.scrollIntoViewIfNeeded();
+  await resumeAll.click();
+  await page.goto("http://localhost:8080/index.html");
+  await page.getByText("hello world!").isVisible();
 });
 
 test("should edit a script in place", async ({ page, extensionId }) => {
-  await createTestScriptInterpolation({
-    page,
-    extensionId,
-    runAt: "document_start",
-    script: "alert('hello world');",
-    name: "test script",
-    endOnOptionsPage: true,
-  });
+  await page.goto(`chrome-extension://${extensionId}/src/options/index.html`);
+  await createHelloWorldScript({ extensionId, page });
 
-  const options = page.getByTestId(/script-preview.*/);
+  const options = page.getByTestId("script-preview-test script");
 
   await options.isVisible();
 
@@ -102,14 +79,16 @@ test("should edit a script in place", async ({ page, extensionId }) => {
 
   await edit.click();
 
-  const name = page.getByLabel("Name:");
+  const body = page.getByLabel("Script:");
 
-  await expect(name).toBeVisible();
-  await name.click();
+  await expect(body).toBeVisible();
+  await body.click();
+  const script = `const el = document.createElement('h1');
+el.innerHTML = "<h1>changed!</h1>";document.body.prepend(el)`;
 
-  await name.fill("example 2");
+  await body.fill(script);
 
   await page.getByText("Save script").click();
-  await page.getByTestId(/script-preview-example 2/).waitFor();
-  expect(page.getByText("test script")).not.toBeInViewport();
+  await page.goto("http://localhost:8080/index.html");
+  await page.getByText("changed!").isVisible();
 });

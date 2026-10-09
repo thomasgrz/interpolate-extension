@@ -27,7 +27,7 @@ const handleCreateScriptInterpolation = async ({
 
 export const UserScriptForm = ({
   defaultValues = {
-    runAt: "document_start",
+    runAt: "document_end",
   },
   onCancelEdit,
   onSubmit,

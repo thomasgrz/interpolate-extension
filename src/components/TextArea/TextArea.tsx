@@ -20,14 +20,14 @@ export default function TextAreaInput({
     <Box flexGrow={"1"}>
       <Flex gap={"1"} align="start" direction={"column"}>
         {label && (
-          <Label.Root>
+          <Label.Root htmlFor="script-body">
             <Text size="2">
               <Strong>{label}</Strong>
             </Text>
           </Label.Root>
         )}
         <Box width={"100%"}>
-          <TextArea radius={"large"} {...props} />
+          <TextArea id="script-body" radius={"large"} {...props} />
         </Box>
         {errors?.map?.((error?: string | null) => (
           <Text align={"left"} size="1" key={error} color="red">

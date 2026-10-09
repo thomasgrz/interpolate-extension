@@ -166,7 +166,12 @@ export const DashboardView = () => {
               </AlertDialog.Description>
               <Flex pt="2" justify={"end"} align={"center"}>
                 <AlertDialog.Action>
-                  <Button onClick={enableExtension} size={"2"} color={"grass"}>
+                  <Button
+                    data-testid="re-enable"
+                    onClick={enableExtension}
+                    size={"2"}
+                    color={"grass"}
+                  >
                     Enable <ResumeIcon />
                   </Button>
                 </AlertDialog.Action>
