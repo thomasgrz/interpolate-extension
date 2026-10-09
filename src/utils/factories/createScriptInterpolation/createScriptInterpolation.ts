@@ -14,7 +14,8 @@ export const createScriptInterpolation = (scriptForm: {
       js: [{ code: `${scriptForm.script}` }],
       id: scriptForm?.id ?? generateRuleId().toString(),
       matches: [scriptForm.matches || "*://*/*"],
-      runAt: scriptForm?.runAt ?? "document_start",
+      runAt: scriptForm?.runAt ?? "document_end",
+      world: "MAIN",
     },
   });
 };

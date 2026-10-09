@@ -9,7 +9,7 @@ export const updateUserScripts = async (
   const scriptsByStatus = interpolations?.reduce(
     (
       acc: {
-        enabledScripts: ScriptInterpolation[];
+        updatedScripts: ScriptInterpolation[];
         pausedScripts: ScriptInterpolation[];
       },
       curr,
@@ -17,7 +17,7 @@ export const updateUserScripts = async (
       if (curr?.enabledByUser) {
         return {
           ...acc,
-          enabledScripts: [...(acc?.enabledScripts ?? []), curr],
+          updatedScripts: [...(acc?.updatedScripts ?? []), curr],
         };
       }
       return {
@@ -26,7 +26,7 @@ export const updateUserScripts = async (
       };
     },
     {
-      enabledScripts: [],
+      updatedScripts: [],
       pausedScripts: [],
     },
   );
@@ -56,4 +56,12 @@ export const updateUserScripts = async (
       ...scriptsToRegister?.map((script) => script.details),
     ]);
   }
+
+  scriptsByStatus.updatedScripts.forEach(async (script) => {
+    chrome.userScripts.update([
+      {
+        ...script.details,
+      },
+    ]);
+  });
 };
