@@ -30,6 +30,8 @@ import { FilteredSortedList } from "../FilteredSortedList/FilteredSortedList.tsx
 import { InterpolationsGroupsView } from "../InterpolationGroupsView/InterpolationsGroupsView.tsx";
 import { ExtensionEnablmentNotice } from "../ExtensionEnablementNotice/ExtensionEnablementNotice.tsx";
 
+const DEFAULT_COLOR = "grass";
+
 type ThemeColor =
   | "grass"
   | "iris"
@@ -59,7 +61,7 @@ export const DashboardView = () => {
     setShowGroups(true);
   };
   const isExtensionDisabled = !isExtensionEnabled;
-  const [themeColor, setThemeColor] = useState<ThemeColor>("yellow");
+  const [themeColor, setThemeColor] = useState<ThemeColor>(DEFAULT_COLOR);
   const [themeChoiceBackgroundColor, setThemeChoiceBackgroundColor] = useState<
     | "--mint-2"
     | "--grass-2"
@@ -68,7 +70,7 @@ export const DashboardView = () => {
     | "--yellow-2"
     | "--ruby-2"
     | "--slate-2"
-  >("--yellow-2");
+  >(`--${DEFAULT_COLOR}-2`);
   const [themeChoiceActionColor, setThemeChoiceActionColor] = useState<
     | "--mint-5"
     | "--grass-5"
@@ -77,7 +79,7 @@ export const DashboardView = () => {
     | "--yellow-5"
     | "--ruby-5"
     | "--slate-5"
-  >("--yellow-5");
+  >(`--${DEFAULT_COLOR}-5`);
   const [themeChoiceHighContrast, setThemeChoiceHighContrast] = useState<
     | "--mint-8"
     | "--grass-8"
@@ -86,7 +88,7 @@ export const DashboardView = () => {
     | "--yellow-8"
     | "--ruby-8"
     | "--slate-8"
-  >("--yellow-8");
+  >(`--${DEFAULT_COLOR}-8`);
   const [expandedSection, setExpandedSection] =
     useState<ExpandedSection>("all");
 
