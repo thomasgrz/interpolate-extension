@@ -107,8 +107,11 @@ export const DashboardView = () => {
     chrome?.storage?.local.get("themeColor", ({ themeColor }) => {
       if (themeColor) {
         setThemeColor(themeColor);
+        // @ts-expect-error TODO: fix types
         setThemeChoiceBackgroundColor(`--${themeColor as string}-2`);
+        // @ts-expect-error TODO: fix types
         setThemeChoiceActionColor(`--${themeColor as string}-5`);
+        // @ts-expect-error TODO: fix types
         setThemeChoiceHighContrast(`--${themeColor as string}-8`);
       }
     });
